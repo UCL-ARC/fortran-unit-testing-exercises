@@ -1,0 +1,14 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools",
+    "setuptools-scm",
+]
+
+[project]
+name = "fortran-unit-testing-exercises"
+version = "0.0.1"
+dependencies = [
+    "fortitude-lint>=0.7.2",
+    "pre-commit>=4.2.0"
+]
