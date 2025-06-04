@@ -3,8 +3,4 @@ repos:
   - repo: https://github.com/PlasmaFAIR/fortitude-pre-commit
     rev : v0.7.2
     hooks:
-    # Idealy, we would not need to specify the entry point, but the fortitude cli 
-    # requires the `--config-file` option to be specified before the `check` subcommand
-    # and the pre-commit hook correctly states check in the entry.
     - id: fortitude
-      entry: fortitude --config-file formatting/fortitude.toml check --force-exclude
