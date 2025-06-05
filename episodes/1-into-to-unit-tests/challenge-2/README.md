@@ -12,7 +12,7 @@ A solution is provided in [test/maths_test_solution.f90](./test/maths_test_solut
 
 ## Running the tests
 
-An [fpm.toml](./fpm.toml) is provided to make running these test easy. From within the episode-1 challenge-2 directory,  run the command
+An [fpm.toml](./fpm.toml) is provided to make running these test easier. From within the challenge-2 directory, run the command
 
 ```sh
 fpm test
