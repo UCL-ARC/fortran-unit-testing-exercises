@@ -2,54 +2,77 @@ module game_of_life_sol_test
     use game_of_life_mod, only : check_for_steady_state
     use veggies, only:            &
         assert_that,              &
+        describe,                 &
+        example_t,                &
         fail,                     &
-        given,                    &
         input_t,                  &
+        it,                       &
         result_t,                 &
-        test_item_t,              &
-        then__,                   &
-        transformation_failure_t, &
-        transformed_t,            &
-        when
+        test_item_t
     implicit none
 
     private
-    public :: game_of_life_sol_test_suite
+    public :: check_for_steady_state_tests
 
-    !> Type to bundle the inputs of game_of_life_sol::check_for_steady_state
+    !> Type to bundle the boards of game_of_life_sol
     type, extends(input_t) :: input_boards_t
         integer, dimension(:,:), allocatable :: current_board, new_board
     end type input_boards_t
 
-    !> Type to bundle the outputs of game_of_life_sol::check_for_steady_state
-    type, extends(input_t) :: check_for_steady_state_output_t
-        logical :: steady_state
-    end type check_for_steady_state_output_t
+    !> Type to bundle inputs and expected outputs of game_of_life_sol::check_for_steady_state
+    type, extends(input_t) :: check_for_steady_state_in_out_t
+        type(input_boards_t) :: input_boards
+        logical :: expected_steady_state
+    end type check_for_steady_state_in_out_t
+    interface check_for_steady_state_in_out_t
+        module procedure check_for_steady_state_in_out_constructor
+    end interface check_for_steady_state_in_out_t
 
 contains
 
-    function game_of_life_sol_test_suite() result(tests)
+    function check_for_steady_state_tests() result(tests)
         type(test_item_t) :: tests
 
-        tests = given( &
-                    "we have populated a matching board and temp_board", &
-                    setup_matching_boards(), &
-                    [ when( &
-                        "we check for steady_state", &
-                        run_steady_sate_check, &
-                        [ then__("steady_state will be reached", check_is_steady_sate) &
-                        ]) &
-                    ])
-    end function game_of_life_sol_test_suite
+        tests = describe( &
+            "check_for_steady_state", &
+            [ it( &
+                "matching boards are in steady state", &
+                [ example_t(check_for_steady_state_in_out_t(setup_matching_boards(31, 31, 0), .true.)) &
+                , example_t(check_for_steady_state_in_out_t(setup_matching_boards(31, 31, 10), .true.)) &
+                , example_t(check_for_steady_state_in_out_t(setup_matching_boards(31, 31, 31*31), .true.)) &
+                ], &
+                check_is_steady_state &
+            )] &
+        )
+    end function check_for_steady_state_tests
 
-    function setup_matching_boards() result(input_boards)
+    function check_is_steady_state(input) result(result_)
+        class(input_t), intent(in) :: input
+        type(result_t) :: result_
+
+        logical :: actual_steady_state
+
+        select type (input)
+        type is (check_for_steady_state_in_out_t)
+            call check_for_steady_state(input%input_boards%current_board, input%input_boards%new_board, actual_steady_state)
+
+            result_ = assert_that(input%expected_steady_state .eqv. actual_steady_state)
+
+        class default
+            result_ = fail("Didn't get check_for_steady_state_in_out_t")
+
+        end select
+    end function check_is_steady_state
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    function setup_matching_boards(nrow, ncol, num_ones) result(input_boards)
+        integer, intent(in) :: nrow, ncol, num_ones
         type(input_boards_t) :: input_boards
 
-        integer :: nrow, ncol, row, col, num_ones, rand_row, rand_col
+        integer :: row, col, rand_row, rand_col
         real :: rand_real
-
-        nrow = 31
-        ncol = 31
 
         ! Initialise to all zeros
         allocate(input_boards%current_board(nrow, ncol))
@@ -57,9 +80,7 @@ contains
         input_boards%current_board = 0
         input_boards%new_board = 0
 
-        ! For both boards, set one or more elements to 1
-        call random_number(rand_real)
-        num_ones = 1 + FLOOR(nrow*ncol*rand_real) ! n=1 to n=nrow*ncol
+        ! For both boards, set to requested number of elements to 1
         do row = 1, num_ones
             ! Get random coordinates for 1
             call random_number(rand_real)
@@ -73,34 +94,14 @@ contains
 
     end function setup_matching_boards
 
-    function run_steady_sate_check(input) result(output)
-        class(input_t), intent(in) :: input
-        type(transformed_t) :: output
+    function check_for_steady_state_in_out_constructor(input_boards, steady_state) result(check_for_steady_state_in_out)
+        type(input_boards_t), intent(in) :: input_boards
+        logical, intent(in) :: steady_state
 
-        logical :: actual_steady_state
+        type(check_for_steady_state_in_out_t) :: check_for_steady_state_in_out
 
-        select type (input)
-        type is (input_boards_t)
-            call check_for_steady_state(input%current_board, input%new_board, actual_steady_state)
+        check_for_steady_state_in_out%input_boards = input_boards
+        check_for_steady_state_in_out%expected_steady_state = steady_state
 
-            output = transformed_t(check_for_steady_state_output_t(actual_steady_state))
-
-        class default
-            output = transformed_t(transformation_failure_t(fail( &
-                "Didn't get input_boards_t")))
-
-        end select
-    end function run_steady_sate_check
-
-    function check_is_steady_sate(input) result(result_)
-        class(input_t), intent(in) :: input
-        type(result_t) :: result_
-
-        select type (input)
-        type is (check_for_steady_state_output_t)
-            result_ = assert_that(input%steady_state)
-        class default
-            result_ = fail("Didn't get check_for_steady_state_output_t")
-        end select
-    end function check_is_steady_sate
+    end function check_for_steady_state_in_out_constructor
 end module game_of_life_sol_test

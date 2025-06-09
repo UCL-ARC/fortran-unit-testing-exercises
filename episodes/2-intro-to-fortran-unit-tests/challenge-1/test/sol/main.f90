@@ -1,7 +1,7 @@
 program test_main
     use veggies, only : test_item_t, test_that, run_tests
 
-    use game_of_life_sol_test, only : game_of_life_sol_test_suite
+    use game_of_life_sol_test, only : check_for_steady_state_tests
 
     implicit none
 
@@ -14,7 +14,7 @@ contains
         type(test_item_t) :: tests
         type(test_item_t) :: individual_tests(1)
 
-        individual_tests(1) = game_of_life_sol_test_suite()
+        individual_tests(1) = check_for_steady_state_tests()
 
         tests = test_that(individual_tests)
 
