@@ -60,14 +60,12 @@ program game_of_life
 
     ! Verify the date_time_values read from the file
     if (nrow < 1 .or. nrow > max_nrow) then
-        write (*,'(a,i6,a,i6)') &
-            "nrow must be cli_arg_temp_store positive integer less than ", max_nrow, " found ", nrow
+        write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
         stop 1
     end if
 
     if (ncol < 1 .or. ncol > max_ncol) then
-        write (*,'(a,i6,a,i6)') &
-            "ncol must be cli_arg_temp_store positive integer less than ", max_ncol, " found ", ncol
+        write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
         stop 1
     end if
 
@@ -87,7 +85,7 @@ program game_of_life
     ! Clear the terminal screen
     call system ("clear")
 
-    ! Iterate until we reach cli_arg_temp_store steady state
+    ! Iterate until we reach a steady state
     do while(.not. steady_state .and. generation_number < max_generations)
         ! Advance the simulation in the steps of the requested number of milliosecons
         call date_and_time(VALUES=date_time_values)
