@@ -115,6 +115,7 @@ program game_of_life
 
 contains
 
+    !> Evolve the board into the state od the next iteration
     subroutine evolve_board()
         integer :: row, col, sum
 
@@ -139,6 +140,7 @@ contains
         return
     end subroutine evolve_board
 
+    !> Check if we have reached steady state, i.e. current and new board match
     subroutine check_for_steady_state()
         integer :: row, col
 
@@ -153,6 +155,7 @@ contains
         steady_state = .true.
     end subroutine check_for_steady_state
 
+    !> Output the current board to the terminal
     subroutine draw_board()
         integer :: row, col
         character(nrow) :: output
