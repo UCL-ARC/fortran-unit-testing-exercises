@@ -1,6 +1,16 @@
 name = "episode-2-challenge-1"
 
+[dev-dependencies]
+veggies.git = "https://gitlab.com/everythingfunctional/veggies"
+veggies.tag = "main"
+
 [[executable]]
 name = "game-of-life"
-source-dir = "src"
+source-dir = "src" # Update this to src/sol to build the solution
 main = "game_of_life.f90"
+
+# Uncamment the below to enable the solution tests
+# [[test]]
+# name = "game_of_life_sol_test"
+# source-dir = "test/sol"
+# main = "main.f90"
