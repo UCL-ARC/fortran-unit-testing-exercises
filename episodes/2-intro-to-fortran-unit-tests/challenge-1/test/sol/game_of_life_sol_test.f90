@@ -41,12 +41,20 @@ contains
                 , example_t(check_for_steady_state_in_out_t(setup_matching_boards(31, 31, 10), .true.)) &
                 , example_t(check_for_steady_state_in_out_t(setup_matching_boards(31, 31, 31*31), .true.)) &
                 ], &
-                check_is_steady_state &
+                check_if_steady_state &
+            ) &
+            , it( &
+                "non-matching boards are not in steady state", &
+                [ example_t(check_for_steady_state_in_out_t(setup_mismatched_boards(31, 31, 0), .false.)) &
+                , example_t(check_for_steady_state_in_out_t(setup_mismatched_boards(31, 31, 10), .false.)) &
+                , example_t(check_for_steady_state_in_out_t(setup_mismatched_boards(31, 31, 31*31), .false.)) &
+                ], &
+                check_if_steady_state &
             )] &
         )
     end function check_for_steady_state_tests
 
-    function check_is_steady_state(input) result(result_)
+    function check_if_steady_state(input) result(result_)
         class(input_t), intent(in) :: input
         type(result_t) :: result_
 
@@ -62,7 +70,7 @@ contains
             result_ = fail("Didn't get check_for_steady_state_in_out_t")
 
         end select
-    end function check_is_steady_state
+    end function check_if_steady_state
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Contructors
@@ -82,7 +90,7 @@ contains
 
         ! For both boards, set to requested number of elements to 1
         do row = 1, num_ones
-            ! Get random coordinates for 1
+            ! Get random coordinates for both
             call random_number(rand_real)
             rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
             call random_number(rand_real)
@@ -93,6 +101,40 @@ contains
         end do
 
     end function setup_matching_boards
+
+    function setup_mismatched_boards(nrow, ncol, num_ones) result(input_boards)
+        integer, intent(in) :: nrow, ncol, num_ones
+        type(input_boards_t) :: input_boards
+
+        integer :: row, col, rand_row, rand_col
+        real :: rand_real
+
+        ! Initialise
+        allocate(input_boards%current_board(nrow, ncol))
+        allocate(input_boards%new_board(nrow, ncol))
+        input_boards%current_board = 0
+        input_boards%new_board = 1
+
+        ! For both boards, set to requested number of elements to 1
+        do row = 1, num_ones
+            ! Get random coordinates for current
+            call random_number(rand_real)
+            rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
+            call random_number(rand_real)
+            rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
+
+            input_boards%current_board(rand_row, rand_col) = 1
+
+            ! Get random coordinates for new
+            call random_number(rand_real)
+            rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
+            call random_number(rand_real)
+            rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
+
+            input_boards%new_board(rand_row, rand_col) = 0
+        end do
+
+    end function setup_mismatched_boards
 
     function check_for_steady_state_in_out_constructor(input_boards, steady_state) result(check_for_steady_state_in_out)
         type(input_boards_t), intent(in) :: input_boards
