@@ -9,14 +9,14 @@ program game_of_life
     implicit none
 
     !! Board args
-    integer, parameter :: max_nrow = 100, max_ncol = 100, max_generations = 100, sleep_seconds = 1
+    integer, parameter :: max_nrow = 100, max_ncol = 100, max_generations = 100
     integer :: nrow, ncol
-    integer :: i, generation_number, sum, num_generations, steady_state_generation
+    integer :: i, generation_number, sum, steady_state_generation
     integer, dimension(:,:), allocatable :: board, temp_board
 
     !! Animation args
-    integer, dimension(8) :: values
-    integer :: mod_val, speed = 250, steady_state_counter = 0
+    integer, dimension(8) :: date_time_values
+    integer :: mod_ms_step, ms_per_step = 250, steady_state_counter = 0
     logical :: steady_state = .false.
 
     !! CLI args
@@ -58,11 +58,7 @@ program game_of_life
     read(input_file_io,'(a)') text ! Skip first line
     read(input_file_io,*) nrow, ncol
 
-    if (num_generations < 1 .or. num_generations > max_generations) then
-        write (*,'(a,i6,a,i6)') "num_generations must be a positive integer less than ", max_generations, " found ", num_generations
-        stop 1
-    end if
-
+    ! Verify the date_time_values read from the file
     if (nrow < 1 .or. nrow > max_nrow) then
         write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
         stop 1
@@ -84,13 +80,16 @@ program game_of_life
 
     temp_board = 0
 
+    ! Clear the terminal screen
     call system ("clear")
 
-    do while(.not. steady_state)
-        call date_and_time(VALUES=values)
-        mod_val = mod(values(8), speed)
+    ! Iterate until we reach a steady state
+    do while(.not. steady_state .and. generation_number < max_generations)
+        ! Advance the simulation in the steps of the requested number of milliosecons
+        call date_and_time(VALUES=date_time_values)
+        mod_ms_step = mod(date_time_values(8), ms_per_step)
 
-        if (mod_val == 0) then
+        if (mod_ms_step == 0) then
             call evolve_board()
             call check_for_steady_state()
             board = temp_board
@@ -101,7 +100,11 @@ program game_of_life
 
     end do
 
-    write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"
+    if (steady_state) then
+        write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"
+    else
+        write(*,'(a,i6,a)') "Did NOT Reach steady after ", generation_number, " generations"
+    end if
 
     deallocate(board)
     deallocate(temp_board)
