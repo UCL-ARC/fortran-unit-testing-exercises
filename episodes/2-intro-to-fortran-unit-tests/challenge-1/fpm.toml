@@ -3,4 +3,4 @@ name = "episode-2-challenge-1"
 [[executable]]
 name = "game-of-life"
 source-dir = "src"
-main = "main.f90"
+main = "game_of_life.f90"
