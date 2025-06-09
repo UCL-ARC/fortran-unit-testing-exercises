@@ -120,9 +120,14 @@ contains
         do row=2, nrow-1
             do col=2, ncol-1
                 sum = 0
-                sum = current_board(row-1, col-1) + current_board(row, col-1) + current_board(row+1, col-1) !
-                sum = sum + current_board(row-1, col) + current_board(row+1, col)
-                sum = sum + current_board(row-1, col+1) + current_board(row, col+1) + current_board(row+1, col+1)
+                sum = current_board(row, col-1)   &
+                    + current_board(row+1, col-1) &
+                    + current_board(row+1, col)   &
+                    + current_board(row+1, col+1) &
+                    + current_board(row, col+1)   &
+                    + current_board(row-1, col+1) &
+                    + current_board(row-1, col)   &
+                    + current_board(row-1, col-1)
                 if(current_board(row,col)==1 .and. sum<=1) then
                     new_board(row,col) = 0
                 elseif(current_board(row,col)==1 .and. sum<=3) then
