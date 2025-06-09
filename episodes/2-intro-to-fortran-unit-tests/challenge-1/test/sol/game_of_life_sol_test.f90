@@ -1,7 +1,8 @@
 module game_of_life_sol_test
-    use game_of_life_mod, only : check_for_steady_state
+    use game_of_life_mod, only : check_for_steady_state, evolve_board
     use veggies, only:            &
         assert_that,              &
+        assert_equals,            &
         describe,                 &
         example_t,                &
         fail,                     &
@@ -12,7 +13,7 @@ module game_of_life_sol_test
     implicit none
 
     private
-    public :: check_for_steady_state_tests
+    public :: check_for_steady_state_tests, evolve_board_tests
 
     !> Type to bundle the boards of game_of_life_sol
     type, extends(input_t) :: input_boards_t
@@ -28,8 +29,22 @@ module game_of_life_sol_test
         module procedure check_for_steady_state_in_out_constructor
     end interface check_for_steady_state_in_out_t
 
+    !> Type to bundle inputs and expected outputs of game_of_life_sol::evolve_board
+    type, extends(input_t) :: check_evolve_board_in_out_t
+        type(input_boards_t) :: input_boards
+        integer, dimension(:,:), allocatable :: expected_new_board
+    end type check_evolve_board_in_out_t
+    interface check_evolve_board_in_out_t
+        module procedure check_evolve_board_in_out_constructor
+    end interface check_evolve_board_in_out_t
+
 contains
 
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Test Suites
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Test suite for the game_of_life_sol::check_for_steady_state subroutine
     function check_for_steady_state_tests() result(tests)
         type(test_item_t) :: tests
 
@@ -54,6 +69,99 @@ contains
         )
     end function check_for_steady_state_tests
 
+    !> Test suite for the game_of_life_sol::evolve_board subroutine
+    function evolve_board_tests() result(tests)
+        type(test_item_t) :: tests
+
+        type(input_boards_t) :: test_boards
+        type(example_t) :: steady_state_boards_data(2), non_steady_state_boards_data(1)
+
+        test_boards = get_boards_of_zeros(20, 20)
+
+        ! Steady state boards
+        !  All zeros
+        steady_state_boards_data(1) = example_t(check_evolve_board_in_out_t(test_boards, test_boards%new_board))
+
+        !  A slightly more complex steady state sructure
+        !       8  9 10 11 12
+        !      -- -- -- -- --
+        !   8 | 0  0  0  0  0
+        !   9 | 0  0  1  0  0
+        !  10 | 0  1  0  1  0
+        !  11 | 0  1  0  1  0
+        !  12 | 0  0  1  0  0
+        !  13 | 0  0  0  0  0
+        !
+        !   Input board
+        test_boards%current_board(9,9:11)  = [0,1,0]
+        test_boards%current_board(10,9:11) = [1,0,1]
+        test_boards%current_board(11,9:11) = [1,0,1]
+        test_boards%current_board(12,9:11) = [0,1,0]
+        !   Expected output board
+        test_boards%new_board(9,9:11)  = [0,1,0]
+        test_boards%new_board(10,9:11) = [1,0,1]
+        test_boards%new_board(11,9:11) = [1,0,1]
+        test_boards%new_board(12,9:11) = [0,1,0]
+        steady_state_boards_data(2) = example_t(check_evolve_board_in_out_t(test_boards, test_boards%new_board))
+        !  Reset for next test
+        test_boards%current_board = 0
+        test_boards%new_board = 0
+
+        ! None-steady state boards
+        !  One non-zero element
+        !   Input board
+        test_boards%current_board(10,9) = 1
+        non_steady_state_boards_data(1) = example_t(check_evolve_board_in_out_t(test_boards, test_boards%new_board))
+        !  Reset for next test
+        test_boards%current_board(10,9) = 0
+        test_boards%new_board(10,9) = 0
+
+        !  A slightly more complex non-steady state sructure
+        !   Input board             Expected output board
+        !       8  9 10 11 12           8  9 10 11 12
+        !      -- -- -- -- --          -- -- -- -- --
+        !   8 | 0  0  0  0  0       8 | 0  0  0  0  0
+        !   9 | 0  0  1  0  0   \   9 | 0  1  1  1  0
+        !  10 | 0  1  1  1  0 ---\ 10 | 0  1  0  1  0
+        !  11 | 0  1  0  1  0 ---/ 11 | 0  1  0  1  0
+        !  12 | 0  0  1  0  0   /  12 | 0  0  1  0  0
+        !  13 | 0  0  0  0  0      13 | 0  0  0  0  0
+        !
+        !   Input board
+        test_boards%current_board(9,9:11)  = [0,1,0]
+        test_boards%current_board(10,9:11) = [1,1,1]
+        test_boards%current_board(11,9:11) = [1,0,1]
+        test_boards%current_board(12,9:11) = [0,1,0]
+        !   Expected output board
+        test_boards%new_board(9,9:11)  = [1,1,1]
+        test_boards%new_board(10,9:11) = [1,0,1]
+        test_boards%new_board(11,9:11) = [1,0,1]
+        test_boards%new_board(12,9:11) = [0,1,0]
+        steady_state_boards_data(2) = example_t(check_evolve_board_in_out_t(test_boards, test_boards%new_board))
+        !  Reset for next test
+        test_boards%current_board = 0
+        test_boards%new_board = 0
+
+        tests = describe( &
+            "evolve_board", &
+            [ it( &
+                "a board in steady state does not change", &
+                steady_state_boards_data, &
+                check_evolve_board &
+            ) &
+            , it( &
+                "a board not in steady state will change", &
+                non_steady_state_boards_data, &
+                check_evolve_board &
+            )] &
+        )
+    end function evolve_board_tests
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Assertion functions
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Check for the expected output of the game_of_life_sol::check_for_steady_state subroutine
     function check_if_steady_state(input) result(result_)
         class(input_t), intent(in) :: input
         type(result_t) :: result_
@@ -70,11 +178,47 @@ contains
             result_ = fail("Didn't get check_for_steady_state_in_out_t")
 
         end select
+
     end function check_if_steady_state
 
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !> Check for the expected output of the game_of_life_sol::evolve_board subroutine
+    function check_evolve_board(input) result(result_)
+        class(input_t), intent(in) :: input
+        type(result_t) :: result_
+
+        integer, dimension(:,:), allocatable ::actual_new_board
+
+        select type (input)
+        type is (check_evolve_board_in_out_t)
+            allocate(actual_new_board(size(input%input_boards%current_board, 1), size(input%input_boards%current_board, 2)))
+
+            call evolve_board(input%input_boards%current_board, actual_new_board)
+
+            result_ = assert_equals(input%input_boards%new_board, actual_new_board)
+
+            deallocate(actual_new_board)
+        class default
+            result_ = fail("Didn't get check_evolve_board_in_out_t")
+
+        end select
+
+    end function check_evolve_board
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Contructors
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    function get_boards_of_zeros(nrow, ncol) result(input_boards)
+        integer, intent(in) :: nrow, ncol
+        type(input_boards_t) :: input_boards
+
+        ! Initialise to all zeros
+        allocate(input_boards%current_board(nrow, ncol))
+        allocate(input_boards%new_board(nrow, ncol))
+        input_boards%current_board = 0
+        input_boards%new_board = 0
+    end function get_boards_of_zeros
+
     function setup_matching_boards(nrow, ncol, num_ones) result(input_boards)
         integer, intent(in) :: nrow, ncol, num_ones
         type(input_boards_t) :: input_boards
@@ -83,10 +227,7 @@ contains
         real :: rand_real
 
         ! Initialise to all zeros
-        allocate(input_boards%current_board(nrow, ncol))
-        allocate(input_boards%new_board(nrow, ncol))
-        input_boards%current_board = 0
-        input_boards%new_board = 0
+        input_boards = get_boards_of_zeros(nrow, ncol)
 
         ! For both boards, set to requested number of elements to 1
         do row = 1, num_ones
@@ -110,9 +251,7 @@ contains
         real :: rand_real
 
         ! Initialise
-        allocate(input_boards%current_board(nrow, ncol))
-        allocate(input_boards%new_board(nrow, ncol))
-        input_boards%current_board = 0
+        input_boards = get_boards_of_zeros(nrow, ncol)
         input_boards%new_board = 1
 
         ! For both boards, set to requested number of elements to 1
@@ -146,4 +285,14 @@ contains
         check_for_steady_state_in_out%expected_steady_state = steady_state
 
     end function check_for_steady_state_in_out_constructor
+
+    function check_evolve_board_in_out_constructor(input_boards, expected_new_board) result(check_evolve_board_in_out)
+        type(input_boards_t), intent(in) :: input_boards
+        integer, dimension(:,:), allocatable, intent(in) :: expected_new_board
+
+        type(check_evolve_board_in_out_t) :: check_evolve_board_in_out
+
+        check_evolve_board_in_out%input_boards = input_boards
+        check_evolve_board_in_out%expected_new_board = expected_new_board
+    end function check_evolve_board_in_out_constructor
 end module game_of_life_sol_test

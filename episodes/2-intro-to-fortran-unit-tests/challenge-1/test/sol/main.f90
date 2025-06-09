@@ -1,7 +1,7 @@
 program test_main
     use veggies, only : test_item_t, test_that, run_tests
 
-    use game_of_life_sol_test, only : check_for_steady_state_tests
+    use game_of_life_sol_test, only : check_for_steady_state_tests, evolve_board_tests
 
     implicit none
 
@@ -12,9 +12,10 @@ contains
         logical :: passed
 
         type(test_item_t) :: tests
-        type(test_item_t) :: individual_tests(1)
+        type(test_item_t) :: individual_tests(2)
 
         individual_tests(1) = check_for_steady_state_tests()
+        individual_tests(2) = evolve_board_tests()
 
         tests = test_that(individual_tests)
 
