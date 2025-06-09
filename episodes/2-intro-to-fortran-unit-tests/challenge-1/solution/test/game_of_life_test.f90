@@ -1,4 +1,4 @@
-module game_of_life_sol_test
+module game_of_life_test
     use game_of_life_mod, only : check_for_steady_state, evolve_board
     use veggies, only:            &
         assert_that,              &
@@ -323,4 +323,4 @@ contains
         check_evolve_board_in_out%current_board = current_board
         check_evolve_board_in_out%expected_new_board = expected_new_board
     end function check_evolve_board_in_out_constructor
-end module game_of_life_sol_test
+end module game_of_life_test

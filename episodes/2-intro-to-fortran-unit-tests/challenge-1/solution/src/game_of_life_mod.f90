@@ -1,9 +1,4 @@
-! =======================================================
-! Conway's game of life
-!
-! =======================================================
-! Adapted from https://github.com/tuckerrc/game_of_life
-! =======================================================
+! Q1_FIX_1: Moving these procedures into a separate file allows them to be used within a test file
 module game_of_life_mod
     implicit none
 
@@ -11,7 +6,8 @@ module game_of_life_mod
 
 contains
 
-    !> Evolve the board into the state od the next iteration
+    ! Q1_FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
+    !> Evolve the board into the state of the next iteration
     subroutine evolve_board(current_board, new_board)
         !> The board as it currently is before this iteration
         integer, dimension(:,:), allocatable, intent(in) :: current_board
@@ -47,6 +43,7 @@ contains
         enddo
     end subroutine evolve_board
 
+    ! Q1_FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Check if we have reached steady state, i.e. current and new board match
     subroutine check_for_steady_state(current_board, new_board, steady_state)
         !> The board as it currently is before this iteration
@@ -73,6 +70,7 @@ contains
         steady_state = .true.
     end subroutine check_for_steady_state
 
+    ! Q1_FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Output the current board to the terminal
     subroutine draw_board(current_board)
         !> The board as it currently is for this iteration

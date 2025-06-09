@@ -1,7 +1,7 @@
 program test_main
     use veggies, only : test_item_t, test_that, run_tests
 
-    use game_of_life_sol_test, only : check_for_steady_state_tests, evolve_board_tests
+    use game_of_life_test, only : check_for_steady_state_tests, evolve_board_tests
 
     implicit none
 
