@@ -21,11 +21,10 @@ contains
     end function maths_test_suite
 
     !> A unit test for the maths module.
-    !!
-    !! @returns result_ - The result of the test (pass or fail) of type result_t
     function test_maths() result(result_)
         implicit none
 
+        !> The result of the test (pass or fail) of type result_t
         type(result_t) :: result_
 
         integer :: actual_value, expected_value, input

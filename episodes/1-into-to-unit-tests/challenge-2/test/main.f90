@@ -8,6 +8,7 @@ program test_main
     if (.not.run()) stop 1
 
 contains
+    !> Runs the entire veggies test suite
     function run() result(passed)
         logical :: passed
 

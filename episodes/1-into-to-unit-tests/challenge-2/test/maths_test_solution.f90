@@ -14,7 +14,7 @@ module maths_test_solution
 
     public :: maths_test_suite
 
-    !! @class test_parameters_t
+    !> @class test_parameters_t
     !!
     !! @brief A class to store test parameters
     type, extends(input_t) :: test_parameters_t
@@ -61,16 +61,13 @@ contains
     end function maths_test_suite
 
     !> A unit test for the maths::double function.
-    !!
-    !! @param inputs - An instance of the test_parameters_t containing function
-    !!                 inputs and expected outputs.
-    !!
-    !! @returns result_ - The result of the test (pass or fail) of type result_t
     function test_double(input) result(result_)
         implicit none
 
         ! Setting the values of actual/expected_value outside of the test allows many different inputs to be tested using the same code.
+        !> An instance of the test_parameters_t containing function inputs and expected outputs.
         class(input_t), intent(in) :: input
+        !> The result of the test (pass or fail) of type result_t
         type(result_t) :: result_
 
         integer :: actual_value
@@ -89,15 +86,12 @@ contains
     end function test_double
 
     !> A unit test for the maths::factorial function.
-    !!
-    !! @param inputs - An instance of the test_parameters_t containing function
-    !!                 inputs and expected outputs.
-    !!
-    !! @returns result_ - The result of the test (pass or fail) of type result_t
     function test_factorial(input) result(result_)
         implicit none
 
+        !> An instance of the test_parameters_t containing function inputs and expected outputs.
         class(input_t), intent(in) :: input
+        !> The result of the test (pass or fail) of type result_t
         type(result_t) :: result_
 
         integer :: actual_value
