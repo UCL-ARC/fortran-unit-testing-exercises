@@ -13,6 +13,12 @@ In the [episodes](./episodes/) directory you will find exercises which match up 
 
 Each episode contains its own build systems however there is a top level build script ([build.sh](./build.sh)) to make things easier.
 
+### Solutions
+
+Every exercise has a provided solution. To use this solution, you will likely need to make a small change to some code or build/run a different project. 
+
+Within each solution, you can find docstrings about fixes to the exercise questions. To find these, search each solution for comments starting with `Q<question_number>_FIX<fix_number>`. The question_number and fix_number will correspond to a specific question and fix in each solution.
+
 ## Dependencies
 
 There are several prerequisites to being able to use this repo. 
