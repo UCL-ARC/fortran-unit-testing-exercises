@@ -122,6 +122,8 @@ contains
         integer :: input_file_io, iostat
         character(len=80) :: text_to_discard
 
+        stat = 0
+
         ! Open input file
         open(unit=input_file_io,   &
             file=input_fname, &
@@ -148,13 +150,17 @@ contains
             stat = 1
         end if
 
-        allocate(board(nrow, ncol))
+        if (stat == 0) then
 
-        read(input_file_io,'(a)') text_to_discard ! Skip next line
-        ! Populate the boards starting state
-        do row = 1, nrow
-            read(input_file_io,*) board(row, :)
-        end do
+            allocate(board(nrow, ncol))
+
+            read(input_file_io,'(a)') text_to_discard ! Skip next line
+            ! Populate the boards starting state
+            do row = 1, nrow
+                read(input_file_io,*) board(row, :)
+            end do
+
+        end if
 
         close(input_file_io)
     end subroutine read_model_from_file

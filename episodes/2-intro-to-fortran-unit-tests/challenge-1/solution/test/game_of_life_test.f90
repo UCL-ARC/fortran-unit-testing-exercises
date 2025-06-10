@@ -1,5 +1,5 @@
 module game_of_life_test
-    use game_of_life_mod, only : check_for_steady_state, evolve_board
+    use game_of_life_mod, only : check_for_steady_state, evolve_board, read_model_from_file
     use veggies, only:            &
         assert_that,              &
         assert_equals,            &
@@ -13,7 +13,7 @@ module game_of_life_test
     implicit none
 
     private
-    public :: check_for_steady_state_tests, evolve_board_tests
+    public :: check_for_steady_state_tests, evolve_board_tests, read_model_from_file_tests
 
     !> Type to bundle inputs and expected outputs of game_of_life_sol::check_for_steady_state
     type, extends(input_t) :: check_for_steady_state_in_out_t
@@ -31,6 +31,18 @@ module game_of_life_test
     interface check_evolve_board_in_out_t
         module procedure check_evolve_board_in_out_constructor
     end interface check_evolve_board_in_out_t
+
+    !> Type to bundle inputs and expected outputs of game_of_life_sol::read_model_from_file
+    type, extends(input_t) :: check_read_model_from_file_in_out_t
+        character(len=:), allocatable :: input_fname
+        integer :: max_nrow
+        integer :: max_ncol
+        integer, dimension(:,:), allocatable :: expected_board
+        integer :: expected_stat
+    end type check_read_model_from_file_in_out_t
+    interface check_read_model_from_file_in_out_t
+        module procedure check_read_model_from_file_in_out_constructor
+    end interface check_read_model_from_file_in_out_t
 
 contains
 
@@ -190,6 +202,29 @@ contains
         deallocate(expected_new_board)
     end function evolve_board_tests
 
+    function read_model_from_file_tests() result(tests)
+        type(test_item_t) :: tests
+
+        integer, dimension(:,:), allocatable :: test_board
+        type(example_t) :: valid_model_file_data(1)
+
+        allocate(test_board(31, 31))
+        test_board = 0
+
+        valid_model_file_data(1) = example_t( &
+            check_read_model_from_file_in_out_t("test/models/zeros_31_31.dat", 100, 100, test_board, 0) &
+        )
+
+        tests = describe( &
+            "read_model_from_file", &
+            [ it( &
+                "a valid model file is loaded successfully", &
+                valid_model_file_data, &
+                check_read_model_from_file &
+            )] &
+        )
+    end function read_model_from_file_tests
+
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -237,6 +272,31 @@ contains
         end select
 
     end function check_evolve_board
+
+    !> Check for the expected output of the game_of_life_sol::read_model_from_file subroutine
+    function check_read_model_from_file(input) result(result_)
+        class(input_t), intent(in) :: input
+        type(result_t) :: result_
+
+        integer, dimension(:,:), allocatable ::actual_board
+        integer :: actual_stat
+
+        select type (input)
+        type is (check_read_model_from_file_in_out_t)
+            call read_model_from_file(input%input_fname, input%max_nrow, input%max_ncol, actual_board, actual_stat)
+
+            result_ = assert_equals(input%expected_board(1,1), actual_board(1,1)) .and. &
+                      assert_equals(input%expected_stat, actual_stat)
+
+            if (allocated(actual_board)) then
+                deallocate(actual_board)
+            end if
+        class default
+            result_ = fail("Didn't get check_read_model_from_file_in_out_t")
+
+        end select
+
+    end function check_read_model_from_file
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Contructors
@@ -323,4 +383,21 @@ contains
         check_evolve_board_in_out%current_board = current_board
         check_evolve_board_in_out%expected_new_board = expected_new_board
     end function check_evolve_board_in_out_constructor
+
+    function check_read_model_from_file_in_out_constructor(input_fname, max_nrow, max_ncol, expected_board, expected_stat) &
+            result(check_read_model_from_file_in_out)
+        character(len=:), allocatable, intent(in) :: input_fname
+        integer, intent(in) :: max_nrow
+        integer, intent(in) :: max_ncol
+        integer, dimension(:,:), allocatable, intent(out) :: expected_board
+        integer, intent(out) :: expected_stat
+
+        type(check_read_model_from_file_in_out_t) :: check_read_model_from_file_in_out
+
+        check_read_model_from_file_in_out%input_fname = input_fname
+        check_read_model_from_file_in_out%max_nrow = max_nrow
+        check_read_model_from_file_in_out%max_ncol = max_ncol
+        check_read_model_from_file_in_out%expected_board = expected_board
+        check_read_model_from_file_in_out%expected_stat = expected_stat
+    end function check_read_model_from_file_in_out_constructor
 end module game_of_life_test
