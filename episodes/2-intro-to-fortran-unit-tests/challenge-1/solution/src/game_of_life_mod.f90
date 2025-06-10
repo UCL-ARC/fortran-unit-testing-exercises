@@ -101,4 +101,62 @@ contains
         deallocate(output)
     end subroutine draw_board
 
+    ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
+    !> Populate the a board from the provided file
+    subroutine read_model_from_file(input_fname, max_nrow, max_ncol, board, stat)
+        !> The name of the file to read in the board
+        character(len=:), allocatable, intent(in) :: input_fname
+        !> The maximum allowed number of rows
+        integer, intent(in) :: max_nrow
+        !> The maximum allowed number of columns
+        integer, intent(in) :: max_ncol
+        !> The board to be populated
+        integer, dimension(:,:), allocatable, intent(out) :: board
+        !> A flag to indicate if reading the file was successful
+        integer, intent(out) :: stat
+
+        ! Board definition args
+        integer :: nrow, ncol, row
+
+        ! File IO args
+        integer :: input_file_io, iostat
+        character(len=80) :: text_to_discard
+
+        ! Open input file
+        open(unit=input_file_io,   &
+            file=input_fname, &
+            status='old',  &
+            IOSTAT=iostat)
+
+        if( iostat /= 0) then
+            write(*,'(a)') ' *** Error when opening '//input_fname
+            stat = iostat
+        end if
+
+        ! Read in board from file
+        read(input_file_io,'(a)') text_to_discard ! Skip first line
+        read(input_file_io,*) nrow, ncol
+
+        ! Verify the date_time_values read from the file
+        if (nrow < 1 .or. nrow > max_nrow) then
+            write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
+            stat = 1
+        end if
+
+        if (ncol < 1 .or. ncol > max_ncol) then
+            write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
+            stat = 1
+        end if
+
+        allocate(board(nrow, ncol))
+
+        read(input_file_io,'(a)') text_to_discard ! Skip next line
+        ! Populate the boards starting state
+        do row = 1, nrow
+            read(input_file_io,*) board(row, :)
+        end do
+
+        close(input_file_io)
+    end subroutine read_model_from_file
+
 end module game_of_life_mod

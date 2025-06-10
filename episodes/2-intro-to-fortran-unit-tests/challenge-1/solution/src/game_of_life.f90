@@ -5,14 +5,13 @@
 ! Adapted from https://github.com/tuckerrc/game_of_life
 ! =======================================================
 program game_of_life
-    use game_of_life_mod, only : evolve_board, check_for_steady_state, draw_board
+    use game_of_life_mod, only : evolve_board, check_for_steady_state, draw_board, read_model_from_file
 
     implicit none
 
     !! Board args
     integer, parameter :: max_nrow = 100, max_ncol = 100, max_generations = 100
-    integer :: nrow, ncol
-    integer :: row, generation_number
+    integer :: generation_number
     integer, dimension(:,:), allocatable :: current_board, new_board
 
     !! Animation args
@@ -24,10 +23,8 @@ program game_of_life
     integer                       :: argl
     character(len=:), allocatable :: cli_arg_temp_store, input_fname
 
-    !! File IO args
-    character(len=80) :: text_to_discard
-    integer :: input_file_io
-    integer :: iostat
+    !! IO args
+    integer :: stat
 
     ! Get current_board file path from command line
     if (command_argument_count() == 1) then
@@ -44,43 +41,14 @@ program game_of_life
         stop
     end if
 
-    ! Open input file
-    open(unit=input_file_io,   &
-         file=input_fname, &
-         status='old',  &
-         IOSTAT=iostat)
+    ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
+    call read_model_from_file(input_fname, max_nrow, max_ncol, current_board, stat)
 
-    if( iostat /= 0) then
-        write(*,'(a)') ' *** Error when opening '//input_fname
-        stop 1
+    if( stat /= 0) then
+        stop stat
     end if
 
-    ! Read in current_board from file
-    read(input_file_io,'(a)') text_to_discard ! Skip first line
-    read(input_file_io,*) nrow, ncol
-
-    ! Verify the date_time_values read from the file
-    if (nrow < 1 .or. nrow > max_nrow) then
-        write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
-        stop 1
-    end if
-
-    if (ncol < 1 .or. ncol > max_ncol) then
-        write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
-        stop 1
-    end if
-
-    allocate(current_board(nrow, ncol))
-    allocate(new_board(nrow, ncol))
-
-    read(input_file_io,'(a)') text_to_discard ! Skip next line
-    ! Populate the boards starting state
-    do row = 1, nrow
-        read(input_file_io,*) current_board(row, :)
-    end do
-
-    close(input_file_io)
-
+    allocate(new_board(size(current_board,1), size(current_board, 2)))
     new_board = 0
 
     ! Clear the terminal screen
