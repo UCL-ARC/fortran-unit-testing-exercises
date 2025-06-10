@@ -1,6 +1,16 @@
 # Episode 2 - Challenge 1 - Solution: Identify bad practice for unit testing Fortran
 
-You can find the corresponding fix for each point below within the provided solution [src](./src/). Search each file for `Q<question_number>_FIX<fix_number>`.
+The solution provided here is an entirely self-contained project which can be built using FPM.
+
+```bash
+fpm build
+```
+
+Tests are also provided, which can be run using FPM.
+
+```bash
+fpm test
+```
 
 ## Question 1
 
