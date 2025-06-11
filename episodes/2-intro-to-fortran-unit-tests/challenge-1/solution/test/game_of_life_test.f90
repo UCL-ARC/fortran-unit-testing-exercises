@@ -9,7 +9,7 @@ module game_of_life_test
         input_t,                  &
         it,                       &
         result_t,                 &
-        test_item_t
+        test_item_t, assert_not
     implicit none
 
     private
@@ -25,24 +25,24 @@ module game_of_life_test
     end interface check_for_steady_state_in_out_t
 
     !> Type to bundle inputs and expected outputs of game_of_life_sol::evolve_board
-    type, extends(input_t) :: check_evolve_board_in_out_t
+    type, extends(input_t) :: evolve_board_in_out_t
         integer, dimension(:,:), allocatable :: current_board, expected_new_board
-    end type check_evolve_board_in_out_t
-    interface check_evolve_board_in_out_t
-        module procedure check_evolve_board_in_out_constructor
-    end interface check_evolve_board_in_out_t
+    end type evolve_board_in_out_t
+    interface evolve_board_in_out_t
+        module procedure evolve_board_in_out_constructor
+    end interface evolve_board_in_out_t
 
     !> Type to bundle inputs and expected outputs of game_of_life_sol::read_model_from_file
-    type, extends(input_t) :: check_read_model_from_file_in_out_t
+    type, extends(input_t) :: read_model_from_file_in_out_t
         character(len=:), allocatable :: input_fname
         integer :: max_nrow
         integer :: max_ncol
         integer, dimension(:,:), allocatable :: expected_board
-        integer :: expected_stat
-    end type check_read_model_from_file_in_out_t
-    interface check_read_model_from_file_in_out_t
-        module procedure check_read_model_from_file_in_out_constructor
-    end interface check_read_model_from_file_in_out_t
+        character(len=:), allocatable :: expected_io_error_message
+    end type read_model_from_file_in_out_t
+    interface read_model_from_file_in_out_t
+        module procedure read_model_from_file_in_out_constructor
+    end interface read_model_from_file_in_out_t
 
 contains
 
@@ -123,7 +123,7 @@ contains
 
         ! Steady state boards
         !  All zeros
-        steady_state_boards_data(1) = example_t(check_evolve_board_in_out_t(test_current_board, expected_new_board))
+        steady_state_boards_data(1) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
 
         !  A slightly more complex steady state sructure
         !       8  9 10 11 12
@@ -145,7 +145,7 @@ contains
         expected_new_board(10,9:11) = test_current_board(10,9:11)
         expected_new_board(11,9:11) = test_current_board(11,9:11)
         expected_new_board(12,9:11) = test_current_board(12,9:11)
-        steady_state_boards_data(2) = example_t(check_evolve_board_in_out_t(test_current_board, expected_new_board))
+        steady_state_boards_data(2) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
         !  Reset for next test
         test_current_board = 0
         expected_new_board = 0
@@ -154,7 +154,7 @@ contains
         !  One non-zero element
         !   Input board
         test_current_board(10,9) = 1
-        non_steady_state_boards_data(1) = example_t(check_evolve_board_in_out_t(test_current_board, expected_new_board))
+        non_steady_state_boards_data(1) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
         !  Reset for next test
         test_current_board(10,9) = 0
 
@@ -179,7 +179,7 @@ contains
         expected_new_board(10,9:11) = [1,0,1]
         expected_new_board(11,9:11) = [1,0,1]
         expected_new_board(12,9:11) = [0,1,0]
-        non_steady_state_boards_data(2) = example_t(check_evolve_board_in_out_t(test_current_board, expected_new_board))
+        non_steady_state_boards_data(2) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
         !  Reset for next test
         test_current_board = 0
         expected_new_board = 0
@@ -206,14 +206,46 @@ contains
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_board
-        type(example_t) :: valid_model_file_data(1)
+        character(len=:), allocatable :: test_io_error_message
+        type(example_t) :: valid_model_file_data(1), invalid_model_file_data(5)
 
         allocate(test_board(31, 31))
         test_board = 0
 
         valid_model_file_data(1) = example_t( &
-            check_read_model_from_file_in_out_t("test/models/zeros_31_31.dat", 100, 100, test_board, 0) &
+            read_model_from_file_in_out_t("test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message) &
         )
+
+        deallocate(test_board)
+
+        allocate(character(100) :: test_io_error_message)
+
+        test_io_error_message = "nrow must be a positive integer less than     10 found     31"
+        invalid_model_file_data(1) = example_t( &
+            read_model_from_file_in_out_t("test/models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message) &
+        )
+
+        test_io_error_message = "ncol must be a positive integer less than     10 found     31"
+        invalid_model_file_data(2) = example_t( &
+            read_model_from_file_in_out_t("test/models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message) &
+        )
+
+        test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
+        invalid_model_file_data(3) = example_t( &
+            read_model_from_file_in_out_t("test/models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message) &
+        )
+
+        test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
+        invalid_model_file_data(4) = example_t( &
+            read_model_from_file_in_out_t("test/models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message) &
+        )
+
+        test_io_error_message = " *** Error when opening does/not/exist.dat"
+        invalid_model_file_data(5) = example_t( &
+            read_model_from_file_in_out_t("does/not/exist.dat", 100, 100, test_board, test_io_error_message) &
+        )
+
+        deallocate(test_io_error_message)
 
         tests = describe( &
             "read_model_from_file", &
@@ -221,6 +253,11 @@ contains
                 "a valid model file is loaded successfully", &
                 valid_model_file_data, &
                 check_read_model_from_file &
+            ), &
+            it( &
+                "a invalid model file is loaded unsuccessfully", &
+                invalid_model_file_data, &
+                check_read_model_from_file_with_invalid_model &
             )] &
         )
     end function read_model_from_file_tests
@@ -257,7 +294,7 @@ contains
         integer, dimension(:,:), allocatable ::actual_new_board
 
         select type (input)
-        type is (check_evolve_board_in_out_t)
+        type is (evolve_board_in_out_t)
             allocate(actual_new_board(size(input%current_board, 1), size(input%current_board, 2)))
             actual_new_board = input%current_board
 
@@ -267,7 +304,7 @@ contains
 
             deallocate(actual_new_board)
         class default
-            result_ = fail("Didn't get check_evolve_board_in_out_t")
+            result_ = fail("Didn't get evolve_board_in_out_t")
 
         end select
 
@@ -279,24 +316,47 @@ contains
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable ::actual_board
-        integer :: actual_stat
+        character(len=:), allocatable :: actual_io_error_message
 
         select type (input)
-        type is (check_read_model_from_file_in_out_t)
-            call read_model_from_file(input%input_fname, input%max_nrow, input%max_ncol, actual_board, actual_stat)
+        type is (read_model_from_file_in_out_t)
+            call read_model_from_file(input%input_fname, input%max_nrow, input%max_ncol, actual_board, actual_io_error_message)
 
-            result_ = assert_equals(input%expected_board(1,1), actual_board(1,1)) .and. &
-                      assert_equals(input%expected_stat, actual_stat)
+            result_ = assert_equals(input%expected_board, actual_board) .and. &
+                      assert_not(allocated(actual_io_error_message))
 
             if (allocated(actual_board)) then
                 deallocate(actual_board)
             end if
         class default
-            result_ = fail("Didn't get check_read_model_from_file_in_out_t")
+            result_ = fail("Didn't get read_model_from_file_in_out_t")
 
         end select
 
     end function check_read_model_from_file
+
+    !> Check for the expected output of the game_of_life_sol::read_model_from_file subroutine
+    function check_read_model_from_file_with_invalid_model(input) result(result_)
+        class(input_t), intent(in) :: input
+        type(result_t) :: result_
+
+        integer, dimension(:,:), allocatable ::actual_board
+        character(len=:), allocatable :: actual_io_error_message
+
+        select type (input)
+        type is (read_model_from_file_in_out_t)
+            call read_model_from_file(input%input_fname, input%max_nrow, input%max_ncol, actual_board, actual_io_error_message)
+
+            result_ = assert_not(allocated(actual_board)) .and. &
+                      assert_that(allocated(actual_io_error_message)) .and. &
+                      assert_equals(trim(input%expected_io_error_message), trim(actual_io_error_message))
+
+        class default
+            result_ = fail("Didn't get read_model_from_file_in_out_t")
+
+        end select
+
+    end function check_read_model_from_file_with_invalid_model
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Contructors
@@ -375,29 +435,30 @@ contains
 
     end function check_for_steady_state_in_out_constructor
 
-    function check_evolve_board_in_out_constructor(current_board, expected_new_board) result(check_evolve_board_in_out)
+    function evolve_board_in_out_constructor(current_board, expected_new_board) result(evolve_board_in_out)
         integer, dimension(:,:), allocatable, intent(in) :: current_board, expected_new_board
 
-        type(check_evolve_board_in_out_t) :: check_evolve_board_in_out
+        type(evolve_board_in_out_t) :: evolve_board_in_out
 
-        check_evolve_board_in_out%current_board = current_board
-        check_evolve_board_in_out%expected_new_board = expected_new_board
-    end function check_evolve_board_in_out_constructor
+        evolve_board_in_out%current_board = current_board
+        evolve_board_in_out%expected_new_board = expected_new_board
+    end function evolve_board_in_out_constructor
 
-    function check_read_model_from_file_in_out_constructor(input_fname, max_nrow, max_ncol, expected_board, expected_stat) &
-            result(check_read_model_from_file_in_out)
+    function read_model_from_file_in_out_constructor( &
+                input_fname, max_nrow, max_ncol, expected_board, expected_io_error_message) &
+                result(read_model_from_file_in_out)
         character(len=:), allocatable, intent(in) :: input_fname
         integer, intent(in) :: max_nrow
         integer, intent(in) :: max_ncol
-        integer, dimension(:,:), allocatable, intent(out) :: expected_board
-        integer, intent(out) :: expected_stat
+        integer, dimension(:,:), allocatable, intent(in) :: expected_board
+        character(len=:), allocatable, intent(in) :: expected_io_error_message
 
-        type(check_read_model_from_file_in_out_t) :: check_read_model_from_file_in_out
+        type(read_model_from_file_in_out_t) :: read_model_from_file_in_out
 
-        check_read_model_from_file_in_out%input_fname = input_fname
-        check_read_model_from_file_in_out%max_nrow = max_nrow
-        check_read_model_from_file_in_out%max_ncol = max_ncol
-        check_read_model_from_file_in_out%expected_board = expected_board
-        check_read_model_from_file_in_out%expected_stat = expected_stat
-    end function check_read_model_from_file_in_out_constructor
+        read_model_from_file_in_out%input_fname = input_fname
+        read_model_from_file_in_out%max_nrow = max_nrow
+        read_model_from_file_in_out%max_ncol = max_ncol
+        read_model_from_file_in_out%expected_board = expected_board
+        read_model_from_file_in_out%expected_io_error_message = expected_io_error_message
+    end function read_model_from_file_in_out_constructor
 end module game_of_life_test
