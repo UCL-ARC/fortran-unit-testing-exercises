@@ -22,4 +22,4 @@ There are several issues with this Fortran code which make it hard to unit test.
 
 2. There is a lot of global state used across multiple procedures. This makes tests dependent on one another therefore complicating the management of data/state between tests.
 
-3. TODO: There is a lot of logic not contained within procedures. Wrapping this in a procedure opens up more of the code which can be tested.
+3. There is a lot of logic not contained within procedures. Wrapping this in procedures opens up more of the code which can be tested.
