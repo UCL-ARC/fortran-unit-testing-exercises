@@ -24,6 +24,7 @@ program game_of_life
     character(len=:), allocatable :: cli_arg_temp_store, input_fname
 
     !! IO args
+    character(len=:), allocatable :: io_error_message
     integer :: stat
 
     ! Get current_board file path from command line
@@ -42,10 +43,12 @@ program game_of_life
     end if
 
     ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
-    call read_model_from_file(input_fname, max_nrow, max_ncol, current_board, stat)
+    call read_model_from_file(input_fname, max_nrow, max_ncol, current_board, io_error_message)
 
-    if( stat /= 0) then
-        stop stat
+    if (allocated(io_error_message)) then
+        write (*,*) io_error_message
+        deallocate(io_error_message)
+        stop
     end if
 
     allocate(new_board(size(current_board,1), size(current_board, 2)))

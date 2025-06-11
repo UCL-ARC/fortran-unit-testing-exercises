@@ -103,7 +103,7 @@ contains
 
     ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
     !> Populate the a board from the provided file
-    subroutine read_model_from_file(input_fname, max_nrow, max_ncol, board, stat)
+    subroutine read_model_from_file(input_fname, max_nrow, max_ncol, board, io_error_message)
         !> The name of the file to read in the board
         character(len=:), allocatable, intent(in) :: input_fname
         !> The maximum allowed number of rows
@@ -113,7 +113,7 @@ contains
         !> The board to be populated
         integer, dimension(:,:), allocatable, intent(out) :: board
         !> A flag to indicate if reading the file was successful
-        integer, intent(out) :: stat
+        character(len=:), allocatable,intent(out) :: io_error_message
 
         ! Board definition args
         integer :: nrow, ncol, row
@@ -122,7 +122,7 @@ contains
         integer :: input_file_io, iostat
         character(len=80) :: text_to_discard
 
-        stat = 0
+        input_file_io = 1111
 
         ! Open input file
         open(unit=input_file_io,   &
@@ -130,27 +130,25 @@ contains
             status='old',  &
             IOSTAT=iostat)
 
-        if( iostat /= 0) then
-            write(*,'(a)') ' *** Error when opening '//input_fname
-            stat = iostat
-        end if
+        if( iostat == 0) then
+            ! Read in board from file
+            read(input_file_io,'(a)') text_to_discard ! Skip first line
+            read(input_file_io,*) nrow, ncol
 
-        ! Read in board from file
-        read(input_file_io,'(a)') text_to_discard ! Skip first line
-        read(input_file_io,*) nrow, ncol
+            ! Verify the date_time_values read from the file
+            if (nrow < 1 .or. nrow > max_nrow) then
+                allocate(character(100) :: io_error_message)
+                write (io_error_message,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
+            elseif (ncol < 1 .or. ncol > max_ncol) then
+                allocate(character(100) :: io_error_message)
+                write (io_error_message,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
+            end if
+        else
+            allocate(character(100) :: io_error_message)
+            write(io_error_message,'(a)') ' *** Error when opening '//input_fname
+        endif
 
-        ! Verify the date_time_values read from the file
-        if (nrow < 1 .or. nrow > max_nrow) then
-            write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
-            stat = 1
-        end if
-
-        if (ncol < 1 .or. ncol > max_ncol) then
-            write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
-            stat = 1
-        end if
-
-        if (stat == 0) then
+        if (.not. allocated(io_error_message)) then
 
             allocate(board(nrow, ncol))
 
