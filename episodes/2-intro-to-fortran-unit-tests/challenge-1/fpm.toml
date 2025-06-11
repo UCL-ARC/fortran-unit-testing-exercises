@@ -1,0 +1,10 @@
+name = "episode-2-challenge-1"
+
+[dev-dependencies]
+veggies.git = "https://gitlab.com/everythingfunctional/veggies"
+veggies.tag = "main"
+
+[[executable]]
+name = "game-of-life"
+source-dir = "src"
+main = "game_of_life.f90"
