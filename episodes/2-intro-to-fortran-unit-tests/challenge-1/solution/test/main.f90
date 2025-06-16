@@ -1,7 +1,9 @@
 program test_main
     use veggies, only : test_item_t, test_that, run_tests
 
-    use game_of_life_test, only : check_for_steady_state_tests, evolve_board_tests, read_model_from_file_tests
+    use check_for_steady_state_test, only : check_for_steady_state_test_suite
+    use evolve_board_test, only : evolve_board_test_suite
+    use read_model_from_file_test, only : read_model_from_file_test_suite
 
     implicit none
 
@@ -14,9 +16,9 @@ contains
         type(test_item_t) :: tests
         type(test_item_t) :: individual_tests(3)
 
-        individual_tests(1) = check_for_steady_state_tests()
-        individual_tests(2) = evolve_board_tests()
-        individual_tests(3) = read_model_from_file_tests()
+        individual_tests(1) = check_for_steady_state_test_suite()
+        individual_tests(2) = evolve_board_test_suite()
+        individual_tests(3) = read_model_from_file_test_suite()
 
         tests = test_that(individual_tests)
 
