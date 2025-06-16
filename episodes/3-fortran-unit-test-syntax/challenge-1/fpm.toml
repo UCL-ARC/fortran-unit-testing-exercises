@@ -11,5 +11,5 @@ main = "game_of_life.f90"
 
 [[test]]
 name = "game_of_life_test"
-source-dir = "test"
+source-dir = "veggies-test"
 main = "main.f90"
