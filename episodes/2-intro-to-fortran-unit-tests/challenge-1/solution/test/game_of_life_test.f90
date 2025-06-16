@@ -15,7 +15,7 @@ module game_of_life_test
     private
     public :: check_for_steady_state_tests, evolve_board_tests, read_model_from_file_tests
 
-    !> Type to bundle inputs and expected outputs of game_of_life_sol::check_for_steady_state
+    !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     type, extends(input_t) :: check_for_steady_state_in_out_t
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
@@ -24,7 +24,7 @@ module game_of_life_test
         module procedure check_for_steady_state_in_out_constructor
     end interface check_for_steady_state_in_out_t
 
-    !> Type to bundle inputs and expected outputs of game_of_life_sol::evolve_board
+    !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     type, extends(input_t) :: evolve_board_in_out_t
         integer, dimension(:,:), allocatable :: current_board, expected_new_board
     end type evolve_board_in_out_t
@@ -32,7 +32,7 @@ module game_of_life_test
         module procedure evolve_board_in_out_constructor
     end interface evolve_board_in_out_t
 
-    !> Type to bundle inputs and expected outputs of game_of_life_sol::read_model_from_file
+    !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
     type, extends(input_t) :: read_model_from_file_in_out_t
         character(len=:), allocatable :: input_fname
         integer :: max_nrow
@@ -50,7 +50,7 @@ contains
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    !> Test suite for the game_of_life_sol::check_for_steady_state subroutine
+    !> Test suite for the game_of_life::check_for_steady_state subroutine
     function check_for_steady_state_tests() result(tests)
         type(test_item_t) :: tests
 
@@ -105,7 +105,7 @@ contains
         deallocate(test_new_board)
     end function check_for_steady_state_tests
 
-    !> Test suite for the game_of_life_sol::evolve_board subroutine
+    !> Test suite for the game_of_life::evolve_board subroutine
     function evolve_board_tests() result(tests)
         type(test_item_t) :: tests
 
@@ -266,7 +266,7 @@ contains
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    !> Check for the expected output of the game_of_life_sol::check_for_steady_state subroutine
+    !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     function check_if_steady_state(input) result(result_)
         class(input_t), intent(in) :: input
         type(result_t) :: result_
@@ -286,7 +286,7 @@ contains
 
     end function check_if_steady_state
 
-    !> Check for the expected output of the game_of_life_sol::evolve_board subroutine
+    !> Check for the expected output of the game_of_life::evolve_board subroutine
     function check_evolve_board(input) result(result_)
         class(input_t), intent(in) :: input
         type(result_t) :: result_
@@ -310,7 +310,7 @@ contains
 
     end function check_evolve_board
 
-    !> Check for the expected output of the game_of_life_sol::read_model_from_file subroutine
+    !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     function check_read_model_from_file(input) result(result_)
         class(input_t), intent(in) :: input
         type(result_t) :: result_
@@ -335,7 +335,7 @@ contains
 
     end function check_read_model_from_file
 
-    !> Check for the expected output of the game_of_life_sol::read_model_from_file subroutine
+    !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     function check_read_model_from_file_with_invalid_model(input) result(result_)
         class(input_t), intent(in) :: input
         type(result_t) :: result_

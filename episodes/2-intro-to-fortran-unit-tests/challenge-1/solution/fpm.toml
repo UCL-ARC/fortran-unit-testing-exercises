@@ -10,6 +10,6 @@ source-dir = "src"
 main = "game_of_life.f90"
 
 [[test]]
-name = "game_of_life_sol_test"
+name = "game_of_life_test"
 source-dir = "test"
 main = "main.f90"
