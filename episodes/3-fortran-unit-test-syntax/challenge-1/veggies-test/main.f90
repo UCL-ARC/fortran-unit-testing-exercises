@@ -1,7 +1,7 @@
 program test_main
     use veggies, only : test_item_t, test_that, run_tests
 
-    use evolve_board_test, only : evolve_board_test_suite
+    use veggies_evolve_board_test, only : veggies_evolve_board_test_suite
 
     implicit none
 
@@ -14,7 +14,7 @@ contains
         type(test_item_t) :: tests
         type(test_item_t) :: individual_tests(1)
 
-        individual_tests(1) = evolve_board_test_suite()
+        individual_tests(1) = veggies_evolve_board_test_suite()
 
         tests = test_that(individual_tests)
 
