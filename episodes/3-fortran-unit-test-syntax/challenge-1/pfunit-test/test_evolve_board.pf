@@ -106,10 +106,6 @@ contains
         !  Reset for next test
         test_current_board = 0
         expected_new_board = 0
-
-        deallocate(test_current_board)
-        deallocate(expected_new_board)
-
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -118,7 +114,6 @@ contains
 
     @Test
     subroutine TestEvolveBoard(this)
-        implicit none
         class (evolve_board_test_case), intent(inout) :: this
 
         integer, dimension(:,:), allocatable ::actual_new_board
