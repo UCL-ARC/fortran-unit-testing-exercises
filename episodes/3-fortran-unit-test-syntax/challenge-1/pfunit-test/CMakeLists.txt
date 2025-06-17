@@ -24,7 +24,7 @@ file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
 set(test_evolve_board_src ${test_srcs})
 list(FILTER test_evolve_board_src INCLUDE REGEX ".*test_evolve_board.pf")
 
-add_pfunit_ctest (evolve_board_tests
+add_pfunit_ctest (pfunit_evolve_board_tests
   TEST_SOURCES ${test_evolve_board_src}
   LINK_LIBRARIES sut # your application library
   )
@@ -33,7 +33,7 @@ add_pfunit_ctest (evolve_board_tests
 set(test_check_for_steady_state_src ${test_srcs})
 list(FILTER test_check_for_steady_state_src INCLUDE REGEX ".*test_check_for_steady_state.pf")
 
-add_pfunit_ctest (check_for_steady_state_tests
+add_pfunit_ctest (pfunit_check_for_steady_state_tests
   TEST_SOURCES ${test_check_for_steady_state_src}
   LINK_LIBRARIES sut # your application library
   )
@@ -42,7 +42,7 @@ add_pfunit_ctest (check_for_steady_state_tests
 set(test_read_model_from_file_src ${test_srcs})
 list(FILTER test_read_model_from_file_src INCLUDE REGEX ".*test_read_model_from_file.pf")
 
-add_pfunit_ctest (read_model_from_file_tests
+add_pfunit_ctest (pfunit_read_model_from_file_tests
   TEST_SOURCES ${test_read_model_from_file_src}
   LINK_LIBRARIES sut # your application library
   )
