@@ -5,7 +5,7 @@ module testdrive_evolve_board_test
     implicit none
 
     private
-    public :: testdrive_evolve_board_test_suite
+    public :: evolve_board_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     type :: evolve_board_in_out_t
@@ -20,7 +20,7 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Test suite for the game_of_life::evolve_board subroutine
-    subroutine testdrive_evolve_board_test_suite(testsuite)
+    subroutine evolve_board_test_suite(testsuite)
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite = [ &
@@ -30,7 +30,7 @@ contains
             new_unittest("test_evolve_board_complex_non_steady_state", test_evolve_board_complex_non_steady_state) &
         ]
 
-    end subroutine testdrive_evolve_board_test_suite
+    end subroutine evolve_board_test_suite
 
     !> Test steady state is defined for a board of all zeros
     subroutine test_evolve_board_all_zeros(error)
@@ -48,9 +48,6 @@ contains
         inputs%expected_new_board = 0
 
         call check_evolve_board(error, inputs)
-
-        deallocate(inputs%current_board)
-        deallocate(inputs%expected_new_board)
     end subroutine test_evolve_board_all_zeros
 
     !> Test steady state is defined for a slightly more complex steady state sructure
@@ -89,9 +86,6 @@ contains
         inputs%expected_new_board(12,9:11) = inputs%current_board(12,9:11)
 
         call check_evolve_board(error, inputs)
-
-        deallocate(inputs%current_board)
-        deallocate(inputs%expected_new_board)
     end subroutine test_evolve_board_complex_steady_state
 
     !> Test steady state is not defined for a board with all zeros apart from a one non-zero element
@@ -113,9 +107,6 @@ contains
         inputs%current_board(10,9) = 1
 
         call check_evolve_board(error, inputs)
-
-        deallocate(inputs%current_board)
-        deallocate(inputs%expected_new_board)
     end subroutine test_evolve_board_one_non_zero_element
 
     !> A slightly more complex non-steady state sructure
@@ -154,9 +145,6 @@ contains
         inputs%expected_new_board(12,9:11) = [0,1,0]
 
         call check_evolve_board(error, inputs)
-
-        deallocate(inputs%current_board)
-        deallocate(inputs%expected_new_board)
     end subroutine test_evolve_board_complex_non_steady_state
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -164,21 +152,21 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Check for the expected output of the game_of_life::evolve_board subroutine
-    subroutine check_evolve_board(error, input)
+    subroutine check_evolve_board(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        class(evolve_board_in_out_t), intent(in) :: input
+        class(evolve_board_in_out_t), intent(in) :: inputs
 
         integer, dimension(:,:), allocatable :: actual_new_board
         integer :: nrow, ncol, row, col
         character(len=80) :: failure_message
 
-        allocate(actual_new_board(size(input%current_board, 1), size(input%current_board, 2)))
-        actual_new_board = input%current_board
+        allocate(actual_new_board(size(inputs%current_board, 1), size(inputs%current_board, 2)))
+        actual_new_board = inputs%current_board
 
-        call evolve_board(input%current_board, actual_new_board)
+        call evolve_board(inputs%current_board, actual_new_board)
 
-        nrow = size(input%expected_new_board, 1)
-        ncol = size(input%expected_new_board, 2)
+        nrow = size(inputs%expected_new_board, 1)
+        ncol = size(inputs%expected_new_board, 2)
 
         call check(error, nrow, size(actual_new_board, 1))
         if (allocated(error)) return
@@ -189,8 +177,8 @@ contains
         do col = 1, ncol
             do row = 1, nrow
                 write(failure_message,'(a,i1,a,i1,a,i2,a,i2)') "Unexpected value for new_board(", row, ",", col, "), got ", &
-                    actual_new_board(row, col), " expected ", input%expected_new_board(row, col)
-                call check(error, input%expected_new_board(row, col), actual_new_board(row, col), failure_message)
+                    actual_new_board(row, col), " expected ", inputs%expected_new_board(row, col)
+                call check(error, inputs%expected_new_board(row, col), actual_new_board(row, col), failure_message)
                 if (allocated(error)) return
             end do
         end do
