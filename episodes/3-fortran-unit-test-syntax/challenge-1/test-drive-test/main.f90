@@ -4,13 +4,15 @@ program test_main
             & select_suite, run_selected, get_argument
 
     use testdrive_evolve_board_test, only : testdrive_evolve_board_test_suite
+    use testdrive_check_for_steady_state_test, only : check_for_steady_state_test_suite
 
     implicit none
 
     type(testsuite_type), allocatable :: testsuites(:)
 
     testsuites = [ &
-        new_testsuite("evolve_board", testdrive_evolve_board_test_suite) &
+        new_testsuite("evolve_board", testdrive_evolve_board_test_suite), &
+        new_testsuite("check_for_steady_state", check_for_steady_state_test_suite) &
     ]
 
     call run_tests(testsuites)

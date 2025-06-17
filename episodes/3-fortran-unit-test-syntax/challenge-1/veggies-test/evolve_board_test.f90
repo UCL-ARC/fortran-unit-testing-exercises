@@ -1,3 +1,4 @@
+!> Module for testing the subroutine game_of_life::evolve_board
 module veggies_evolve_board_test
     use game_of_life_mod, only : evolve_board
     use veggies, only:            &
@@ -12,7 +13,7 @@ module veggies_evolve_board_test
     implicit none
 
     private
-    public :: veggies_evolve_board_test_suite
+    public :: evolve_board_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     type, extends(input_t) :: evolve_board_in_out_t
@@ -30,7 +31,7 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Test suite for the game_of_life::evolve_board subroutine
-    function veggies_evolve_board_test_suite() result(tests)
+    function evolve_board_test_suite() result(tests)
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
@@ -124,7 +125,7 @@ contains
 
         deallocate(test_current_board)
         deallocate(expected_new_board)
-    end function veggies_evolve_board_test_suite
+    end function evolve_board_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
