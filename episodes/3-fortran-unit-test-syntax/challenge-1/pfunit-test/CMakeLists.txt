@@ -16,6 +16,10 @@ file(GLOB
   "${PROJ_PFUNIT_DIR}/*.pf"
 )
 
+# Ensure test data is available at runtime
+file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
+        "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
+
 # evolve_board tests
 set(test_evolve_board_src ${test_srcs})
 list(FILTER test_evolve_board_src INCLUDE REGEX ".*test_evolve_board.pf")
@@ -31,5 +35,14 @@ list(FILTER test_check_for_steady_state_src INCLUDE REGEX ".*test_check_for_stea
 
 add_pfunit_ctest (check_for_steady_state_tests
   TEST_SOURCES ${test_check_for_steady_state_src}
+  LINK_LIBRARIES sut # your application library
+  )
+
+# read_model_from_file tests
+set(test_read_model_from_file_src ${test_srcs})
+list(FILTER test_read_model_from_file_src INCLUDE REGEX ".*test_read_model_from_file.pf")
+
+add_pfunit_ctest (read_model_from_file_tests
+  TEST_SOURCES ${test_read_model_from_file_src}
   LINK_LIBRARIES sut # your application library
   )

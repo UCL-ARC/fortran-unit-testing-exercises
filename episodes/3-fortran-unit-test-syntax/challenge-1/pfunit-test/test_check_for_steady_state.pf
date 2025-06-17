@@ -17,8 +17,7 @@ module test_check_for_steady_state
     !> Type to define a single check_for_steady_state test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: check_for_steady_state_test_case
-        integer, dimension(:,:), allocatable :: current_board, new_board
-        logical :: expected_steady_state
+        type(check_for_steady_state_in_out_t) :: params
     end type check_for_steady_state_test_case
 
 contains
@@ -77,9 +76,9 @@ contains
 
         logical :: actual_steady_state
 
-        call check_for_steady_state(this%current_board, this%new_board, actual_steady_state)
+        call check_for_steady_state(this%params%current_board, this%params%new_board, actual_steady_state)
 
-        @assertEqual(this%expected_steady_state, actual_steady_state)
+        @assertEqual(this%params%expected_steady_state, actual_steady_state)
 
 
     end subroutine TestCheckIfSteadyState
@@ -97,12 +96,12 @@ contains
         nrow = size(testParameter%current_board, 1)
         ncol = size(testParameter%current_board, 2)
 
-        allocate(tst%current_board(nrow, ncol))
-        allocate(tst%new_board(nrow, ncol))
+        allocate(tst%params%current_board(nrow, ncol))
+        allocate(tst%params%new_board(nrow, ncol))
 
-        tst%current_board = testParameter%current_board
-        tst%new_board = testParameter%new_board
-        tst%expected_steady_state = testParameter%expected_steady_state
+        tst%params%current_board = testParameter%current_board
+        tst%params%new_board = testParameter%new_board
+        tst%params%expected_steady_state = testParameter%expected_steady_state
     end function newTest
 
     function check_for_steady_state_in_out_toString(this) result(string)
