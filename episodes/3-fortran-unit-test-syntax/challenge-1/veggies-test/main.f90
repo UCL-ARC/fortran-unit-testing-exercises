@@ -3,6 +3,7 @@ program test_main
 
     use veggies_evolve_board_test, only : evolve_board_test_suite
     use veggies_check_for_steady_state_test, only : check_for_steady_state_test_suite
+    use veggies_read_model_from_file_test, only : read_model_from_file_test_suite
 
     implicit none
 
@@ -13,10 +14,11 @@ contains
         logical :: passed
 
         type(test_item_t) :: tests
-        type(test_item_t) :: individual_tests(2)
+        type(test_item_t) :: individual_tests(3)
 
         individual_tests(1) = evolve_board_test_suite()
         individual_tests(2) = check_for_steady_state_test_suite()
+        individual_tests(3) = read_model_from_file_test_suite()
 
         tests = test_that(individual_tests)
 
