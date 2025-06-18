@@ -8,7 +8,7 @@ module testdrive_check_for_steady_state_test
     private
     public :: check_for_steady_state_test_suite
 
-    ! TASK: Define a parameter type `check_for_steady_state_in_out_t` to be used for testing game_of_life::check_for_steady_state
+    ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
     ! Your changes here...
 
 contains
@@ -35,7 +35,7 @@ contains
     subroutine test_check_for_steady_state_all_zeros(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%current_board, inputs%new_board, 0, .true.)
         inputs%expected_steady_state = .true.
@@ -65,7 +65,7 @@ contains
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     subroutine check_if_steady_state(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        type(check_for_steady_state_in_out_t), intent(in) :: inputs
+        type(check_for_steady_state_test_params), intent(in) :: inputs
 
         logical :: actual_steady_state
         character(len=80) :: failure_message

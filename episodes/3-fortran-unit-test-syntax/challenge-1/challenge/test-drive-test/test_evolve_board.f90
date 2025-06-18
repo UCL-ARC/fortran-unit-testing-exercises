@@ -8,10 +8,10 @@ module testdrive_evolve_board_test
     public :: evolve_board_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
-    type :: evolve_board_in_out_t
+    type :: evolve_board_test_params
         integer, dimension(:,:), allocatable :: current_board
         integer, dimension(:,:), allocatable :: expected_new_board
-    end type evolve_board_in_out_t
+    end type evolve_board_test_params
 
 contains
 
@@ -36,7 +36,7 @@ contains
     subroutine test_evolve_board_all_zeros(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(evolve_board_in_out_t) :: inputs
+        type(evolve_board_test_params) :: inputs
         integer :: nrow, ncol
 
         nrow = 20
@@ -63,7 +63,7 @@ contains
     subroutine test_evolve_board_complex_steady_state(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(evolve_board_in_out_t) :: inputs
+        type(evolve_board_test_params) :: inputs
         integer :: nrow, ncol
 
         nrow = 20
@@ -92,7 +92,7 @@ contains
     subroutine test_evolve_board_one_non_zero_element(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(evolve_board_in_out_t) :: inputs
+        type(evolve_board_test_params) :: inputs
         integer :: nrow, ncol
 
         nrow = 20
@@ -122,7 +122,7 @@ contains
     subroutine test_evolve_board_complex_non_steady_state(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(evolve_board_in_out_t) :: inputs
+        type(evolve_board_test_params) :: inputs
         integer :: nrow, ncol
 
         nrow = 20
@@ -154,7 +154,7 @@ contains
     !> Check for the expected output of the game_of_life::evolve_board subroutine
     subroutine check_evolve_board(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        class(evolve_board_in_out_t), intent(in) :: inputs
+        class(evolve_board_test_params), intent(in) :: inputs
 
         integer, dimension(:,:), allocatable :: actual_new_board
         integer :: nrow, ncol, row, col

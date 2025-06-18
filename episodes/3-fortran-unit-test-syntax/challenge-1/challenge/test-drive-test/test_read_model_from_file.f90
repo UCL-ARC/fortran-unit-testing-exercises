@@ -6,7 +6,7 @@ module testdrive_read_model_from_file_test
     private
     public :: read_model_from_file_test_suite
 
-    ! TASK: Define a parameter type `read_model_from_file_in_out_t` to be used for testing game_of_life::read_model_from_file
+    ! TASK: Define a parameter type `read_model_from_file_test_params` to be used for testing game_of_life::read_model_from_file
     ! Your changes here...
 
 contains
@@ -59,7 +59,7 @@ contains
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     subroutine check_read_model_from_file_valid_model(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        class(read_model_from_file_in_out_t), intent(in) :: inputs
+        class(read_model_from_file_test_params), intent(in) :: inputs
 
         integer, dimension(:,:), allocatable ::actual_board
         character(len=:), allocatable :: actual_io_error_message
@@ -74,7 +74,7 @@ contains
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     subroutine check_read_model_from_file_invalid_model(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        class(read_model_from_file_in_out_t), intent(in) :: inputs
+        class(read_model_from_file_test_params), intent(in) :: inputs
 
         integer, dimension(:,:), allocatable ::actual_board
         character(len=:), allocatable :: actual_io_error_message

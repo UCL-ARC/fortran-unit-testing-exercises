@@ -4,7 +4,7 @@ module test_check_for_steady_state
     use funit
     implicit none
 
-    ! TASK: Define a parameter type `check_for_steady_state_in_out_t` to be used for testing game_of_life::check_for_steady_state
+    ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
     ! Your changes here...
 
     ! TASK: Define a test case type `check_for_steady_state_test_case` to be used for testing game_of_life::check_for_steady_state

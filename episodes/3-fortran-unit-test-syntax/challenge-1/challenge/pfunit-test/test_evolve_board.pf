@@ -5,18 +5,18 @@ module test_evolve_board
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     @testParameter
-    type, extends(AbstractTestParameter) :: evolve_board_in_out_t
+    type, extends(AbstractTestParameter) :: evolve_board_test_params
         integer, dimension(:,:), allocatable :: current_board
         integer, dimension(:,:), allocatable :: expected_new_board
         character(len=100) :: description
     contains
-        procedure :: toString => evolve_board_in_out_toString
-    end type evolve_board_in_out_t
+        procedure :: toString => evolve_board_test_params_toString
+    end type evolve_board_test_params
 
     !> Type to define a single evolve_board test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: evolve_board_test_case
-        type(evolve_board_in_out_t) :: params
+        type(evolve_board_test_params) :: params
     end type evolve_board_test_case
 
 
@@ -28,7 +28,7 @@ contains
 
     ! Define test parameter sets
     function getParameters() result(params)
-        type (evolve_board_in_out_t), allocatable :: params(:)
+        type (evolve_board_test_params), allocatable :: params(:)
 
         integer :: nrow, ncol
         integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
@@ -45,7 +45,7 @@ contains
 
         ! Steady state boards
         !  All zeros
-        params(1) = evolve_board_in_out_t(test_current_board, expected_new_board, "all zeros")
+        params(1) = evolve_board_test_params(test_current_board, expected_new_board, "all zeros")
 
         !  A slightly more complex steady state sructure
         !       8  9 10 11 12
@@ -67,7 +67,7 @@ contains
         expected_new_board(10,9:11) = test_current_board(10,9:11)
         expected_new_board(11,9:11) = test_current_board(11,9:11)
         expected_new_board(12,9:11) = test_current_board(12,9:11)
-        params(2) = evolve_board_in_out_t(test_current_board, expected_new_board, "a more complex steady state")
+        params(2) = evolve_board_test_params(test_current_board, expected_new_board, "a more complex steady state")
         !  Reset for next test
         test_current_board = 0
         expected_new_board = 0
@@ -76,7 +76,7 @@ contains
         !  One non-zero element
         !   Input board
         test_current_board(10,9) = 1
-        params(3) = evolve_board_in_out_t(test_current_board, expected_new_board, "one non-zero element")
+        params(3) = evolve_board_test_params(test_current_board, expected_new_board, "one non-zero element")
         !  Reset for next test
         test_current_board(10,9) = 0
 
@@ -101,7 +101,7 @@ contains
         expected_new_board(10,9:11) = [1,0,1]
         expected_new_board(11,9:11) = [1,0,1]
         expected_new_board(12,9:11) = [0,1,0]
-        params(4) = evolve_board_in_out_t(test_current_board, expected_new_board, "a slightly more complex non-steady state")
+        params(4) = evolve_board_test_params(test_current_board, expected_new_board, "a slightly more complex non-steady state")
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -130,7 +130,7 @@ contains
 
     function newTest(testParameter) result(tst)
         type (evolve_board_test_case) :: tst
-        type (evolve_board_in_out_t), intent(in) :: testParameter
+        type (evolve_board_test_params), intent(in) :: testParameter
 
         integer :: nrow, ncol
 
@@ -144,8 +144,8 @@ contains
         tst%params%expected_new_board = testParameter%expected_new_board
     end function newTest
 
-    function evolve_board_in_out_toString(this) result(string)
-        class (evolve_board_in_out_t), intent(in) :: this
+    function evolve_board_test_params_toString(this) result(string)
+        class (evolve_board_test_params), intent(in) :: this
         character(:), allocatable :: string
 
         character(len=80) :: buffer
@@ -159,6 +159,6 @@ contains
             nrow, ncol, trim(this%description)
         string = trim(buffer)
 
-    end function evolve_board_in_out_toString
+    end function evolve_board_test_params_toString
 
 end module test_evolve_board

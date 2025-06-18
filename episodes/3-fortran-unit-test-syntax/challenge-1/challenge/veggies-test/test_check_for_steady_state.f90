@@ -17,10 +17,10 @@ module veggies_check_for_steady_state_test
     public :: check_for_steady_state_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
-    type, extends(input_t) :: check_for_steady_state_in_out_t
+    type, extends(input_t) :: check_for_steady_state_test_params
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
-    end type check_for_steady_state_in_out_t
+    end type check_for_steady_state_test_params
 
 contains
 
@@ -46,24 +46,24 @@ contains
         ! Matching boards
         !  All zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .true.)
-        matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
+        matching_boards_data(1) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
         !  All ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .true.)
-        matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
+        matching_boards_data(2) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
         !  Up to 10 ones
         call populate_random_boards(test_current_board, test_new_board, 10, .true.)
-        matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
+        matching_boards_data(3) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
 
         ! Mismatched boards
         !  All ones vs all zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .false.)
-        non_matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+        non_matching_boards_data(1) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
         !  All zeros vs all ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .false.)
-        non_matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+        non_matching_boards_data(2) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
         !  Up to 10 differences
         call populate_random_boards(test_current_board, test_new_board, 10, .false.)
-        non_matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+        non_matching_boards_data(3) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
 
         tests = describe( &
             "check_for_steady_state", &
@@ -92,7 +92,7 @@ contains
         logical :: actual_steady_state
 
         select type (input)
-        type is (check_for_steady_state_in_out_t)
+        type is (check_for_steady_state_test_params)
             call check_for_steady_state(input%current_board, input%new_board, actual_steady_state)
 
             if (input%expected_steady_state) then
@@ -102,7 +102,7 @@ contains
             end if
 
         class default
-            result_ = fail("Didn't get check_for_steady_state_in_out_t")
+            result_ = fail("Didn't get check_for_steady_state_test_params")
 
         end select
 
