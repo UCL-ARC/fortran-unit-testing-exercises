@@ -54,6 +54,8 @@ program game_of_life
     allocate(new_board(size(current_board,1), size(current_board, 2)))
     new_board = 0
 
+    generation_number = 0
+
     ! Clear the terminal screen
     call system ("clear")
 

@@ -1,3 +1,4 @@
+!> Module for testing the subroutine game_of_life::evolve_board
 module evolve_board_test
     use game_of_life_mod, only : evolve_board
     use veggies, only:            &
@@ -19,9 +20,6 @@ module evolve_board_test
         integer, dimension(:,:), allocatable :: current_board
         integer, dimension(:,:), allocatable :: expected_new_board
     end type evolve_board_in_out_t
-    interface evolve_board_in_out_t
-        module procedure evolve_board_in_out_constructor
-    end interface evolve_board_in_out_t
 
 contains
 
@@ -153,17 +151,4 @@ contains
         end select
 
     end function check_evolve_board
-
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    function evolve_board_in_out_constructor(current_board, expected_new_board) result(evolve_board_in_out)
-        integer, dimension(:,:), allocatable, intent(in) :: current_board, expected_new_board
-
-        type(evolve_board_in_out_t) :: evolve_board_in_out
-
-        evolve_board_in_out%current_board = current_board
-        evolve_board_in_out%expected_new_board = expected_new_board
-    end function evolve_board_in_out_constructor
 end module evolve_board_test

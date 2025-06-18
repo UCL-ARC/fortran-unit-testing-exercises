@@ -81,6 +81,7 @@ program game_of_life
     close(input_file_io)
 
     new_board = 0
+    generation_number = 0
 
     ! Clear the terminal screen
     call system ("clear")
@@ -92,8 +93,8 @@ program game_of_life
         mod_ms_step = mod(date_time_values(8), ms_per_step)
 
         if (mod_ms_step == 0) then
-            call check_for_steady_state()
             call evolve_board()
+            call check_for_steady_state()
             current_board = new_board
             call draw_board()
 

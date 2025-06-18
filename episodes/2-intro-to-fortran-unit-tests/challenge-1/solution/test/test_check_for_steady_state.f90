@@ -1,6 +1,8 @@
+!> Module for testing the subroutine game_of_life::check_for_steady_state
 module check_for_steady_state_test
     use game_of_life_mod, only : check_for_steady_state
     use veggies, only:            &
+        assert_not,               &
         assert_that,              &
         describe,                 &
         example_t,                &
@@ -19,9 +21,6 @@ module check_for_steady_state_test
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
     end type check_for_steady_state_in_out_t
-    interface check_for_steady_state_in_out_t
-        module procedure check_for_steady_state_in_out_constructor
-    end interface check_for_steady_state_in_out_t
 
 contains
 
@@ -46,24 +45,24 @@ contains
 
         ! Matching boards
         !  All zeros
-        call setup_matching_boards(test_current_board, test_new_board, 0)
+        call populate_random_boards(test_current_board, test_new_board, 0, .true.)
         matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
         !  All ones
-        call setup_matching_boards(test_current_board, test_new_board, nrow*ncol)
+        call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .true.)
         matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
         !  Up to 10 ones
-        call setup_matching_boards(test_current_board, test_new_board, 10)
+        call populate_random_boards(test_current_board, test_new_board, 10, .true.)
         matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
 
         ! Mismatched boards
         !  All ones vs all zeros
-        call setup_mismatched_boards(test_current_board, test_new_board, 0)
+        call populate_random_boards(test_current_board, test_new_board, 0, .false.)
         non_matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
         !  All zeros vs all ones
-        call setup_mismatched_boards(test_current_board, test_new_board, nrow*ncol)
+        call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .false.)
         non_matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
         !  Up to 10 differences
-        call setup_mismatched_boards(test_current_board, test_new_board, 10)
+        call populate_random_boards(test_current_board, test_new_board, 10, .false.)
         non_matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
 
         tests = describe( &
@@ -99,7 +98,11 @@ contains
         type is (check_for_steady_state_in_out_t)
             call check_for_steady_state(input%current_board, input%new_board, actual_steady_state)
 
-            result_ = assert_that(input%expected_steady_state .eqv. actual_steady_state)
+            if (input%expected_steady_state) then
+                result_ = assert_that(actual_steady_state)
+            else
+                result_ = assert_not(actual_steady_state)
+            end if
 
         class default
             result_ = fail("Didn't get check_for_steady_state_in_out_t")
@@ -112,45 +115,24 @@ contains
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    subroutine setup_matching_boards(current_board, new_board, num_ones)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
-        integer, intent(in) :: num_ones
-
-        integer :: nrow, ncol, row, col, rand_row, rand_col
-        real :: rand_real
-
-        ! Initialise to all zeros
-        nrow = size(current_board, 1)
-        ncol = size(current_board, 2)
-        current_board = 0
-        new_board = 0
-
-        ! For both boards, set to requested number of elements to 1
-        do row = 1, num_ones
-            ! Get random coordinates for both
-            call random_number(rand_real)
-            rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
-            call random_number(rand_real)
-            rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
-
-            current_board(rand_row, rand_col) = 1
-            new_board(rand_row, rand_col) = 1
-        end do
-
-    end subroutine setup_matching_boards
-
-    subroutine setup_mismatched_boards(current_board, new_board, num_differences)
+    subroutine populate_random_boards(current_board, new_board, num_differences, matching)
         integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
         integer, intent(in) :: num_differences
+        logical, intent(in) :: matching
 
-        integer :: nrow, ncol, row, col, rand_row, rand_col
+        integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
         real :: rand_real
 
         ! Initialise
         nrow = size(current_board, 1)
         ncol = size(current_board, 2)
         current_board = 0
-        new_board = 1
+
+        if (matching) then
+            new_board = 0
+        else
+            new_board = 1
+        end if
 
         ! For both boards, set to requested number of elements to the opposite value
         do row = 1, num_differences
@@ -162,26 +144,20 @@ contains
 
             current_board(rand_row, rand_col) = 1
 
-            ! Get random coordinates for new
-            call random_number(rand_real)
-            rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
-            call random_number(rand_real)
-            rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
+            if (.not. matching) then
+                ! Get random coordinates for new
+                call random_number(rand_real)
+                rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
+                call random_number(rand_real)
+                rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-            new_board(rand_row, rand_col) = 0
+                new_board(rand_row, rand_col) = 0
+            else
+                new_board(rand_row, rand_col) = 1
+            end if
+
+
         end do
 
-    end subroutine setup_mismatched_boards
-
-    function check_for_steady_state_in_out_constructor(current_board, new_board, steady_state) result(check_for_steady_state_in_out)
-        integer, dimension(:,:), allocatable, intent(in) :: current_board, new_board
-        logical, intent(in) :: steady_state
-
-        type(check_for_steady_state_in_out_t) :: check_for_steady_state_in_out
-
-        check_for_steady_state_in_out%current_board = current_board
-        check_for_steady_state_in_out%new_board = new_board
-        check_for_steady_state_in_out%expected_steady_state = steady_state
-
-    end function check_for_steady_state_in_out_constructor
+    end subroutine populate_random_boards
 end module check_for_steady_state_test
