@@ -21,9 +21,6 @@ module veggies_check_for_steady_state_test
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
     end type check_for_steady_state_in_out_t
-    interface check_for_steady_state_in_out_t
-        module procedure check_for_steady_state_in_out_constructor
-    end interface check_for_steady_state_in_out_t
 
 contains
 
@@ -81,9 +78,6 @@ contains
                 check_if_steady_state &
             )] &
         )
-
-        deallocate(test_current_board)
-        deallocate(test_new_board)
     end function check_for_steady_state_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -163,16 +157,4 @@ contains
         end do
 
     end subroutine populate_random_boards
-
-    function check_for_steady_state_in_out_constructor(current_board, new_board, steady_state) result(check_for_steady_state_in_out)
-        integer, dimension(:,:), allocatable, intent(in) :: current_board, new_board
-        logical, intent(in) :: steady_state
-
-        type(check_for_steady_state_in_out_t) :: check_for_steady_state_in_out
-
-        check_for_steady_state_in_out%current_board = current_board
-        check_for_steady_state_in_out%new_board = new_board
-        check_for_steady_state_in_out%expected_steady_state = steady_state
-
-    end function check_for_steady_state_in_out_constructor
 end module veggies_check_for_steady_state_test

@@ -1,4 +1,4 @@
-name = "episode-2-challenge-1-solution"
+name = "episode-3-challenge-1-solution"
 
 [dev-dependencies]
 test-drive.git = "https://github.com/fortran-lang/test-drive"
