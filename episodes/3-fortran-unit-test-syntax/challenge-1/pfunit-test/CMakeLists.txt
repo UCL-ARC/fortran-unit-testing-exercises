@@ -1,8 +1,9 @@
 find_package(PFUNIT REQUIRED)
 enable_testing()
 
-# Define test files
-set(PROJ_PFUNIT_DIR "${PROJECT_SOURCE_DIR}/pfunit-test")
+# Ensure test data is available at runtime
+file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
+        "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
 
 # Filter out the main.f90 files. We can only have one main() function in our tests
 set(PROJ_SRC_FILES_EXEC_MAIN ${PROJ_SRC_FILES})
@@ -11,14 +12,11 @@ list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*main.f90")
 # Create library for src code
 add_library (sut STATIC ${PROJ_SRC_FILES_EXEC_MAIN})
 
+# List all  test files
 file(GLOB
   test_srcs
-  "${PROJ_PFUNIT_DIR}/*.pf"
+  "${PROJECT_SOURCE_DIR}/pfunit-test/*.pf"
 )
-
-# Ensure test data is available at runtime
-file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
-        "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
 
 # evolve_board tests
 set(test_evolve_board_src ${test_srcs})
