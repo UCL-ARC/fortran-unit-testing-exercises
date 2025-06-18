@@ -7,13 +7,13 @@ module testdrive_read_model_from_file_test
     public :: read_model_from_file_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
-    type :: read_model_from_file_in_out_t
+    type :: read_model_from_file_test_params
         character(len=:), allocatable :: input_fname
         integer :: max_nrow
         integer :: max_ncol
         integer, dimension(:,:), allocatable :: expected_board
         character(len=:), allocatable :: expected_io_error_message
-    end type read_model_from_file_in_out_t
+    end type read_model_from_file_test_params
 
 contains
 
@@ -43,7 +43,7 @@ contains
     subroutine test_read_model_from_file_zeros_31_31(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(read_model_from_file_in_out_t) :: inputs
+        type(read_model_from_file_test_params) :: inputs
 
         inputs%input_fname = "test-models/zeros_31_31.dat"
         inputs%max_nrow = 100
@@ -57,7 +57,7 @@ contains
     subroutine test_read_model_from_file_zeros_31_31_low_max_nrow(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(read_model_from_file_in_out_t) :: inputs
+        type(read_model_from_file_test_params) :: inputs
 
         inputs%input_fname = "test-models/zeros_31_31.dat"
         inputs%max_nrow = 10
@@ -70,12 +70,12 @@ contains
     subroutine test_read_model_from_file_zeros_31_31_low_max_ncol(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(read_model_from_file_in_out_t) :: inputs
+        type(read_model_from_file_test_params) :: inputs
 
         inputs%input_fname = "test-models/zeros_31_31.dat"
         inputs%max_nrow = 100
         inputs%max_ncol = 10
-        inputs%expected_io_error_message = "nrow must be a positive integer less than     31 found     10"
+        inputs%expected_io_error_message = "ncol must be a positive integer less than     10 found     31"
 
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31_low_max_ncol
@@ -83,7 +83,7 @@ contains
     subroutine test_read_model_from_file_empty_minus10_10(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(read_model_from_file_in_out_t) :: inputs
+        type(read_model_from_file_test_params) :: inputs
 
         inputs%input_fname = "test-models/empty_-10_10.dat"
         inputs%max_nrow = 100
@@ -96,7 +96,7 @@ contains
     subroutine test_read_model_from_file_empty_10_minus10(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(read_model_from_file_in_out_t) :: inputs
+        type(read_model_from_file_test_params) :: inputs
 
         inputs%input_fname = "test-models/empty_10_-10.dat"
         inputs%max_nrow = 100
@@ -109,7 +109,7 @@ contains
     subroutine test_read_model_from_file_non_existent_dat_file(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(read_model_from_file_in_out_t) :: inputs
+        type(read_model_from_file_test_params) :: inputs
 
         inputs%input_fname = "does/not/exist.dat"
         inputs%max_nrow = 100
@@ -126,7 +126,7 @@ contains
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     subroutine check_read_model_from_file_valid_model(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        class(read_model_from_file_in_out_t), intent(in) :: inputs
+        class(read_model_from_file_test_params), intent(in) :: inputs
 
         integer, dimension(:,:), allocatable ::actual_board
         character(len=:), allocatable :: actual_io_error_message
@@ -162,7 +162,7 @@ contains
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     subroutine check_read_model_from_file_invalid_model(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        class(read_model_from_file_in_out_t), intent(in) :: inputs
+        class(read_model_from_file_test_params), intent(in) :: inputs
 
         integer, dimension(:,:), allocatable ::actual_board
         character(len=:), allocatable :: actual_io_error_message

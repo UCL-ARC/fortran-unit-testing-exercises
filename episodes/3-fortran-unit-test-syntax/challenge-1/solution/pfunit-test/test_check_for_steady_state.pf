@@ -6,18 +6,18 @@ module test_check_for_steady_state
 
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     @testParameter
-    type, extends(AbstractTestParameter) :: check_for_steady_state_in_out_t
+    type, extends(AbstractTestParameter) :: check_for_steady_state_test_params
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
         character(len=100) :: description
     contains
-        procedure :: toString => check_for_steady_state_in_out_toString
-    end type check_for_steady_state_in_out_t
+        procedure :: toString => check_for_steady_state_test_params_toString
+    end type check_for_steady_state_test_params
 
     !> Type to define a single check_for_steady_state test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: check_for_steady_state_test_case
-        type(check_for_steady_state_in_out_t) :: params
+        type(check_for_steady_state_test_params) :: params
     end type check_for_steady_state_test_case
 
 contains
@@ -28,7 +28,7 @@ contains
 
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     function getParameters() result(params)
-        type(check_for_steady_state_in_out_t), allocatable :: params(:)
+        type(check_for_steady_state_test_params), allocatable :: params(:)
 
         integer :: nrow, ncol
         integer, dimension(:,:), allocatable :: test_current_board, test_new_board
@@ -45,24 +45,24 @@ contains
         ! Matching boards
         !  All zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .true.)
-        params(1) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .true., "all zeros")
+        params(1) = check_for_steady_state_test_params(test_current_board, test_new_board, .true., "all zeros")
         !  All ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .true.)
-        params(2) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .true., "all ones")
+        params(2) = check_for_steady_state_test_params(test_current_board, test_new_board, .true., "all ones")
         !  Up to 10 ones
         call populate_random_boards(test_current_board, test_new_board, 10, .true.)
-        params(3) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .true., "up to ten ones")
+        params(3) = check_for_steady_state_test_params(test_current_board, test_new_board, .true., "up to ten ones")
 
         ! Mismatched boards
         !  All ones vs all zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .false.)
-        params(4) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .false., "all ones and all zeros")
+        params(4) = check_for_steady_state_test_params(test_current_board, test_new_board, .false., "all ones and all zeros")
         !  All zeros vs all ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .false.)
-        params(5) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .false., "all zeros and all ones")
+        params(5) = check_for_steady_state_test_params(test_current_board, test_new_board, .false., "all zeros and all ones")
         !  Up to 10 differences
         call populate_random_boards(test_current_board, test_new_board, 10, .false.)
-        params(6) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .false., "up to ten differences")
+        params(6) = check_for_steady_state_test_params(test_current_board, test_new_board, .false., "up to ten differences")
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -87,7 +87,7 @@ contains
 
     function newTest(testParameter) result(tst)
         type(check_for_steady_state_test_case) :: tst
-        type(check_for_steady_state_in_out_t), intent(in) :: testParameter
+        type(check_for_steady_state_test_params), intent(in) :: testParameter
 
         integer :: nrow, ncol
 
@@ -102,8 +102,8 @@ contains
         tst%params%expected_steady_state = testParameter%expected_steady_state
     end function newTest
 
-    function check_for_steady_state_in_out_toString(this) result(string)
-        class(check_for_steady_state_in_out_t), intent(in) :: this
+    function check_for_steady_state_test_params_toString(this) result(string)
+        class(check_for_steady_state_test_params), intent(in) :: this
         character(:), allocatable :: string
 
         character(len=80) :: buffer
@@ -121,7 +121,7 @@ contains
                 nrow, ncol, trim(this%description)
         end if
         string = trim(buffer)
-    end function check_for_steady_state_in_out_toString
+    end function check_for_steady_state_test_params_toString
 
     subroutine populate_random_boards(current_board, new_board, num_differences, matching)
         integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board

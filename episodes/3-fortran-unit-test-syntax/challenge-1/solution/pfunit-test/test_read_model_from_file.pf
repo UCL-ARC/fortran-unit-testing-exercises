@@ -6,7 +6,7 @@ module test_read_model_from_file
 
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
     @testParameter
-    type, extends(AbstractTestParameter) :: read_model_from_file_params
+    type, extends(AbstractTestParameter) :: read_model_from_file_test_params
         character(len=:), allocatable :: input_fname
         integer :: max_nrow
         integer :: max_ncol
@@ -14,13 +14,13 @@ module test_read_model_from_file
         character(len=:), allocatable :: expected_io_error_message
         logical :: model_is_valid
     contains
-        procedure :: toString => read_model_from_file_params_toString
-    end type read_model_from_file_params
+        procedure :: toString => read_model_from_file_test_params_toString
+    end type read_model_from_file_test_params
 
     !> Type to define a single evolve_board test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: read_model_from_file_test_case
-        type(read_model_from_file_params) :: params
+        type(read_model_from_file_test_params) :: params
         logical :: model_is_valid
     end type read_model_from_file_test_case
 
@@ -32,7 +32,7 @@ contains
 
     !> Test suite for the game_of_life::read_model_from_file subroutine
     function getParameters() result(params)
-        type (read_model_from_file_params), allocatable :: params(:)
+        type (read_model_from_file_test_params), allocatable :: params(:)
 
         integer, dimension(:,:), allocatable :: test_board
         character(len=:), allocatable :: test_io_error_message
@@ -46,22 +46,22 @@ contains
 
         allocate(character(len=80) :: test_io_error_message)
         
-        params(1) = read_model_from_file_params("test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true.)
+        params(1) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true.)
 
         test_io_error_message = "nrow must be a positive integer less than     10 found     31"
-        params(2) = read_model_from_file_params("test-models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, .false.)
+        params(2) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, .false.)
 
         test_io_error_message = "ncol must be a positive integer less than     10 found     31"
-        params(3) = read_model_from_file_params("test-models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, .false.)
+        params(3) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, .false.)
 
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
-        params(4) = read_model_from_file_params("test-models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, .false.)
+        params(4) = read_model_from_file_test_params("test-models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, .false.)
 
         test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
-        params(5) = read_model_from_file_params("test-models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, .false.)
+        params(5) = read_model_from_file_test_params("test-models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, .false.)
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"
-        params(6) = read_model_from_file_params("does/not/exist.dat", 100, 100, test_board, test_io_error_message, .false.)
+        params(6) = read_model_from_file_test_params("does/not/exist.dat", 100, 100, test_board, test_io_error_message, .false.)
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -85,7 +85,7 @@ contains
     end subroutine TestCheckReadModelFromFile
 
     subroutine VerifyCheckReadModelFromFileValidModel(params, actual_board, actual_io_error_message)
-        class (read_model_from_file_params), intent(inout) :: params
+        class (read_model_from_file_test_params), intent(inout) :: params
 
         integer, dimension(:,:), allocatable, intent(in) :: actual_board
         character(len=:), allocatable, intent(in) :: actual_io_error_message
@@ -97,7 +97,7 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     subroutine VerifyCheckReadModelFromFileInvalidModel(params, actual_board, actual_io_error_message)
-        class (read_model_from_file_params), intent(inout) :: params
+        class (read_model_from_file_test_params), intent(inout) :: params
 
         integer, dimension(:,:), allocatable, intent(in) :: actual_board
         character(len=:), allocatable, intent(in) :: actual_io_error_message
@@ -113,7 +113,7 @@ contains
 
     function newTest(testParameter) result(tst)
         type (read_model_from_file_test_case) :: tst
-        type (read_model_from_file_params), intent(in) :: testParameter
+        type (read_model_from_file_test_params), intent(in) :: testParameter
 
         integer :: nrow, ncol
 
@@ -129,8 +129,8 @@ contains
         tst%params%model_is_valid = testParameter%model_is_valid
     end function newTest
 
-    function read_model_from_file_params_toString(this) result(string)
-        class (read_model_from_file_params), intent(in) :: this
+    function read_model_from_file_test_params_toString(this) result(string)
+        class (read_model_from_file_test_params), intent(in) :: this
         character(:), allocatable :: string
 
         character(len=80) :: buffer
@@ -144,5 +144,5 @@ contains
         end if
         string = trim(buffer)
 
-    end function read_model_from_file_params_toString
+    end function read_model_from_file_test_params_toString
 end module test_read_model_from_file

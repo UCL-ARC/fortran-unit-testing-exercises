@@ -9,10 +9,10 @@ module testdrive_check_for_steady_state_test
     public :: check_for_steady_state_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
-    type :: check_for_steady_state_in_out_t
+    type :: check_for_steady_state_test_params
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
-    end type check_for_steady_state_in_out_t
+    end type check_for_steady_state_test_params
 
 contains
 
@@ -38,7 +38,7 @@ contains
     subroutine test_check_for_steady_state_all_zeros(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%current_board, inputs%new_board, 0, .true.)
         inputs%expected_steady_state = .true.
@@ -50,7 +50,7 @@ contains
     subroutine test_check_for_steady_state_all_ones(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%current_board, inputs%new_board, 1, .true.)
         inputs%expected_steady_state = .true.
@@ -65,7 +65,7 @@ contains
     subroutine test_check_for_steady_state_up_to_ten_ones(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%current_board, inputs%new_board, 10, .true.)
         inputs%expected_steady_state = .true.
@@ -77,7 +77,7 @@ contains
     subroutine test_check_for_steady_state_all_zeros_all_ones(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%current_board, inputs%new_board, 0, .false.)
         inputs%expected_steady_state = .false.
@@ -89,7 +89,7 @@ contains
     subroutine test_check_for_steady_state_all_ones_all_zeros(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%new_board, inputs%current_board, 0, .false.)
         inputs%expected_steady_state = .false.
@@ -101,7 +101,7 @@ contains
     subroutine test_check_for_steady_state_up_to_ten_differences(error)
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_in_out_t) :: inputs
+        type(check_for_steady_state_test_params) :: inputs
 
         call populate_random_boards(inputs%current_board, inputs%new_board, 10, .false.)
         inputs%expected_steady_state = .false.
@@ -116,7 +116,7 @@ contains
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     subroutine check_if_steady_state(error, inputs)
         type(error_type), allocatable, intent(out) :: error
-        type(check_for_steady_state_in_out_t), intent(in) :: inputs
+        type(check_for_steady_state_test_params), intent(in) :: inputs
 
         logical :: actual_steady_state
         character(len=80) :: failure_message
