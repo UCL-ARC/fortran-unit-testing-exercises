@@ -1,6 +1,6 @@
 # Episode 2 - Challenge 1 - Solution: Identify bad practice for unit testing Fortran
 
-The solution provided here is an entirely self-contained project which can be built using FPM.
+This solution can be built using FPM.
 
 ```bash
 fpm build
