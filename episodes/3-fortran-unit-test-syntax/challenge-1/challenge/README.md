@@ -1,25 +1,11 @@
-# Episode 2 - Challenge 1 - Solution: Identify bad practice for unit testing Fortran
+# Episode 3 - Challenge 1: Rewrite veggies tests using test-drive and pFUnit
 
-The solution provided here is an entirely self-contained project which can be built using FPM.
+In [src](./src/) there is a copy of [the src from the episode-2 solution](../../../2-intro-to-fortran-unit-tests/challenge-1/solution/src/).
+You will also find a copy of [the veggies tests from the episode-2 solution](../../../2-intro-to-fortran-unit-tests/challenge-1/solution/test/)
+in [veggies-test](./veggies-test/)
 
-```bash
-fpm build
-```
+Now, take a look at the partially implemented tests within [](./pfunit-test/) and [](./test-drive-test/). The sections to be completed have
+been labelled by a comments prefixed with `TASK`.
 
-Tests are also provided, which can be run using FPM.
-
-```bash
-fpm test
-```
-
-## Question 1
-
->Can you identify the aspects of this Fortran code which make it difficult to unit test?
-
-There are several issues with this Fortran code which make it hard to unit test. Find the suggested fixes listed below.
-
-1. Everything is containing within a single program. This prevents us from using individual procedures within test modules. Effectively preventing us from testing them.
-
-2. There is a lot of global state used across multiple procedures. This makes tests dependent on one another therefore complicating the management of data/state between tests.
-
-3. There is a lot of logic not contained within procedures. Wrapping this in procedures opens up more of the code which can be tested.
+1. Can you implement the unfinished sections in pfunit-test
+2. Can you implement the unfinished sections in test-drive-test

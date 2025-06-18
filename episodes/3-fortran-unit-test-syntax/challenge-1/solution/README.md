@@ -1,25 +1,20 @@
-# Episode 2 - Challenge 1 - Solution: Identify bad practice for unit testing Fortran
+# Episode 3 - Challenge 1 - Solution: Rewrite veggies tests using test-drive and pFUnit
 
-The solution provided here is an entirely self-contained project which can be built using FPM.
+This solution can be built with either FPM or CMake.
 
-```bash
-fpm build
-```
+>NOTE: pFUnit tests will only be built and run if CMake is used.
 
-Tests are also provided, which can be run using FPM.
+#### FPM
 
-```bash
+```sh
 fpm test
 ```
 
-## Question 1
+#### CMake
 
->Can you identify the aspects of this Fortran code which make it difficult to unit test?
-
-There are several issues with this Fortran code which make it hard to unit test. Find the suggested fixes listed below.
-
-1. Everything is containing within a single program. This prevents us from using individual procedures within test modules. Effectively preventing us from testing them.
-
-2. There is a lot of global state used across multiple procedures. This makes tests dependent on one another therefore complicating the management of data/state between tests.
-
-3. There is a lot of logic not contained within procedures. Wrapping this in procedures opens up more of the code which can be tested.
+```sh
+cmake -B build-cmake -DCMAKE_PREFIX_PATH=</path/to/pFUnit/installed/dir>
+cmake --build build-cmake
+cd build-cmake
+ctest
+```
