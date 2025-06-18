@@ -1,31 +1,30 @@
 # Define test-drive related variables
-set(test_lib "test-drive")
-set(test_pkg "TEST_DRIVE")
-set(test_url "https://github.com/fortran-lang/test-drive")
+set(testdrive_url "https://github.com/fortran-lang/test-drive")
+
+set(TEST_DRIVE_BUILD_TESTING OFF CACHE BOOL "Disable test-drive internal tests")
 
 # Download test-drive sources
-message(STATUS "Retrieving ${test_lib} from ${test_url}")
+if(NOT TARGET test-drive)
+message(STATUS "Retrieving test-drive from ${testdrive_url}")
 include(FetchContent)
 FetchContent_Declare(
-    "${test_lib}"
-    GIT_REPOSITORY "${test_url}"
+    "test-drive"
+    GIT_REPOSITORY "${testdrive_url}"
     GIT_TAG "HEAD"
     )
-FetchContent_MakeAvailable("${test_lib}")
-
-# Allows using test-drive via target_link_libraries()
-add_library("${test_lib}::${test_lib}" INTERFACE IMPORTED)
-target_link_libraries("${test_lib}::${test_lib}" INTERFACE "${test_lib}")
-
-# We need the module directory in the subproject before we finish the configure stage
-FetchContent_GetProperties("${test_lib}" SOURCE_DIR "${test_pkg}_SOURCE_DIR")
-FetchContent_GetProperties("${test_lib}" BINARY_DIR "${test_pkg}_BINARY_DIR")
-if(NOT EXISTS "${${test_pkg}_BINARY_DIR}/include")
-    make_directory("${${test_pkg}_BINARY_DIR}/include")
+FetchContent_MakeAvailable("test-drive")
 endif()
 
-# Ignore tests from test-drive itself
-configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR})
+# Allows using test-drive via target_link_libraries()
+add_library("test-drive::test-drive" INTERFACE IMPORTED)
+target_link_libraries("test-drive::test-drive" INTERFACE "test-drive")
+
+# We need the module directory in the subproject before we finish the configure stage
+FetchContent_GetProperties("test-drive" SOURCE_DIR "TEST_DRIVE_SOURCE_DIR")
+FetchContent_GetProperties("test-drive" BINARY_DIR "TEST_DRIVE_BINARY_DIR")
+if(NOT EXISTS "${TEST_DRIVE_BINARY_DIR}/include")
+    make_directory("${TEST_DRIVE_BINARY_DIR}/include")
+endif()
 
 # Define test files
 set(PROJ_TEST_DRIVE_DIR "${PROJECT_SOURCE_DIR}/test-drive-test")
@@ -64,7 +63,7 @@ add_executable(
 target_link_libraries(
   "test_${PROJECT_NAME}-test-drive"
   PRIVATE
-  "${test_lib}"
+  "test-drive"
 )
 
 # Add specific tests which pass the test name to our new executable
