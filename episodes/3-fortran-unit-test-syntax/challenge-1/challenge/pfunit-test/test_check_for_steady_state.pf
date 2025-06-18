@@ -1,0 +1,104 @@
+!> Module for testing the subroutine game_of_life::check_for_steady_state
+module test_check_for_steady_state
+    use game_of_life_mod, only : check_for_steady_state
+    use funit
+    implicit none
+
+    ! TASK: Define a parameter type `check_for_steady_state_in_out_t` to be used for testing game_of_life::check_for_steady_state
+    ! Your changes here...
+
+    ! TASK: Define a test case type `check_for_steady_state_test_case` to be used for testing game_of_life::check_for_steady_state
+    ! Your changes here...
+
+contains
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Test Suites
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    ! TASK: Write a function which returns and array of the parameter type you defined above for testing
+    !       game_of_life::check_for_steady_state including tests of the following scenarios.
+    !
+    !       1. Matching boards full of zeros are in steady state
+    !       2. Matching boards full of ones are in steady state
+    !       3. Matching boards with up to 10 ones are in steady state
+    !       4. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       5. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       6. Mismatched boards with up to 10 differences is not in steady state
+    !
+    ! Your changes here...
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Assertion functions
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
+    @Test
+    subroutine TestCheckIfSteadyState(this)
+        class(check_for_steady_state_test_case), intent(inout) :: this
+
+        logical :: actual_steady_state
+
+        call check_for_steady_state(this%params%current_board, this%params%new_board, actual_steady_state)
+
+        @assertEqual(this%params%expected_steady_state, actual_steady_state)
+    end subroutine TestCheckIfSteadyState
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    ! TASK: Write a function which returns an instance of your new test case type from an inputted
+    !       instance of your new parameter type.
+    ! Your changes here...
+
+    ! TASK: Write a function which returns your new parameter type as a string. This is used to
+    !       decsribe your test scenario in the cli output
+    ! Your changes here...
+
+    subroutine populate_random_boards(current_board, new_board, num_differences, matching)
+        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+        integer, intent(in) :: num_differences
+        logical, intent(in) :: matching
+
+        integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
+        real :: rand_real
+
+        ! Initialise
+        nrow = size(current_board, 1)
+        ncol = size(current_board, 2)
+        current_board = 0
+
+        if (matching) then
+            new_board = 0
+        else
+            new_board = 1
+        end if
+
+        ! For both boards, set to requested number of elements to the opposite value
+        do row = 1, num_differences
+            ! Get random coordinates for current
+            call random_number(rand_real)
+            rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
+            call random_number(rand_real)
+            rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
+
+            current_board(rand_row, rand_col) = 1
+
+            if (.not. matching) then
+                ! Get random coordinates for new
+                call random_number(rand_real)
+                rand_row = 1 + FLOOR(nrow*rand_real) ! n=1 to n=nrow
+                call random_number(rand_real)
+                rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
+
+                new_board(rand_row, rand_col) = 0
+            else
+                new_board(rand_row, rand_col) = 1
+            end if
+
+
+        end do
+
+    end subroutine populate_random_boards
+end module test_check_for_steady_state

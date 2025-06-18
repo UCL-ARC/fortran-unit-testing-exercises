@@ -30,6 +30,9 @@ contains
             new_unittest( &
                 "test_read_model_from_file_zeros_31_31_low_max_nrow", test_read_model_from_file_zeros_31_31_low_max_nrow &
             ), &
+            new_unittest( &
+                "test_read_model_from_file_zeros_31_31_low_max_ncol", test_read_model_from_file_zeros_31_31_low_max_ncol &
+            ), &
             new_unittest("test_read_model_from_file_empty_minus10_10", test_read_model_from_file_empty_minus10_10), &
             new_unittest("test_read_model_from_file_empty_10_minus10", test_read_model_from_file_empty_10_minus10), &
             new_unittest("test_read_model_from_file_non_existent_dat_file", test_read_model_from_file_non_existent_dat_file) &
@@ -63,6 +66,19 @@ contains
 
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31_low_max_nrow
+
+    subroutine test_read_model_from_file_zeros_31_31_low_max_ncol(error)
+        type(error_type), allocatable, intent(out) :: error
+
+        type(read_model_from_file_in_out_t) :: inputs
+
+        inputs%input_fname = "test-models/zeros_31_31.dat"
+        inputs%max_nrow = 100
+        inputs%max_ncol = 10
+        inputs%expected_io_error_message = "nrow must be a positive integer less than     31 found     10"
+
+        call check_read_model_from_file_invalid_model(error, inputs)
+    end subroutine test_read_model_from_file_zeros_31_31_low_max_ncol
 
     subroutine test_read_model_from_file_empty_minus10_10(error)
         type(error_type), allocatable, intent(out) :: error

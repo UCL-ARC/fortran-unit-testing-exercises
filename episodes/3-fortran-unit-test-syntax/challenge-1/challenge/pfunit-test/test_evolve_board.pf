@@ -1,0 +1,164 @@
+module test_evolve_board
+    use game_of_life_mod, only : evolve_board
+    use funit
+    implicit none
+
+    !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
+    @testParameter
+    type, extends(AbstractTestParameter) :: evolve_board_in_out_t
+        integer, dimension(:,:), allocatable :: current_board
+        integer, dimension(:,:), allocatable :: expected_new_board
+        character(len=100) :: description
+    contains
+        procedure :: toString => evolve_board_in_out_toString
+    end type evolve_board_in_out_t
+
+    !> Type to define a single evolve_board test case
+    @TestCase(testParameters={getParameters()}, constructor=newTest)
+    type, extends(ParameterizedTestCase) :: evolve_board_test_case
+        type(evolve_board_in_out_t) :: params
+    end type evolve_board_test_case
+
+
+contains
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Test Suites
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    ! Define test parameter sets
+    function getParameters() result(params)
+        type (evolve_board_in_out_t), allocatable :: params(:)
+
+        integer :: nrow, ncol
+        integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
+
+        allocate(params(4))
+
+        nrow = 20
+        ncol = 20
+
+        allocate(test_current_board(nrow, ncol))
+        allocate(expected_new_board(nrow, ncol))
+        test_current_board = 0
+        expected_new_board = 0
+
+        ! Steady state boards
+        !  All zeros
+        params(1) = evolve_board_in_out_t(test_current_board, expected_new_board, "all zeros")
+
+        !  A slightly more complex steady state sructure
+        !       8  9 10 11 12
+        !      -- -- -- -- --
+        !   8 | 0  0  0  0  0
+        !   9 | 0  0  1  0  0
+        !  10 | 0  1  0  1  0
+        !  11 | 0  1  0  1  0
+        !  12 | 0  0  1  0  0
+        !  13 | 0  0  0  0  0
+        !
+        !   Input board
+        test_current_board(9,9:11)  = [0,1,0]
+        test_current_board(10,9:11) = [1,0,1]
+        test_current_board(11,9:11) = [1,0,1]
+        test_current_board(12,9:11) = [0,1,0]
+        !   Expected output board
+        expected_new_board(9,9:11)  = test_current_board(9,9:11)
+        expected_new_board(10,9:11) = test_current_board(10,9:11)
+        expected_new_board(11,9:11) = test_current_board(11,9:11)
+        expected_new_board(12,9:11) = test_current_board(12,9:11)
+        params(2) = evolve_board_in_out_t(test_current_board, expected_new_board, "a more complex steady state")
+        !  Reset for next test
+        test_current_board = 0
+        expected_new_board = 0
+
+        ! Non-steady state boards
+        !  One non-zero element
+        !   Input board
+        test_current_board(10,9) = 1
+        params(3) = evolve_board_in_out_t(test_current_board, expected_new_board, "one non-zero element")
+        !  Reset for next test
+        test_current_board(10,9) = 0
+
+        !  A slightly more complex non-steady state sructure
+        !   Input board             Expected output board
+        !       8  9 10 11 12           8  9 10 11 12
+        !      -- -- -- -- --          -- -- -- -- --
+        !   8 | 0  0  0  0  0       8 | 0  0  0  0  0
+        !   9 | 0  0  1  0  0   \   9 | 0  1  1  1  0
+        !  10 | 0  1  1  1  0 ---\ 10 | 0  1  0  1  0
+        !  11 | 0  1  0  1  0 ---/ 11 | 0  1  0  1  0
+        !  12 | 0  0  1  0  0   /  12 | 0  0  1  0  0
+        !  13 | 0  0  0  0  0      13 | 0  0  0  0  0
+        !
+        !   Input board
+        test_current_board(9,9:11)  = [0,1,0]
+        test_current_board(10,9:11) = [1,1,1]
+        test_current_board(11,9:11) = [1,0,1]
+        test_current_board(12,9:11) = [0,1,0]
+        !   Expected output board
+        expected_new_board(9,9:11)  = [1,1,1]
+        expected_new_board(10,9:11) = [1,0,1]
+        expected_new_board(11,9:11) = [1,0,1]
+        expected_new_board(12,9:11) = [0,1,0]
+        params(4) = evolve_board_in_out_t(test_current_board, expected_new_board, "a slightly more complex non-steady state")
+    end function getParameters
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Assertion functions
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    @Test
+    subroutine TestEvolveBoard(this)
+        class (evolve_board_test_case), intent(inout) :: this
+
+        integer, dimension(:,:), allocatable ::actual_new_board
+
+        allocate(actual_new_board(size(this%params%current_board, 1), size(this%params%current_board, 2)))
+        actual_new_board = this%params%current_board
+
+        call evolve_board(this%params%current_board, actual_new_board)
+
+        @assertEqual(this%params%expected_new_board, actual_new_board, "Unexpected new_board")
+
+        deallocate(actual_new_board)
+    end subroutine TestEvolveBoard
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    function newTest(testParameter) result(tst)
+        type (evolve_board_test_case) :: tst
+        type (evolve_board_in_out_t), intent(in) :: testParameter
+
+        integer :: nrow, ncol
+
+        nrow = size(testParameter%current_board, 1)
+        ncol = size(testParameter%current_board, 2)
+
+        allocate(tst%params%current_board(nrow, ncol))
+        allocate(tst%params%expected_new_board(nrow, ncol))
+
+        tst%params%current_board = testParameter%current_board
+        tst%params%expected_new_board = testParameter%expected_new_board
+    end function newTest
+
+    function evolve_board_in_out_toString(this) result(string)
+        class (evolve_board_in_out_t), intent(in) :: this
+        character(:), allocatable :: string
+
+        character(len=80) :: buffer
+
+        integer :: nrow, ncol
+
+        nrow = size(this%current_board, 1)
+        ncol = size(this%current_board, 2)
+
+        write(buffer,'(i2, "x", i2, " board with ", a)') &
+            nrow, ncol, trim(this%description)
+        string = trim(buffer)
+
+    end function evolve_board_in_out_toString
+
+end module test_evolve_board

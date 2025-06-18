@@ -1,24 +1,26 @@
 !> Module for testing the subroutine game_of_life::check_for_steady_state
-module test_check_for_steady_state
+module veggies_check_for_steady_state_test
     use game_of_life_mod, only : check_for_steady_state
-    use funit
+    use veggies, only:            &
+        assert_not,               &
+        assert_that,              &
+        describe,                 &
+        example_t,                &
+        fail,                     &
+        input_t,                  &
+        it,                       &
+        result_t,                 &
+        test_item_t
     implicit none
 
+    private
+    public :: check_for_steady_state_test_suite
+
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
-    @testParameter
-    type, extends(AbstractTestParameter) :: check_for_steady_state_in_out_t
+    type, extends(input_t) :: check_for_steady_state_in_out_t
         integer, dimension(:,:), allocatable :: current_board, new_board
         logical :: expected_steady_state
-        character(len=100) :: description
-    contains
-        procedure :: toString => check_for_steady_state_in_out_toString
     end type check_for_steady_state_in_out_t
-
-    !> Type to define a single check_for_steady_state test case
-    @TestCase(testParameters={getParameters()}, constructor=newTest)
-    type, extends(ParameterizedTestCase) :: check_for_steady_state_test_case
-        type(check_for_steady_state_in_out_t) :: params
-    end type check_for_steady_state_test_case
 
 contains
 
@@ -27,14 +29,13 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Test suite for the game_of_life::check_for_steady_state subroutine
-    function getParameters() result(params)
-        type(check_for_steady_state_in_out_t), allocatable :: params(:)
+    function check_for_steady_state_test_suite() result(tests)
+        type(test_item_t) :: tests
 
-        integer :: nrow, ncol
         integer, dimension(:,:), allocatable :: test_current_board, test_new_board
+        type(example_t) :: matching_boards_data(3), non_matching_boards_data(3)
+        integer :: nrow, ncol
 
-        allocate(params(6))
-        
         nrow = 31
         ncol = 31
 
@@ -45,83 +46,71 @@ contains
         ! Matching boards
         !  All zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .true.)
-        params(1) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .true., "all zeros")
+        matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
         !  All ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .true.)
-        params(2) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .true., "all ones")
+        matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
         !  Up to 10 ones
         call populate_random_boards(test_current_board, test_new_board, 10, .true.)
-        params(3) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .true., "up to ten ones")
+        matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
 
         ! Mismatched boards
         !  All ones vs all zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .false.)
-        params(4) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .false., "all ones and all zeros")
+        non_matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
         !  All zeros vs all ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .false.)
-        params(5) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .false., "all zeros and all ones")
+        non_matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
         !  Up to 10 differences
         call populate_random_boards(test_current_board, test_new_board, 10, .false.)
-        params(6) = check_for_steady_state_in_out_t(test_current_board, test_new_board, .false., "up to ten differences")
-    end function getParameters
+        non_matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+
+        tests = describe( &
+            "check_for_steady_state", &
+            [ it( &
+                "matching boards are in steady state", &
+                matching_boards_data, &
+                check_if_steady_state &
+            ) &
+            , it( &
+                "non-matching boards are not in steady state", &
+                non_matching_boards_data, &
+                check_if_steady_state &
+            )] &
+        )
+    end function check_for_steady_state_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
-    @Test
-    subroutine TestCheckIfSteadyState(this)
-        class(check_for_steady_state_test_case), intent(inout) :: this
+    function check_if_steady_state(input) result(result_)
+        class(input_t), intent(in) :: input
+        type(result_t) :: result_
 
         logical :: actual_steady_state
 
-        call check_for_steady_state(this%params%current_board, this%params%new_board, actual_steady_state)
+        select type (input)
+        type is (check_for_steady_state_in_out_t)
+            call check_for_steady_state(input%current_board, input%new_board, actual_steady_state)
 
-        @assertEqual(this%params%expected_steady_state, actual_steady_state)
-    end subroutine TestCheckIfSteadyState
+            if (input%expected_steady_state) then
+                result_ = assert_that(actual_steady_state)
+            else
+                result_ = assert_not(actual_steady_state)
+            end if
+
+        class default
+            result_ = fail("Didn't get check_for_steady_state_in_out_t")
+
+        end select
+
+    end function check_if_steady_state
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    function newTest(testParameter) result(tst)
-        type(check_for_steady_state_test_case) :: tst
-        type(check_for_steady_state_in_out_t), intent(in) :: testParameter
-
-        integer :: nrow, ncol
-
-        nrow = size(testParameter%current_board, 1)
-        ncol = size(testParameter%current_board, 2)
-
-        allocate(tst%params%current_board(nrow, ncol))
-        allocate(tst%params%new_board(nrow, ncol))
-
-        tst%params%current_board = testParameter%current_board
-        tst%params%new_board = testParameter%new_board
-        tst%params%expected_steady_state = testParameter%expected_steady_state
-    end function newTest
-
-    function check_for_steady_state_in_out_toString(this) result(string)
-        class(check_for_steady_state_in_out_t), intent(in) :: this
-        character(:), allocatable :: string
-
-        character(len=80) :: buffer
-
-        integer :: nrow, ncol
-
-        nrow = size(this%current_board, 1)
-        ncol = size(this%current_board, 2)
-
-        if (this%expected_steady_state) then
-            write(buffer,'("Steady state ", i2, "x", i2, " boards with ", a)') &
-                nrow, ncol, trim(this%description)
-        else
-            write(buffer,'("Non steady state ", i2, "x", i2, " boards with ", a)') &
-                nrow, ncol, trim(this%description)
-        end if
-        string = trim(buffer)
-    end function check_for_steady_state_in_out_toString
 
     subroutine populate_random_boards(current_board, new_board, num_differences, matching)
         integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
@@ -168,4 +157,4 @@ contains
         end do
 
     end subroutine populate_random_boards
-end module test_check_for_steady_state
+end module veggies_check_for_steady_state_test
