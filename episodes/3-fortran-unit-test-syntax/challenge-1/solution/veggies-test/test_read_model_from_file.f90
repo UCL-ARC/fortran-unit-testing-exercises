@@ -99,7 +99,7 @@ contains
         class(input_t), intent(in) :: input
         type(result_t) :: result_
 
-        integer, dimension(:,:), allocatable ::actual_board
+        integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
         select type (input)

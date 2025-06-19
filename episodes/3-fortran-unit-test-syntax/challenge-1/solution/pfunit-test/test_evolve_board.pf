@@ -14,7 +14,7 @@ module test_evolve_board
     end type evolve_board_test_params
 
     !> Type to define a single evolve_board test case
-    @TestCase(testParameters={getParameters()}, constructor=newTest)
+    @TestCase(testParameters={evolve_board_test_suite()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: evolve_board_test_case
         type(evolve_board_test_params) :: params
     end type evolve_board_test_case
@@ -27,13 +27,11 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     ! Define test parameter sets
-    function getParameters() result(params)
-        type (evolve_board_test_params), allocatable :: params(:)
+    function evolve_board_test_suite() result(params)
+        type (evolve_board_test_params) :: params(4)
 
         integer :: nrow, ncol
         integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
-
-        allocate(params(4))
 
         nrow = 20
         ncol = 20
@@ -102,7 +100,7 @@ contains
         expected_new_board(11,9:11) = [1,0,1]
         expected_new_board(12,9:11) = [0,1,0]
         params(4) = evolve_board_test_params(test_current_board, expected_new_board, "a slightly more complex non-steady state")
-    end function getParameters
+    end function evolve_board_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
