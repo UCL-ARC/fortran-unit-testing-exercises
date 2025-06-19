@@ -17,6 +17,11 @@ add_executable("${PROJECT_NAME}" "${PROJ_SRC_FILES}")
 enable_testing()
 
 #--------------------------------------#
+#               veggies                #
+#--------------------------------------#
+# add_subdirectory("veggies-test")
+
+#--------------------------------------#
 #             test-drive               #
 #--------------------------------------#
 add_subdirectory("test-drive-test")
