@@ -3,7 +3,7 @@ program test_main
     use testdrive, only : run_testsuite, new_testsuite, testsuite_type, &
             & select_suite, run_selected, get_argument
 
-    use test_matrix_transform, only : test_transpose_testsuite
+    use testdrive_test_transpose, only : test_transpose_testsuite
 
     implicit none
 
