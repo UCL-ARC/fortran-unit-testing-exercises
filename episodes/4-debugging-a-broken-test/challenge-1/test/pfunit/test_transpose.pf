@@ -42,7 +42,7 @@ contains
         expected_output_matrix(2,:) = [4,1,3]
         expected_output_matrix(3,:) = [0,0,1]
 
-        params(2) = test_transpose_params(input_matrix, expected_output_matrix, "3x3 Unsymetric")
+        params(2) = test_transpose_params(input_matrix, expected_output_matrix, "3x3 Asymmetric")
     end function test_transpose_testsuite
 
     @Test

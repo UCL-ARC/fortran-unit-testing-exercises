@@ -18,7 +18,7 @@ contains
 
         testsuite =[ &
             new_unittest("3x3 identity matrix", test_transpose_3x3_identity), &
-            new_unittest("3x3 unsymetric matrix", test_transpose_3x3_unsymetric) &
+            new_unittest("3x3 asymmetric matrix", test_transpose_3x3_asymmetric) &
         ]
     end subroutine test_transpose_testsuite
 
@@ -39,7 +39,7 @@ contains
         call check_transpose(error, params)
     end subroutine test_transpose_3x3_identity
 
-    subroutine test_transpose_3x3_unsymetric(error)
+    subroutine test_transpose_3x3_asymmetric(error)
         type(error_type), allocatable, intent(out) :: error
 
         type(test_transpose_params) :: params
@@ -56,7 +56,7 @@ contains
         params%expected_output_matrix(3,:) = [0,0,1]
 
         call check_transpose(error, params)
-    end subroutine test_transpose_3x3_unsymetric
+    end subroutine test_transpose_3x3_asymmetric
 
     subroutine check_transpose(error, params)
         type(error_type), allocatable, intent(out) :: error
