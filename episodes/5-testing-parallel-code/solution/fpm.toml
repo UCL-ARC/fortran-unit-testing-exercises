@@ -1,0 +1,25 @@
+name = "episode-3-challenge-1-solution"
+
+[dependencies]
+openmp = "*"
+
+[dev-dependencies]
+test-drive.git = "https://github.com/fortran-lang/test-drive"
+test-drive.tag = "v0.5.0"
+veggies.git = "https://gitlab.com/everythingfunctional/veggies"
+veggies.tag = "main"
+
+[[executable]]
+name = "game-of-life"
+source-dir = "src"
+main = "game_of_life.f90"
+
+[[test]]
+name = "veggies_game_of_life_test"
+source-dir = "veggies-test"
+main = "main.f90"
+
+[[test]]
+name = "test-drive_game_of_life_test"
+source-dir = "test-drive-test"
+main = "main.f90"
