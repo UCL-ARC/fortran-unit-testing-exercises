@@ -1,25 +1,24 @@
-!> Module for testing the subroutine game_of_life::evolve_board
-module veggies_evolve_board_test
+module test_evolve_board
     use game_of_life_mod, only : evolve_board
-    use veggies, only:            &
-        assert_equals,            &
-        describe,                 &
-        example_t,                &
-        fail,                     &
-        input_t,                  &
-        it,                       &
-        result_t,                 &
-        test_item_t
+    use funit
     implicit none
 
-    private
-    public :: evolve_board_test_suite
-
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
-    type, extends(input_t) :: evolve_board_test_params
+    @testParameter
+    type, extends(AbstractTestParameter) :: evolve_board_test_params
         integer, dimension(:,:), allocatable :: current_board
         integer, dimension(:,:), allocatable :: expected_new_board
+        character(len=100) :: description
+    contains
+        procedure :: toString => evolve_board_test_params_toString
     end type evolve_board_test_params
+
+    !> Type to define a single evolve_board test case
+    @TestCase(testParameters={evolve_board_test_suite()}, constructor=newTest)
+    type, extends(ParameterizedTestCase) :: evolve_board_test_case
+        type(evolve_board_test_params) :: params
+    end type evolve_board_test_case
+
 
 contains
 
@@ -27,13 +26,12 @@ contains
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    !> Test suite for the game_of_life::evolve_board subroutine
-    function evolve_board_test_suite() result(tests)
-        type(test_item_t) :: tests
+    ! Define test parameter sets
+    function evolve_board_test_suite() result(params)
+        type (evolve_board_test_params) :: params(4)
 
-        integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
-        type(example_t) :: steady_state_boards_data(2), non_steady_state_boards_data(2)
         integer :: nrow, ncol
+        integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
 
         nrow = 20
         ncol = 20
@@ -45,7 +43,7 @@ contains
 
         ! Steady state boards
         !  All zeros
-        steady_state_boards_data(1) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
+        params(1) = evolve_board_test_params(test_current_board, expected_new_board, "all zeros")
 
         !  A slightly more complex steady state sructure
         !       8  9 10 11 12
@@ -67,16 +65,16 @@ contains
         expected_new_board(10,9:11) = test_current_board(10,9:11)
         expected_new_board(11,9:11) = test_current_board(11,9:11)
         expected_new_board(12,9:11) = test_current_board(12,9:11)
-        steady_state_boards_data(2) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
+        params(2) = evolve_board_test_params(test_current_board, expected_new_board, "a more complex steady state")
         !  Reset for next test
         test_current_board = 0
         expected_new_board = 0
 
-        ! None-steady state boards
+        ! Non-steady state boards
         !  One non-zero element
         !   Input board
         test_current_board(10,9) = 1
-        non_steady_state_boards_data(1) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
+        params(3) = evolve_board_test_params(test_current_board, expected_new_board, "one non-zero element")
         !  Reset for next test
         test_current_board(10,9) = 0
 
@@ -101,49 +99,64 @@ contains
         expected_new_board(10,9:11) = [1,0,1]
         expected_new_board(11,9:11) = [1,0,1]
         expected_new_board(12,9:11) = [0,1,0]
-        non_steady_state_boards_data(2) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
-
-        tests = describe( &
-            "evolve_board", &
-            [ it( &
-                "a board in steady state does not change", &
-                steady_state_boards_data, &
-                check_evolve_board &
-            ) &
-            , it( &
-                "a board not in steady state will change", &
-                non_steady_state_boards_data, &
-                check_evolve_board &
-            )] &
-        )
+        params(4) = evolve_board_test_params(test_current_board, expected_new_board, "a slightly more complex non-steady state")
     end function evolve_board_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    !> Check for the expected output of the game_of_life::evolve_board subroutine
-    function check_evolve_board(input) result(result_)
-        class(input_t), intent(in) :: input
-        type(result_t) :: result_
+    @Test
+    subroutine TestEvolveBoard(this)
+        class (evolve_board_test_case), intent(inout) :: this
 
-        integer, dimension(:,:), allocatable ::current_board
         integer, dimension(:,:), allocatable ::actual_new_board
 
-        select type (input)
-        type is (evolve_board_test_params)
-            allocate(current_board(size(input%current_board, 1), size(input%current_board, 2)))
-            allocate(actual_new_board(size(input%current_board, 1), size(input%current_board, 2)))
-            current_board = input%current_board
-            actual_new_board = input%current_board
+        allocate(actual_new_board(size(this%params%current_board, 1), size(this%params%current_board, 2)))
+        actual_new_board = this%params%current_board
 
-            call evolve_board(current_board, actual_new_board)
+        call evolve_board(this%params%current_board, actual_new_board)
 
-            result_ = assert_equals(input%expected_new_board, actual_new_board)
-        class default
-            result_ = fail("Didn't get evolve_board_test_params")
+        @assertEqual(this%params%expected_new_board, actual_new_board, "Unexpected new_board")
 
-        end select
+        deallocate(actual_new_board)
+    end subroutine TestEvolveBoard
 
-    end function check_evolve_board
-end module veggies_evolve_board_test
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    function newTest(testParameter) result(tst)
+        type (evolve_board_test_case) :: tst
+        type (evolve_board_test_params), intent(in) :: testParameter
+
+        integer :: nrow, ncol
+
+        nrow = size(testParameter%current_board, 1)
+        ncol = size(testParameter%current_board, 2)
+
+        allocate(tst%params%current_board(nrow, ncol))
+        allocate(tst%params%expected_new_board(nrow, ncol))
+
+        tst%params%current_board = testParameter%current_board
+        tst%params%expected_new_board = testParameter%expected_new_board
+    end function newTest
+
+    function evolve_board_test_params_toString(this) result(string)
+        class (evolve_board_test_params), intent(in) :: this
+        character(:), allocatable :: string
+
+        character(len=80) :: buffer
+
+        integer :: nrow, ncol
+
+        nrow = size(this%current_board, 1)
+        ncol = size(this%current_board, 2)
+
+        write(buffer,'(i2, "x", i2, " board with ", a)') &
+            nrow, ncol, trim(this%description)
+        string = trim(buffer)
+
+    end function evolve_board_test_params_toString
+
+end module test_evolve_board
