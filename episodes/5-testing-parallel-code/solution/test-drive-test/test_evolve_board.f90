@@ -166,9 +166,7 @@ contains
         allocate(actual_new_board(size(inputs%current_board, 1), size(inputs%current_board, 2)))
         actual_new_board = inputs%current_board
 
-        !$omp parallel default(none) shared(current_board, actual_new_board)
         call evolve_board(current_board, actual_new_board)
-        !$omp end parallel
 
         nrow = size(inputs%expected_new_board, 1)
         ncol = size(inputs%expected_new_board, 2)
