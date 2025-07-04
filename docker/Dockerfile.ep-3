@@ -1,0 +1,15 @@
+FROM fortran-unit-testing-exercises
+
+# Episode 3
+COPY episodes/3-fortran-unit-test-syntax/challenge-1/solution /solution
+
+# build with cmake
+RUN cd /solution && \
+    cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+    cmake --build build-cmake
+
+# test with ctest
+RUN cd /solution/build-cmake && ctest
+
+# test with fpm
+RUN cd /solution && fpm test
