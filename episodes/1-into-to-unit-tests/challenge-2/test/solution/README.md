@@ -1,8 +1,5 @@
 # Introduction to unit testing - Challenge 2 - Solution: Unit test bad practices
 
-The solution here is a single test file written using Veggies. To run these solution tests,
-update which module is used within [test/main.f90](../main.f90) from `maths_test` to `maths_test_solution`.
-
 ## Questions 1
 
 > Can you identify the aspects of this test which make it a bad unit test?
@@ -19,7 +16,7 @@ There are several issues with `maths_test`
 > What changes would improve this unit test?
 
 - To ensure the unit tests remain **minimal**, we should split the single test `test_maths` into two
-  unit tests, one fr testing `maths::double` and another for testing `maths::factorial`.
+  unit tests, one for testing `maths::double` and another for testing `maths::factorial`.
 - To ensure we have good test coverage of our src code, we should make our test more generic so that
   we can parameterize it and test many input values, including edge cases.
 
