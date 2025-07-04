@@ -1,4 +1,4 @@
-# Episode 1 - Challenge 2: Unit test bad practices
+# Introduction to unit testing - Challenge 2: Unit test bad practices
 
 Take a look at the [src](./src/maths.f90) and [test](./test/maths_test.f90) code provided. 
 
