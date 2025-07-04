@@ -9,6 +9,7 @@ module maths_test
 
 contains
 
+    !> The test suite for the maths module tests
     function maths_test_suite() result(tests)
         type(test_item_t) :: tests
 

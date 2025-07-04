@@ -21,20 +21,7 @@ module maths_test_solution
         integer :: input_value, expected_value
     end type test_parameters_t
 
-    interface test_parameters_t
-        module procedure test_parameters_constructor
-    end interface test_parameters_t
-
 contains
-
-    !> A constructor for the test_parameters_t type
-    pure function test_parameters_constructor(input_value, expected_value) result(test_parameters)
-        integer, intent(in) :: input_value, expected_value
-        type(test_parameters_t) :: test_parameters
-
-        test_parameters%input_value = input_value
-        test_parameters%expected_value = expected_value
-    end function test_parameters_constructor
 
     !> The test suite for the maths module tests
     function maths_test_suite() result(tests)
@@ -64,7 +51,6 @@ contains
     function test_double(input) result(result_)
         implicit none
 
-        ! Setting the values of actual/expected_value outside of the test allows many different inputs to be tested using the same code.
         !> An instance of the test_parameters_t containing function inputs and expected outputs.
         class(input_t), intent(in) :: input
         !> The result of the test (pass or fail) of type result_t
