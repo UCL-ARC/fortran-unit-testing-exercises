@@ -4,6 +4,7 @@ module test_check_for_steady_state
     use funit
     implicit none
 
+    ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     @testParameter
     type, extends(AbstractTestParameter) :: check_for_steady_state_test_params
@@ -14,6 +15,7 @@ module test_check_for_steady_state
         procedure :: toString => check_for_steady_state_test_params_toString
     end type check_for_steady_state_test_params
 
+    ! TASK: Define a test case type `check_for_steady_state_test_case` to be used for testing game_of_life::check_for_steady_state
     !> Type to define a single check_for_steady_state test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: check_for_steady_state_test_case
@@ -26,6 +28,16 @@ contains
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    ! TASK: Write a function which returns and array of the parameter type you defined above for testing
+    !       game_of_life::check_for_steady_state including tests of the following scenarios.
+    !
+    !       1. Matching boards full of zeros are in steady state
+    !       2. Matching boards full of ones are in steady state
+    !       3. Matching boards with up to 10 ones are in steady state
+    !       4. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       5. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       6. Mismatched boards with up to 10 differences is not in steady state
+    !
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     function getParameters() result(params)
         type(check_for_steady_state_test_params), allocatable :: params(:)
@@ -85,6 +97,8 @@ contains
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    ! TASK: Write a function which returns an instance of your new test case type from an inputted
+    !       instance of your new parameter type.
     function newTest(testParameter) result(tst)
         type(check_for_steady_state_test_case) :: tst
         type(check_for_steady_state_test_params), intent(in) :: testParameter
@@ -102,6 +116,8 @@ contains
         tst%params%expected_steady_state = testParameter%expected_steady_state
     end function newTest
 
+    ! TASK: Write a function which returns your new parameter type as a string. This is used to
+    !       decsribe your test scenario in the cli output
     function check_for_steady_state_test_params_toString(this) result(string)
         class(check_for_steady_state_test_params), intent(in) :: this
         character(:), allocatable :: string

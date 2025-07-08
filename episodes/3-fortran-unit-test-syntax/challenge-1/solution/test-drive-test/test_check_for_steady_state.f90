@@ -8,6 +8,7 @@ module testdrive_check_for_steady_state_test
     private
     public :: check_for_steady_state_test_suite
 
+    ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     type :: check_for_steady_state_test_params
         integer, dimension(:,:), allocatable :: current_board, new_board
@@ -20,6 +21,16 @@ contains
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    ! TASK: Write the subroutine `check_for_steady_state_test_suite` which populates testsuites for testing
+    !       game_of_life::check_for_steady_state including tests of the following scenarios.
+    !
+    !       1. Matching boards full of zeros are in steady state
+    !       2. Matching boards full of ones are in steady state
+    !       3. Matching boards with up to 10 ones are in steady state
+    !       4. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       5. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       6. Mismatched boards with up to 10 differences is not in steady state
+    !
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     subroutine check_for_steady_state_test_suite(testsuite)
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
@@ -34,6 +45,8 @@ contains
         ]
     end subroutine check_for_steady_state_test_suite
 
+    ! TASK: Write test subroutines for each of the above scenarios (1. is already provided)
+
     !> Test matching boards with all zeros are in steady state
     subroutine test_check_for_steady_state_all_zeros(error)
         type(error_type), allocatable, intent(out) :: error
@@ -46,6 +59,7 @@ contains
         call check_if_steady_state(error, inputs)
     end subroutine test_check_for_steady_state_all_zeros
 
+    !> 2. Test matching boards with all ones are in steady state
     !> Test matching boards with all ones are in steady state
     subroutine test_check_for_steady_state_all_ones(error)
         type(error_type), allocatable, intent(out) :: error
@@ -61,6 +75,7 @@ contains
         deallocate(inputs%new_board)
     end subroutine test_check_for_steady_state_all_ones
 
+    !> 3. Test matching boards with up to 10 ones are in steady state
     !> Test matching boards with up to 10 ones are in steady state
     subroutine test_check_for_steady_state_up_to_ten_ones(error)
         type(error_type), allocatable, intent(out) :: error
@@ -73,6 +88,7 @@ contains
         call check_if_steady_state(error, inputs)
     end subroutine test_check_for_steady_state_up_to_ten_ones
 
+    !> 4. Test mismatched boards with all zeros and all ones are not in steady state
     !> Test mismatched boards with all zeros and all ones are not in steady state
     subroutine test_check_for_steady_state_all_zeros_all_ones(error)
         type(error_type), allocatable, intent(out) :: error
@@ -85,6 +101,7 @@ contains
         call check_if_steady_state(error, inputs)
     end subroutine test_check_for_steady_state_all_zeros_all_ones
 
+    !> 5. Test mismatched boards with all ones and all zeros are not in steady state
     !> Test mismatched boards with all ones and all zeros are not in steady state
     subroutine test_check_for_steady_state_all_ones_all_zeros(error)
         type(error_type), allocatable, intent(out) :: error
@@ -97,6 +114,7 @@ contains
         call check_if_steady_state(error, inputs)
     end subroutine test_check_for_steady_state_all_ones_all_zeros
 
+    !> 6. Test mismatched boards with with up to ten differences are not in steady state
     !> Test mismatched boards with with up to ten differences are not in steady state
     subroutine test_check_for_steady_state_up_to_ten_differences(error)
         type(error_type), allocatable, intent(out) :: error

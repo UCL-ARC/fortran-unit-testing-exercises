@@ -29,7 +29,7 @@ contains
 
     ! TASK: Write test subroutines for each of the above scenarios
 
-    !> 1. Matching boards full of zeros are in steady state
+    !> 1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
     ! Your changes here...
 
     !> 2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected

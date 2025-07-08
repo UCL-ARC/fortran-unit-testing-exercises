@@ -6,6 +6,7 @@ module testdrive_read_model_from_file_test
     private
     public :: read_model_from_file_test_suite
 
+    ! TASK: Define a parameter type `read_model_from_file_test_params` to be used for testing game_of_life::read_model_from_file
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
     type :: read_model_from_file_test_params
         character(len=:), allocatable :: input_fname
@@ -21,6 +22,16 @@ contains
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    ! TASK: Write the subroutine `read_model_from_file_test_suite` which populates testsuites for testing
+    !       game_of_life::read_model_from_file including tests of the following scenarios.
+    !
+    !       1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
+    !       2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
+    !       3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
+    !       4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
+    !       5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
+    !       6. Reading a model which doesn't exist populates the error message es expected
+    !
     !> Test suite for the game_of_life::read_model_from_file subroutine
     subroutine read_model_from_file_test_suite(testsuite)
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
@@ -40,6 +51,9 @@ contains
 
     end subroutine read_model_from_file_test_suite
 
+    ! TASK: Write test subroutines for each of the above scenarios
+
+    !> 1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
     subroutine test_read_model_from_file_zeros_31_31(error)
         type(error_type), allocatable, intent(out) :: error
 
@@ -54,6 +68,7 @@ contains
         call check_read_model_from_file_valid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31
 
+    !> 2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
     subroutine test_read_model_from_file_zeros_31_31_low_max_nrow(error)
         type(error_type), allocatable, intent(out) :: error
 
@@ -67,6 +82,7 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31_low_max_nrow
 
+    !> 3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
     subroutine test_read_model_from_file_zeros_31_31_low_max_ncol(error)
         type(error_type), allocatable, intent(out) :: error
 
@@ -80,6 +96,7 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31_low_max_ncol
 
+    !> 4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
     subroutine test_read_model_from_file_empty_minus10_10(error)
         type(error_type), allocatable, intent(out) :: error
 
@@ -93,6 +110,7 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_empty_minus10_10
 
+    !> 5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
     subroutine test_read_model_from_file_empty_10_minus10(error)
         type(error_type), allocatable, intent(out) :: error
 
@@ -106,6 +124,7 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_empty_10_minus10
 
+    !> 6. Reading a model which doesn't exist populates the error message es expected
     subroutine test_read_model_from_file_non_existent_dat_file(error)
         type(error_type), allocatable, intent(out) :: error
 
@@ -122,6 +141,10 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    ! TASK: Finish the subroutines below such that they calls game_of_life::read_model_from_file and asserts
+    !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
+    !       the appropriate error message. Ensure any failure message makes it clear what has failed.
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     subroutine check_read_model_from_file_valid_model(error, inputs)
