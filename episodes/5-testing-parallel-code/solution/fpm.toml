@@ -1,6 +1,11 @@
 name = "episode-3-challenge-1-solution"
 
+[fortran]
+implicit-typing = true
+implicit-external = true
+
 [dependencies]
+mpi = "*"
 openmp = "*"
 
 [dev-dependencies]
