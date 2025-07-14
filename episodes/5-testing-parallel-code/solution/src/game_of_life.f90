@@ -7,12 +7,12 @@
 program game_of_life
     ! allow(C121)
     use mpi
-    use game_of_life_mod, only : evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries
+    use game_of_life_mod, only : evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, getLocalGridInfo
     implicit none
 
     !! Board args
-    integer, parameter :: max_nrow = 50000, max_ncol = 50000, max_generations = 100
-    integer :: generation_number, local_nrow, local_ncol, global_nrow, global_ncol
+    integer, parameter :: max_nx = 50000, max_ny = 50000, max_generations = 100
+    integer :: generation_number, local_nx, local_ny, global_nx, global_ny, nx_per_rank, ny_per_rank
     integer, dimension(:,:), allocatable :: global_board, local_current, local_new
     logical :: local_steady = .false., global_steady = .false.
 
@@ -22,7 +22,7 @@ program game_of_life
 
     !! IO args
     character(len=:), allocatable :: io_error_message
-    integer :: num_ranks_x, num_ranks_y, row_start, col_start, row_end, col_end
+    integer :: num_ranks_x, num_ranks_y, x_start, y_start, x_end, y_end
 
     !! Timing
     real :: start_time, end_time
@@ -30,8 +30,11 @@ program game_of_life
     !! MPI args
     integer :: ierr, rank, nprocs
     integer :: dims(2), coords(2), cart_comm
-    integer :: nbr_north, nbr_south, nbr_east, nbr_west
+    integer :: neighbours(4)
     logical :: periods(2)
+
+    !! MPI args for rank 0 only
+    integer :: coords_i(2), neighbours_i(4), y_start_i, x_start_i, local_ny_i, local_nx_i
 
     !! Misc
     integer :: i, j
@@ -58,7 +61,7 @@ program game_of_life
             stop
         end if
 
-        call read_model_from_file(input_fname, max_nrow, max_ncol, global_board, io_error_message)
+        call read_model_from_file(input_fname, max_nx, max_ny, global_board, io_error_message)
 
         if (allocated(io_error_message)) then
             write (*,*) io_error_message
@@ -66,60 +69,56 @@ program game_of_life
             stop
         end if
 
-        global_nrow = size(global_board, 1)
-        global_ncol = size(global_board, 2)
+        global_ny = size(global_board, 1)
+        global_nx = size(global_board, 2)
     end if
 
     ! Broadcast global dimensions
-    call MPI_Bcast(global_nrow, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-    call MPI_Bcast(global_ncol, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+    call MPI_Bcast(global_nx, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+    call MPI_Bcast(global_ny, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
 
     ! Create 2D Cartesian topology
     dims = 0
     call MPI_Dims_create(nprocs, 2, dims, ierr)   ! Automatically split into num_ranks_x x num_ranks_y grid
     periods = [ .false., .false. ]
     call MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, .true., cart_comm, ierr)
-    call MPI_Cart_coords(cart_comm, rank, 2, coords, ierr)
-    call MPI_Cart_shift(cart_comm, 0, 1, nbr_north, nbr_south, ierr)
-    call MPI_Cart_shift(cart_comm, 1, 1, nbr_west, nbr_east, ierr)
 
-    num_ranks_x = dims(1)
-    num_ranks_y = dims(2)
+    num_ranks_y = dims(1)
+    num_ranks_x = dims(2)
 
-    ! Local domain sizes
-    local_nrow = global_nrow / num_ranks_x
-    local_ncol = global_ncol / num_ranks_y
-    row_start = coords(1)*local_nrow + 1
-    col_start = coords(2)*local_ncol + 1
+    ! Shared local domain sizes
+    ny_per_rank = global_ny / num_ranks_y
+    nx_per_rank = global_nx / num_ranks_x
 
-    allocate(local_current(local_nrow+2, local_ncol+2))
-    allocate(local_new(local_nrow+2, local_ncol+2))
+    call getLocalGridInfo(cart_comm, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, y_start, &
+                          x_start, local_ny, local_nx)
+
+    if (rank == 0) write(*,*) rank, "Ranks,", num_ranks_x, num_ranks_y, ny_per_rank, nx_per_rank, "grid values,", coords, ",", &
+        neighbours, ",", y_start, ",", x_start, ",", local_ny, ",", local_nx
+
+    ! call MPI_FINALIZE(ierr);
+    ! stop
+
+    allocate(local_current(local_nx+2, local_ny+2))
+    allocate(local_new(local_nx+2, local_ny+2))
     local_current = 0
     local_new = 0
 
     ! Scatter global board
     if (rank == 0) then
         do i = 1, nprocs - 1
-            call MPI_Cart_coords(cart_comm, i, 2, coords, ierr)
-            row_start = coords(1)*local_nrow + 1
-            col_start = coords(2)*local_ncol + 1
-            call MPI_Send(global_board(row_start:row_start+local_nrow-1, col_start:col_start+local_ncol-1), &
-                          local_nrow*local_ncol, MPI_INTEGER, i, 0, MPI_COMM_WORLD, ierr)
+            call getLocalGridInfo(cart_comm, i, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords_i, neighbours_i, &
+                y_start_i, x_start_i, local_ny_i, local_nx_i)
+
+            call MPI_Send(global_board(x_start_i:x_start_i+local_nx_i-1, y_start_i:y_start_i+local_ny_i-1), &
+                local_nx_i*local_ny_i, MPI_INTEGER, i, 0, MPI_COMM_WORLD, ierr)
         end do
 
-        local_current(1:local_nrow, 1:local_ncol) = global_board(1:local_nrow, 1:local_ncol)
+        local_current(2:local_nx+1, 2:local_ny+1) = global_board(1:local_nx, 1:local_ny)
     else
-        call MPI_Recv(local_current(2:local_nrow+1, 2:local_ncol+1), local_nrow*local_ncol, MPI_INTEGER, &
+        call MPI_Recv(local_current(2:local_nx+1, 2:local_ny+1), local_nx*local_ny, MPI_INTEGER, &
                       0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE, ierr)
     endif
-
-    ! do j = 0, nprocs - 1
-    !     if (j == rank) then
-    !         do i = 1, local_nrow
-    !             write(100+rank,*) local_current(i,:)
-    !         end do
-    !     end if
-    ! end do
 
     call MPI_Barrier(cart_comm, ierr)
     start_time = MPI_Wtime()
@@ -129,19 +128,16 @@ program game_of_life
 
     do while (.not. local_steady .and. generation_number < max_generations)
         ! Exchange ghost cells with neighbors
-        call exchange_boundaries(local_current, local_nrow, local_ncol, cart_comm, nbr_north, nbr_south, nbr_east, nbr_west)
-
-        ! call MPI_Finalize(ierr)
-        ! stop
+        call exchange_boundaries(local_current, nx_per_rank, ny_per_rank, cart_comm, neighbours)
 
         ! Evolution
-        call evolve_board(local_current, local_new, local_nrow, local_ncol)
-        call check_for_steady_state(local_current, local_new, local_steady, local_nrow, local_ncol)
+        call evolve_board(local_current, local_new, local_nx, local_ny)
+        call check_for_steady_state(local_current, local_new, local_steady, local_nx, local_ny)
 
         call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, cart_comm, ierr)
         local_steady = global_steady
 
-        local_current(2:local_nrow, 2:local_ncol) = local_new(2:local_nrow, 2:local_ncol)
+        local_current(2:local_nx+1, 2:local_ny+1) = local_new(2:local_nx+1, 2:local_ny+1)
 
         generation_number = generation_number + 1
     end do
