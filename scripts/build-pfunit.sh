@@ -125,7 +125,7 @@ then
     
     echo "Building pFUnit from source"
     cmake $pfunit_src_path -B $pfunit_src_path/build -DINSTALL_PATH=$PFUNIT_INSTALLED_PATH
-    cmake --build $pfunit_src_path/build "-j$num_build_threads" --target install
+    cmake --build $pfunit_src_path/build "-j$num_build_threads" --target install -DMPI=YES
 
     echo ""
     echo "Successfully built pFUnit. To use installation, add the following to cmake flags"
