@@ -3,3 +3,8 @@ ignore = [
     "C003", # 'implicit none' missing 'external'
 ]
 line-length = 132
+
+# Exclude all build dirs
+exclude =[
+    "**build**"
+]
