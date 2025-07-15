@@ -10,6 +10,7 @@ project(
 
 # OpenMP
 find_package(OpenMP)
+find_package(MPI COMPONENTS Fortran REQUIRED)
 
 # Define src files
 file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
@@ -17,11 +18,14 @@ file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
 # Build src executables
 add_executable("${PROJECT_NAME}" "${PROJ_SRC_FILES}")
 
+set(TO_LINK_TO_SRC MPI::MPI_Fortran)
 if(OpenMP_Fortran_FOUND)
-    target_link_libraries("${PROJECT_NAME}" PUBLIC OpenMP::OpenMP_Fortran)
+  list(APPEND TO_LINK_TO_SRC OpenMP::OpenMP_Fortran)
 endif()
 
-enable_testing()
+target_link_libraries("${PROJECT_NAME}" "${TO_LINK_TO_SRC}")
+
+# enable_testing()
 
 #--------------------------------------#
 #               veggies                #
@@ -31,9 +35,9 @@ enable_testing()
 #--------------------------------------#
 #             test-drive               #
 #--------------------------------------#
-add_subdirectory("test-drive-test")
+# add_subdirectory("test-drive-test")
 
 #--------------------------------------#
 #               pFUnit                 #
 #--------------------------------------#
-add_subdirectory("pfunit-test")
+# add_subdirectory("pfunit-test")

@@ -31,7 +31,7 @@ program game_of_life
     integer :: ierr, rank, nprocs
     integer :: dims(2), coords(2), cart_comm
     integer :: neighbours(4)
-    logical :: periods(2)
+    logical :: periods(2), error_found = .false.
 
     !! MPI args for rank 0 only
     integer :: coords_i(2), neighbours_i(4), y_start_i, x_start_i, local_ny_i, local_nx_i
@@ -57,20 +57,29 @@ program game_of_life
             call get_command_argument(0, cli_arg_temp_store)
             write(*,'(A,A,A)') "Usage: ", cli_arg_temp_store, " <input_file_name>"
             deallocate(cli_arg_temp_store)
-            call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
-            stop
+            error_found = .true.
         end if
 
-        call read_model_from_file(input_fname, max_nx, max_ny, global_board, io_error_message)
+        if (.not. error_found) then
+            call read_model_from_file(input_fname, max_nx, max_ny, global_board, io_error_message)
 
-        if (allocated(io_error_message)) then
-            write (*,*) io_error_message
-            call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
-            stop
+            if (allocated(io_error_message)) then
+                write (*,*) io_error_message
+                error_found = .true.
+            end if
+
+            if (.not. error_found) then
+                global_ny = size(global_board, 1)
+                global_nx = size(global_board, 2)
+            end if
         end if
+    end if
 
-        global_ny = size(global_board, 1)
-        global_nx = size(global_board, 2)
+    ! Check for input errors
+    call MPI_Bcast(error_found, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
+    if (error_found) then
+        call MPI_Finalize(ierr)
+        stop
     end if
 
     ! Broadcast global dimensions
@@ -95,9 +104,6 @@ program game_of_life
 
     if (rank == 0) write(*,*) rank, "Ranks,", num_ranks_x, num_ranks_y, ny_per_rank, nx_per_rank, "grid values,", coords, ",", &
         neighbours, ",", y_start, ",", x_start, ",", local_ny, ",", local_nx
-
-    ! call MPI_FINALIZE(ierr);
-    ! stop
 
     allocate(local_current(local_nx+2, local_ny+2))
     allocate(local_new(local_nx+2, local_ny+2))
