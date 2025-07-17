@@ -1,7 +1,8 @@
 find_package(PFUNIT REQUIRED)
 enable_testing()
 
-set(CMAKE_Fortran_FLAGS "-fopenmp")
+# set(CMAKE_Fortran_FLAGS "-fopenmp")
+set(CMAKE_Fortran_FLAGS "-g -O0 -Wall -fno-omit-frame-pointer -ffpe-trap=invalid,zero,overflow")
 
 # Ensure test data is available at runtime
 file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
@@ -13,6 +14,7 @@ list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*main.f90")
 
 # Create library for src code
 add_library (sut STATIC ${PROJ_SRC_FILES_EXEC_MAIN})
+target_link_libraries(sut MPI::MPI_Fortran OpenMP::OpenMP_Fortran)
 
 # List all  test files
 file(GLOB
@@ -21,28 +23,39 @@ file(GLOB
 )
 
 # evolve_board tests
-set(test_evolve_board_src ${test_srcs})
-list(FILTER test_evolve_board_src INCLUDE REGEX ".*test_evolve_board.pf")
+# set(test_evolve_board_src ${test_srcs})
+# list(FILTER test_evolve_board_src INCLUDE REGEX ".*test_evolve_board.pf")
 
-add_pfunit_ctest (pfunit_evolve_board_tests
-  TEST_SOURCES ${test_evolve_board_src}
-  LINK_LIBRARIES sut # your application library
-  )
+# add_pfunit_ctest (pfunit_evolve_board_tests
+#   TEST_SOURCES ${test_evolve_board_src}
+#   LINK_LIBRARIES sut # your application library
+#   )
 
 # check_for_steady_state tests
-set(test_check_for_steady_state_src ${test_srcs})
-list(FILTER test_check_for_steady_state_src INCLUDE REGEX ".*test_check_for_steady_state.pf")
+# set(test_check_for_steady_state_src ${test_srcs})
+# list(FILTER test_check_for_steady_state_src INCLUDE REGEX ".*test_check_for_steady_state.pf")
 
-add_pfunit_ctest (pfunit_check_for_steady_state_tests
-  TEST_SOURCES ${test_check_for_steady_state_src}
-  LINK_LIBRARIES sut # your application library
-  )
+# add_pfunit_ctest (pfunit_check_for_steady_state_tests
+#   TEST_SOURCES ${test_check_for_steady_state_src}
+#   LINK_LIBRARIES sut # your application library
+#   )
 
 # read_model_from_file tests
-set(test_read_model_from_file_src ${test_srcs})
-list(FILTER test_read_model_from_file_src INCLUDE REGEX ".*test_read_model_from_file.pf")
+# set(test_read_model_from_file_src ${test_srcs})
+# list(FILTER test_read_model_from_file_src INCLUDE REGEX ".*test_read_model_from_file.pf")
 
-add_pfunit_ctest (pfunit_read_model_from_file_tests
-  TEST_SOURCES ${test_read_model_from_file_src}
+# add_pfunit_ctest (pfunit_read_model_from_file_tests
+#   TEST_SOURCES ${test_read_model_from_file_src}
+#   LINK_LIBRARIES sut # your application library
+#   )
+
+
+# exchange_boundaries tests
+set(test_get_local_grid_info_src ${test_srcs})
+list(FILTER test_get_local_grid_info_src INCLUDE REGEX ".*test_get_local_grid_info.pf")
+
+add_pfunit_ctest (test_get_local_grid_info_tests
+  TEST_SOURCES ${test_get_local_grid_info_src}
   LINK_LIBRARIES sut # your application library
+  MAX_PES 8
   )

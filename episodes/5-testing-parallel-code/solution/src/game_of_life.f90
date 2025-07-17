@@ -7,7 +7,8 @@
 program game_of_life
     ! allow(C121)
     use mpi
-    use game_of_life_mod, only : evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, getLocalGridInfo
+    use game_of_life_mod, only : &
+        evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, get_local_grid_info
     implicit none
 
     !! Board args
@@ -92,18 +93,8 @@ program game_of_life
     periods = [ .false., .false. ]
     call MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, .true., cart_comm, ierr)
 
-    num_ranks_y = dims(1)
-    num_ranks_x = dims(2)
-
-    ! Shared local domain sizes
-    ny_per_rank = global_ny / num_ranks_y
-    nx_per_rank = global_nx / num_ranks_x
-
-    call getLocalGridInfo(cart_comm, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, y_start, &
+    call get_local_grid_info(cart_comm, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, y_start, &
                           x_start, local_ny, local_nx)
-
-    if (rank == 0) write(*,*) rank, "Ranks,", num_ranks_x, num_ranks_y, ny_per_rank, nx_per_rank, "grid values,", coords, ",", &
-        neighbours, ",", y_start, ",", x_start, ",", local_ny, ",", local_nx
 
     allocate(local_current(local_nx+2, local_ny+2))
     allocate(local_new(local_nx+2, local_ny+2))
@@ -113,7 +104,7 @@ program game_of_life
     ! Scatter global board
     if (rank == 0) then
         do i = 1, nprocs - 1
-            call getLocalGridInfo(cart_comm, i, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords_i, neighbours_i, &
+            call get_local_grid_info(cart_comm, i, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords_i, neighbours_i, &
                 y_start_i, x_start_i, local_ny_i, local_nx_i)
 
             call MPI_Send(global_board(x_start_i:x_start_i+local_nx_i-1, y_start_i:y_start_i+local_ny_i-1), &

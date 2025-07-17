@@ -8,17 +8,20 @@ module game_of_life_mod
 
 contains
 
-    subroutine getLocalGridInfo(communicator, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, &
+    subroutine get_local_grid_info(communicator, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, &
                                 y_start, x_start, local_ny, local_nx)
         integer, intent(in) :: communicator
-        integer, intent(in) :: rank, dims(2), global_ny, global_nx,ny_per_rank, nx_per_rank
-        integer, intent(out) :: coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
+        integer, intent(in) :: rank, dims(2), global_ny, global_nx
+        integer, intent(out) :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
 
         integer :: mpierr, num_ranks_y, num_ranks_x
 
         call MPI_Cart_coords(communicator, rank, 2, coords, mpierr)
         call MPI_Cart_shift(communicator, 0, 1, neighbours(1), neighbours(3), mpierr)
         call MPI_Cart_shift(communicator, 1, 1, neighbours(2), neighbours(4), mpierr)
+
+        ny_per_rank = global_ny / dims(1)
+        nx_per_rank = global_nx / dims(2)
 
         y_start = coords(1)*ny_per_rank + 1
         x_start = coords(2)*nx_per_rank + 1
@@ -31,7 +34,7 @@ contains
         local_nx = nx_per_rank
         if (neighbours(3) == MPI_PROC_NULL) local_ny = local_ny + modulo(global_ny, ny_per_rank)
         if (neighbours(4) == MPI_PROC_NULL) local_nx = local_nx + modulo(global_nx, nx_per_rank)
-    end subroutine getLocalGridInfo
+    end subroutine get_local_grid_info
 
     subroutine exchange_boundaries(board, local_nx, local_ny, cart_comm, neighbours)
         implicit none

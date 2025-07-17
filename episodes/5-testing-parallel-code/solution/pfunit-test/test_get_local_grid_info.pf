@@ -1,0 +1,193 @@
+!> Module for testing the subroutine game_of_life::get_local_grid_info
+module test_get_local_grid_info
+    use game_of_life_mod, only : get_local_grid_info
+    use pfunit
+    implicit none
+
+    !> Type to bundle inputs and expected outputs of game_of_life::get_local_grid_info
+    @testParameter!(constructor=newParams)
+    type, extends(MPITestParameter) :: get_local_grid_info_test_params
+        integer :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
+    contains
+        procedure :: toString => get_local_grid_info_test_params_toString
+    end type get_local_grid_info_test_params
+
+    !> Type to define a single get_local_grid_info test case
+    @TestCase(testParameters={getColumnOnlyParameters()}, constructor=newTest)
+    type, extends(MPITestCase) :: get_local_grid_info_column_only_test_case
+        type(get_local_grid_info_test_params) :: params
+        integer :: dims(2), cart_comm, global_ny, global_nx
+    contains
+        procedure :: setUp
+    end type get_local_grid_info_column_only_test_case
+
+contains
+
+    subroutine setUp(this)
+        class(get_local_grid_info_column_only_test_case), intent(inout) :: this
+
+        integer :: ierr
+
+        this%dims = 0
+        call MPI_Dims_create(this%getNumProcesses(), 2, this%dims, ierr) 
+        call MPI_Cart_create(this%getMpiCommunicator(), 2, this%dims, [.false.,.false.], .true., this%cart_comm, ierr)
+
+        this%global_ny = 31
+        this%global_nx = 31
+    end subroutine setUp
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Test Suites
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Test suite for the game_of_life::get_local_grid_info subroutine
+    function getColumnOnlyParameters() result(params)
+        type(get_local_grid_info_test_params), allocatable :: params(:)
+
+        integer :: num_ranks, rank, max_num_ranks, ierr
+        integer :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
+         
+
+        allocate(params(4))
+        
+        call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+
+        ! One rank
+        ny_per_rank = 31
+        nx_per_rank = 31
+        coords = [0,0]
+        neighbours = -2
+        y_start = 1
+        x_start = 1
+        local_ny = 31
+        local_nx = 31
+        params(1) = get_local_grid_info_test_params(1, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+        
+        ! Two Ranks
+        ny_per_rank = 15
+        nx_per_rank = 31
+        x_start = 1
+        local_nx = 31
+        if (rank == 0) then
+            coords = [0,0]
+            neighbours = [-2,-2,1,-2]
+            y_start = 1
+            local_ny = 15
+        else if (rank == 1) then
+            coords = [1,0]
+            neighbours = [0,-2,-2,-2]
+            y_start = 16
+            local_ny = 16
+        end if
+        params(2) = get_local_grid_info_test_params(2, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+
+        ! Three Ranks 
+        ny_per_rank = 10
+        nx_per_rank = 31
+        x_start = 1
+        local_nx = 31
+        if (rank == 0) then
+            coords = [0,0]
+            neighbours = [-2,-2,1,-2]
+            y_start = 1
+            local_ny = 10
+        else if (rank == 1) then
+            coords = [1,0]
+            neighbours = [0,-2,2,-2]
+            y_start = 11
+            local_ny = 10
+        else if (rank == 2) then
+            coords = [2,0]
+            neighbours = [1,-2,-2,-2]
+            y_start = 21
+            local_ny = 11
+        end if
+        params(3) = get_local_grid_info_test_params(3, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+
+        ! Four Ranks 
+        ny_per_rank = 15
+        nx_per_rank = 15
+        if (rank == 0) then
+            coords = [0,0]
+            neighbours = [-2,-2,2,1]
+            y_start = 1
+            x_start = 1
+            local_ny = 15
+            local_nx = 15
+        else if (rank == 1) then
+            coords = [0,1]
+            neighbours = [-2,0,3,-2]
+            y_start = 1
+            x_start = 16
+            local_ny = 15
+            local_nx = 16
+        else if (rank == 2) then
+            coords = [1,0]
+            neighbours = [0,-2,-2,3]
+            y_start = 16
+            x_start = 1
+            local_ny = 16
+            local_nx = 15
+        else if (rank == 3) then
+            coords = [1,1]
+            neighbours = [1,2,-2,-2]
+            y_start = 16
+            x_start = 16
+            local_ny = 16
+            local_nx = 16
+        end if
+        params(4) = get_local_grid_info_test_params(4, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+
+    end function getColumnOnlyParameters
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Assertion functions
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Check for the expected output of the game_of_life::get_local_grid_info subroutine
+    @Test
+    subroutine TestGetLocalGridInfoColumnOnly(this)
+        class(get_local_grid_info_column_only_test_case), intent(inout) :: this
+
+        integer :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
+        
+        call get_local_grid_info(this%cart_comm, this%getProcessRank(), this%dims, this%global_ny, this%global_nx, &
+            ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+        
+        @assertEqual(this%params%ny_per_rank, ny_per_rank, "Unexpected value for ny_per_rank")
+        @assertEqual(this%params%nx_per_rank, nx_per_rank, "Unexpected value for nx_per_rank")
+        @assertEqual(this%params%coords, coords, "Unexpected value for coords")
+        @assertEqual(this%params%neighbours, neighbours, "Unexpected value for neighbours")
+        @assertEqual(this%params%y_start, y_start, "Unexpected value for y_start")
+        @assertEqual(this%params%x_start, x_start, "Unexpected value for x_start")
+        @assertEqual(this%params%local_ny, local_ny, "Unexpected value for local_ny")
+        @assertEqual(this%params%local_nx, local_nx, "Unexpected value for local_nx")
+    end subroutine TestGetLocalGridInfoColumnOnly
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    function newTest(testParameter) result(tst)
+        type(get_local_grid_info_column_only_test_case) :: tst
+        type(get_local_grid_info_test_params), intent(in) :: testParameter
+
+        tst%params%ny_per_rank = testParameter%ny_per_rank
+        tst%params%nx_per_rank = testParameter%nx_per_rank
+        tst%params%coords = testParameter%coords
+        tst%params%neighbours = testParameter%neighbours
+        tst%params%local_nx = testParameter%local_nx
+        tst%params%local_ny = testParameter%local_ny
+        tst%params%y_start = testParameter%y_start
+        tst%params%x_start = testParameter%x_start
+    end function newTest
+
+    function get_local_grid_info_test_params_toString(this) result(string)
+        class(get_local_grid_info_test_params), intent(in) :: this
+        character(:), allocatable :: string
+
+        character(len=80) :: buffer
+
+        string = "test get_local_grid_info"
+    end function get_local_grid_info_test_params_toString
+end module test_get_local_grid_info
