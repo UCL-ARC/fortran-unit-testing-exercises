@@ -13,13 +13,23 @@ list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*main.f90")
 
 # Create library for src code
 add_library (sut STATIC ${PROJ_SRC_FILES_EXEC_MAIN})
-target_link_libraries(sut MPI::MPI_Fortran OpenMP::OpenMP_Fortran)
+
+set(TO_LINK_TO_SRC MPI::MPI_Fortran)
+list(APPEND TO_LINK_TO_SRC OpenMP::OpenMP_Fortran)
+if(OpenMP_Fortran_FOUND)
+endif()
+
+target_link_libraries(sut "${TO_LINK_TO_SRC}")
 
 # List all  test files
 file(GLOB
   test_srcs
   "${PROJECT_SOURCE_DIR}/pfunit-test/*.pf"
 )
+
+#########################
+# Serial tests
+#########################
 
 # evolve_board tests
 set(test_evolve_board_src ${test_srcs})

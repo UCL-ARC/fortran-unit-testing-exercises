@@ -96,7 +96,7 @@ contains
         !> The board into which the new state will be stored after this iteration
         integer, dimension(:,:), allocatable, intent(inout) :: new_board
 
-        integer :: nx, ny, x, y, sum, num_threads, thread_id
+        integer :: nx, ny, x, y, sum
 
         nx = size(current_board, 1)
         ny = size(current_board, 2)

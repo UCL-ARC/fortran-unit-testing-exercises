@@ -129,8 +129,6 @@ contains
         allocate(actual_board(size(this%params%input_board, 1), size(this%params%input_board, 2)))
         actual_board = this%params%input_board
 
-        write(*,*) "Hello from TestExchangeBoundaries"
-
         call exchange_boundaries(actual_board, this%params%local_ny, this%params%local_nx, this%cart_comm, this%params%neighbours)
 
         @assertEqual(this%params%expected_output_board, actual_board, "Unexpected output_board")
