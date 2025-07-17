@@ -128,8 +128,8 @@ program game_of_life
         call exchange_boundaries(local_current, nx_per_rank, ny_per_rank, cart_comm, neighbours)
 
         ! Evolution
-        call evolve_board(local_current, local_new, local_nx, local_ny)
-        call check_for_steady_state(local_current, local_new, local_steady, local_nx, local_ny)
+        call evolve_board(local_current, local_new)
+        call check_for_steady_state(local_current, local_new, local_steady)
 
         call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, cart_comm, ierr)
         local_steady = global_steady

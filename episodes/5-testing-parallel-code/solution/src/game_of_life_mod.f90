@@ -90,21 +90,20 @@ contains
     end subroutine exchange_boundaries
 
     !> Evolve the board into the state of the next iteration
-    subroutine evolve_board(current_board, new_board, nx, ny)
+    subroutine evolve_board(current_board, new_board)
         !> The board as it currently is before this iteration
         integer, dimension(:,:), allocatable, intent(in) :: current_board
         !> The board into which the new state will be stored after this iteration
         integer, dimension(:,:), allocatable, intent(inout) :: new_board
-        !> The number of x elements over which to evolve the board
-        integer, intent(in) :: nx
-        !> The number of yumn elements over which to evolve the board
-        integer, intent(in) :: ny
 
-        integer :: x, y, sum, num_threads, thread_id
+        integer :: nx, ny, x, y, sum, num_threads, thread_id
+
+        nx = size(current_board, 1)
+        ny = size(current_board, 2)
 
         !$omp parallel do default(none) private(x, y, sum) shared(nx, ny, current_board, new_board)
-        do y=2, ny+1
-            do x=2, nx+1
+        do y = 2, ny-1
+            do x = 2, nx-1
 
                 sum = 0
                 sum = current_board(x, y-1)   &
@@ -130,24 +129,23 @@ contains
     end subroutine evolve_board
 
     !> Check if we have reached steady state, i.e. current and new board match
-    subroutine check_for_steady_state(current_board, new_board, steady_state, nx, ny)
+    subroutine check_for_steady_state(current_board, new_board, steady_state)
         !> The board as it currently is before this iteration
         integer, dimension(:,:), intent(in) :: current_board
         !> The board into which the new state has been stored after this iteration
         integer, dimension(:,:), intent(in) :: new_board
         !> Logical to indicate whether current and new board match
         logical, intent(out) :: steady_state
-        !> The number of x elements over which to check for steady state
-        integer, intent(in) :: nx
-        !> The number of yumn elements over which to check for steady state
-        integer, intent(in) :: ny
 
-        integer :: x, y
+        integer :: nx, ny, x, y
+
+        nx = size(current_board, 1)
+        ny = size(current_board, 2)
 
         steady_state = .true.
         !$omp parallel do reduction(.and.: steady_state)
-        do x = 2, nx+1
-        do y = 2, ny+1
+        do y = 2, ny-1
+            do x = 2, nx-1
                 if (current_board(x, y) /= new_board(x, y)) then
                     steady_state = .false.
                 end if
