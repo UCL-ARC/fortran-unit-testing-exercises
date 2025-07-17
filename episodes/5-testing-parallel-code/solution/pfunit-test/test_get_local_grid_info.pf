@@ -8,8 +8,6 @@ module test_get_local_grid_info
     @testParameter!(constructor=newParams)
     type, extends(MPITestParameter) :: get_local_grid_info_test_params
         integer :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
-    contains
-        procedure :: toString => get_local_grid_info_test_params_toString
     end type get_local_grid_info_test_params
 
     !> Type to define a single get_local_grid_info test case
@@ -174,13 +172,4 @@ contains
 
         tst%params = testParameter
     end function newTest
-
-    function get_local_grid_info_test_params_toString(this) result(string)
-        class(get_local_grid_info_test_params), intent(in) :: this
-        character(:), allocatable :: string
-
-        character(len=80) :: buffer
-
-        string = "test get_local_grid_info"
-    end function get_local_grid_info_test_params_toString
 end module test_get_local_grid_info
