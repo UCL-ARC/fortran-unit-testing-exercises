@@ -25,7 +25,7 @@ endif()
 
 target_link_libraries("${PROJECT_NAME}" "${TO_LINK_TO_SRC}")
 
-# enable_testing()
+enable_testing()
 
 #--------------------------------------#
 #               veggies                #
@@ -40,4 +40,4 @@ target_link_libraries("${PROJECT_NAME}" "${TO_LINK_TO_SRC}")
 #--------------------------------------#
 #               pFUnit                 #
 #--------------------------------------#
-# add_subdirectory("pfunit-test")
+add_subdirectory("pfunit-test")
