@@ -36,7 +36,7 @@ contains
         if (neighbours(4) == MPI_PROC_NULL) local_nx = local_nx + modulo(global_nx, nx_per_rank)
     end subroutine get_local_grid_info
 
-    subroutine exchange_boundaries(board, local_nx, local_ny, cart_comm, neighbours)
+    subroutine exchange_boundaries(board, local_ny, local_nx, cart_comm, neighbours)
         implicit none
         !> The number of xs in the local board
         integer, intent(in) :: local_nx

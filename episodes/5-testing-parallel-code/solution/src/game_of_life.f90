@@ -125,7 +125,7 @@ program game_of_life
 
     do while (.not. local_steady .and. generation_number < max_generations)
         ! Exchange ghost cells with neighbors
-        call exchange_boundaries(local_current, nx_per_rank, ny_per_rank, cart_comm, neighbours)
+        call exchange_boundaries(local_current, ny_per_rank, nx_per_rank, cart_comm, neighbours)
 
         ! Evolution
         call evolve_board(local_current, local_new)

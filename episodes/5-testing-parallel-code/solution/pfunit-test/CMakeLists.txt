@@ -61,3 +61,13 @@ add_pfunit_ctest (test_get_local_grid_info_tests
   LINK_LIBRARIES sut # your application library
   MAX_PES 8
   )
+
+# exchange_boundaries tests
+set(test_exchange_boundaries_src ${test_srcs})
+list(FILTER test_exchange_boundaries_src INCLUDE REGEX ".*test_exchange_boundaries.pf")
+
+add_pfunit_ctest (test_exchange_boundaries_tests
+  TEST_SOURCES ${test_exchange_boundaries_src}
+  LINK_LIBRARIES sut # your application library
+  MAX_PES 8
+  )
