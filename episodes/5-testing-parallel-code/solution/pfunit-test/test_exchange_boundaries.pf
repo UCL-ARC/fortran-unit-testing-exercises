@@ -9,8 +9,6 @@ module test_exchange_boundaries
     type, extends(MPITestParameter) :: exchange_boundaries_test_params
         integer, dimension(:,:), allocatable :: input_board, expected_output_board
         integer :: local_ny, local_nx, neighbours(4)
-    contains
-        procedure :: toString => exchange_boundaries_test_params_toString
     end type exchange_boundaries_test_params
 
     !> Type to define a single exchange_boundaries test case
@@ -150,11 +148,4 @@ contains
 
         tst%params = testParameter
     end function newTest
-
-    function exchange_boundaries_test_params_toString(this) result(string)
-        class(exchange_boundaries_test_params), intent(in) :: this
-        character(:), allocatable :: string
-
-        string = "test exchange_boundaries"
-    end function exchange_boundaries_test_params_toString
 end module test_exchange_boundaries
