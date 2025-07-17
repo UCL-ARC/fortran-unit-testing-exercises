@@ -13,7 +13,7 @@ module test_get_local_grid_info
     end type get_local_grid_info_test_params
 
     !> Type to define a single get_local_grid_info test case
-    @TestCase(testParameters={getColumnOnlyParameters()}, constructor=newTest)
+    @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(MPITestCase) :: get_local_grid_info_column_only_test_case
         type(get_local_grid_info_test_params) :: params
         integer :: dims(2), cart_comm, global_ny, global_nx
@@ -41,10 +41,10 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Test suite for the game_of_life::get_local_grid_info subroutine
-    function getColumnOnlyParameters() result(params)
+    function getParameters() result(params)
         type(get_local_grid_info_test_params), allocatable :: params(:)
 
-        integer :: num_ranks, rank, max_num_ranks, ierr
+        integer :: rank, ierr
         integer :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
          
 
@@ -138,7 +138,7 @@ contains
         end if
         params(4) = get_local_grid_info_test_params(4, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
 
-    end function getColumnOnlyParameters
+    end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Assertion functions
@@ -146,7 +146,7 @@ contains
 
     !> Check for the expected output of the game_of_life::get_local_grid_info subroutine
     @Test
-    subroutine TestGetLocalGridInfoColumnOnly(this)
+    subroutine TestGetLocalGridInfo(this)
         class(get_local_grid_info_column_only_test_case), intent(inout) :: this
 
         integer :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
@@ -162,7 +162,7 @@ contains
         @assertEqual(this%params%x_start, x_start, "Unexpected value for x_start")
         @assertEqual(this%params%local_ny, local_ny, "Unexpected value for local_ny")
         @assertEqual(this%params%local_nx, local_nx, "Unexpected value for local_nx")
-    end subroutine TestGetLocalGridInfoColumnOnly
+    end subroutine TestGetLocalGridInfo
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Contructors
@@ -172,14 +172,7 @@ contains
         type(get_local_grid_info_column_only_test_case) :: tst
         type(get_local_grid_info_test_params), intent(in) :: testParameter
 
-        tst%params%ny_per_rank = testParameter%ny_per_rank
-        tst%params%nx_per_rank = testParameter%nx_per_rank
-        tst%params%coords = testParameter%coords
-        tst%params%neighbours = testParameter%neighbours
-        tst%params%local_nx = testParameter%local_nx
-        tst%params%local_ny = testParameter%local_ny
-        tst%params%y_start = testParameter%y_start
-        tst%params%x_start = testParameter%x_start
+        tst%params = testParameter
     end function newTest
 
     function get_local_grid_info_test_params_toString(this) result(string)
