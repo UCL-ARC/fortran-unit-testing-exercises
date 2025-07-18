@@ -8,7 +8,7 @@ program game_of_life
     ! allow(C121)
     use mpi
     use game_of_life_mod, only : &
-        evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, get_local_grid_info
+        evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, get_local_grid_info, DomainDecomposition
     implicit none
 
     !! Board args
@@ -30,9 +30,9 @@ program game_of_life
 
     !! MPI args
     integer :: ierr, rank, nprocs
-    integer :: dims(2), coords(2), cart_comm
-    integer :: neighbours(4)
+    integer :: dims(2), coords(2)
     logical :: periods(2), error_found = .false.
+    type(DomainDecomposition) :: domainDecomp, domainDecomp_i
 
     !! MPI args for rank 0 only
     integer :: coords_i(2), neighbours_i(4), y_start_i, x_start_i, local_ny_i, local_nx_i
@@ -91,9 +91,10 @@ program game_of_life
     dims = 0
     call MPI_Dims_create(nprocs, 2, dims, ierr)   ! Automatically split into num_ranks_x x num_ranks_y grid
     periods = [ .false., .false. ]
-    call MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, .true., cart_comm, ierr)
+    call MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, .true., domainDecomp%communicator, ierr)
+    domainDecomp_i%communicator = domainDecomp%communicator
 
-    call get_local_grid_info(cart_comm, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, y_start, &
+    call get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, y_start, &
                           x_start, local_ny, local_nx)
 
     allocate(local_current(local_nx+2, local_ny+2))
@@ -104,7 +105,7 @@ program game_of_life
     ! Scatter global board
     if (rank == 0) then
         do i = 1, nprocs - 1
-            call get_local_grid_info(cart_comm, i, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords_i, neighbours_i, &
+            call get_local_grid_info(domainDecomp_i, i, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords_i, &
                 y_start_i, x_start_i, local_ny_i, local_nx_i)
 
             call MPI_Send(global_board(x_start_i:x_start_i+local_nx_i-1, y_start_i:y_start_i+local_ny_i-1), &
@@ -117,7 +118,7 @@ program game_of_life
                       0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE, ierr)
     endif
 
-    call MPI_Barrier(cart_comm, ierr)
+    call MPI_Barrier(domainDecomp%communicator, ierr)
     start_time = MPI_Wtime()
 
     generation_number = 0
@@ -125,13 +126,13 @@ program game_of_life
 
     do while (.not. local_steady .and. generation_number < max_generations)
         ! Exchange ghost cells with neighbors
-        call exchange_boundaries(local_current, ny_per_rank, nx_per_rank, cart_comm, neighbours)
+        call exchange_boundaries(local_current, ny_per_rank, nx_per_rank, domainDecomp)
 
         ! Evolution
         call evolve_board(local_current, local_new)
         call check_for_steady_state(local_current, local_new, local_steady)
 
-        call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, cart_comm, ierr)
+        call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, domainDecomp%communicator, ierr)
         local_steady = global_steady
 
         local_current(2:local_nx+1, 2:local_ny+1) = local_new(2:local_nx+1, 2:local_ny+1)
