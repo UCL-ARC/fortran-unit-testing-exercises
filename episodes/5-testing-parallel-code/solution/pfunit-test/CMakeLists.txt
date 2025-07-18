@@ -66,18 +66,18 @@ add_pfunit_ctest (pfunit_read_model_from_file_tests
 set(test_get_local_grid_info_src ${test_srcs})
 list(FILTER test_get_local_grid_info_src INCLUDE REGEX ".*test_get_local_grid_info.pf")
 
-add_pfunit_ctest (test_get_local_grid_info_tests
+add_pfunit_ctest (pfunit_get_local_grid_info_tests
   TEST_SOURCES ${test_get_local_grid_info_src}
   LINK_LIBRARIES sut # your application library
-  MAX_PES 8
+  MAX_PES 4
   )
 
 # exchange_boundaries tests
 set(test_exchange_boundaries_src ${test_srcs})
 list(FILTER test_exchange_boundaries_src INCLUDE REGEX ".*test_exchange_boundaries.pf")
 
-add_pfunit_ctest (test_exchange_boundaries_tests
+add_pfunit_ctest (pfunit_exchange_boundaries_tests
   TEST_SOURCES ${test_exchange_boundaries_src}
   LINK_LIBRARIES sut # your application library
-  MAX_PES 8
+  MAX_PES 4
   )

@@ -6,19 +6,29 @@ module game_of_life_mod
 
     public
 
+    ! Make UP, DOWN, LEFT, RIGHT parameters to define neighbour directions
+    integer, parameter :: DOWN=1, LEFT=2, UP=3, RIGHT=4
+
+    type :: DomainDecomposition
+        !> The ID of the communicator for this domain
+        integer :: communicator
+        !> The ranks of the neighbouring ranks - [down, left, up, right]
+        integer :: neighbours(4)
+    end type DomainDecomposition
+
 contains
 
-    subroutine get_local_grid_info(communicator, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, neighbours, &
+    subroutine get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
                                 y_start, x_start, local_ny, local_nx)
-        integer, intent(in) :: communicator
+        type(DomainDecomposition), intent(inout) :: domainDecomp
         integer, intent(in) :: rank, dims(2), global_ny, global_nx
-        integer, intent(out) :: ny_per_rank, nx_per_rank, coords(2), neighbours(4), y_start, x_start, local_ny, local_nx
+        integer, intent(out) :: ny_per_rank, nx_per_rank, coords(2), y_start, x_start, local_ny, local_nx
 
         integer :: mpierr, num_ranks_y, num_ranks_x
 
-        call MPI_Cart_coords(communicator, rank, 2, coords, mpierr)
-        call MPI_Cart_shift(communicator, 0, 1, neighbours(1), neighbours(3), mpierr)
-        call MPI_Cart_shift(communicator, 1, 1, neighbours(2), neighbours(4), mpierr)
+        call MPI_Cart_coords(domainDecomp%communicator, rank, 2, coords, mpierr)
+        call MPI_Cart_shift(domainDecomp%communicator, 0, 1, domainDecomp%neighbours(DOWN), domainDecomp%neighbours(UP), mpierr)
+        call MPI_Cart_shift(domainDecomp%communicator, 1, 1, domainDecomp%neighbours(LEFT), domainDecomp%neighbours(RIGHT), mpierr)
 
         ny_per_rank = global_ny / dims(1)
         nx_per_rank = global_nx / dims(2)
@@ -32,60 +42,62 @@ contains
         ! Add remainders if on the top or right of the grid
         local_ny = ny_per_rank
         local_nx = nx_per_rank
-        if (neighbours(3) == MPI_PROC_NULL) local_ny = local_ny + modulo(global_ny, ny_per_rank)
-        if (neighbours(4) == MPI_PROC_NULL) local_nx = local_nx + modulo(global_nx, nx_per_rank)
+        if (domainDecomp%neighbours(UP) == MPI_PROC_NULL) local_ny = local_ny + modulo(global_ny, ny_per_rank)
+        if (domainDecomp%neighbours(RIGHT) == MPI_PROC_NULL) local_nx = local_nx + modulo(global_nx, nx_per_rank)
     end subroutine get_local_grid_info
 
-    subroutine exchange_boundaries(board, local_ny, local_nx, cart_comm, neighbours)
+    ! Wrap comm and neighbours in decompostiotion type
+    subroutine exchange_boundaries(board, local_ny, local_nx, domainDecomp)
         implicit none
         !> The number of xs in the local board
         integer, intent(in) :: local_nx
         !> The number of yumns in the local board
         integer, intent(in) :: local_ny
         !> The ID of the cartesian communicator containing the ranks
-        integer, intent(in) :: cart_comm
-        !> The current ranks neighbor to the north
-        integer, intent(in) :: neighbours(4)
+        type(DomainDecomposition), intent(in) :: domainDecomp
         !> The board to be exchanged
         integer, dimension(:,:), intent(inout) :: board
 
         integer :: ierr, rank, mpi_req
 
-        call MPI_Comm_rank(cart_comm, rank, ierr)
-
         ! Vertical exchange
-        if (neighbours(3) >= 0) then
-            ! Send top x north
-            call MPI_ISEND(board(2:local_nx+1,local_ny+1), local_nx, MPI_INTEGER, neighbours(3), 0, cart_comm, mpi_req, ierr)
+        if (domainDecomp%neighbours(UP) >= 0) then
+            ! Send top halo up
+            call MPI_ISEND(board(2:local_nx+1,local_ny+1), local_nx, MPI_INTEGER, domainDecomp%neighbours(UP), 0, &
+                domainDecomp%communicator, mpi_req, ierr)
 
-            ! Receive top x from the north
-            CALL MPI_RECV( &
-                board(2:local_nx+1,local_ny+2), local_nx, MPI_INTEGER, neighbours(3), 1, cart_comm, MPI_STATUS_IGNORE, ierr)
+            ! Receive top halo from the above rank
+            CALL MPI_RECV(board(2:local_nx+1,local_ny+2), local_nx, MPI_INTEGER, domainDecomp%neighbours(UP), 1, &
+                domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
-        if (neighbours(1) >= 0) then
-            ! Send the bottom x south
-            call MPI_ISEND(board(2:local_nx+1,2), local_nx, MPI_INTEGER, neighbours(1), 1, cart_comm, mpi_req, ierr)
+        if (domainDecomp%neighbours(DOWN) >= 0) then
+            ! Send the bottom halo down
+            call MPI_ISEND(board(2:local_nx+1,2), local_nx, MPI_INTEGER, domainDecomp%neighbours(DOWN), 1, &
+                domainDecomp%communicator, mpi_req, ierr)
 
-            ! Receive the bottom x from the south
-            CALL MPI_RECV( &
-                board(2:local_nx+1,1), local_nx, MPI_INTEGER, neighbours(1), 0, cart_comm, MPI_STATUS_IGNORE, ierr)
+            ! Receive the bottom halo from the below rank
+            CALL MPI_RECV(board(2:local_nx+1,1), local_nx, MPI_INTEGER, domainDecomp%neighbours(DOWN), 0, &
+                domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
 
         ! Horizontal exchange
-        if (neighbours(2) >= 0) then
-            ! Send the left to the west
-            call MPI_ISEND(board(2,2:local_ny+1), local_ny, MPI_INTEGER, neighbours(2), 2, cart_comm, mpi_req, ierr)
+        if (domainDecomp%neighbours(LEFT) >= 0) then
+            ! Send the left halo left
+            call MPI_ISEND(board(2,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(LEFT), 2, &
+                domainDecomp%communicator, mpi_req, ierr)
 
-            ! Receive the left from the west
-            CALL MPI_RECV(board(1,2:local_ny+1), local_ny, MPI_INTEGER, neighbours(2), 3, cart_comm, MPI_STATUS_IGNORE, ierr)
+            ! Receive the left halo from the left
+            CALL MPI_RECV(board(1,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(LEFT), 3, &
+                domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
-        if (neighbours(4) >= 0) then
-            ! Send the right east
-            call MPI_ISEND(board(local_nx+1,2:local_ny+1), local_ny, MPI_INTEGER, neighbours(4), 3, cart_comm, mpi_req, ierr)
+        if (domainDecomp%neighbours(RIGHT) >= 0) then
+            ! Send the right halo right
+            call MPI_ISEND(board(local_nx+1,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 3, &
+                domainDecomp%communicator, mpi_req, ierr)
 
-            ! Receive the right from the east
-            CALL MPI_RECV( &
-                board(local_nx+2,2:local_ny+1), local_ny, MPI_INTEGER, neighbours(4), 2, cart_comm, MPI_STATUS_IGNORE, ierr)
+            ! Receive the right halo from the right
+            CALL MPI_RECV(board(local_nx+2,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 2, &
+                domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
     end subroutine exchange_boundaries
 
