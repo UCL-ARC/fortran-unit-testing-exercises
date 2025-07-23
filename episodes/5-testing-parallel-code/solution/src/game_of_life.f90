@@ -7,15 +7,15 @@
 program game_of_life
     ! allow(C121)
     use mpi
-    use game_of_life_mod, only : &
-        evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, get_local_grid_info, DomainDecomposition
+    use game_of_life_mod, only : evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, &
+        get_local_grid_info, DomainDecomposition, find_steady_state
     implicit none
 
     !! Board args
-    integer, parameter :: max_nx = 50000, max_ny = 50000, max_generations = 100
-    integer :: generation_number, local_nx, local_ny, global_nx, global_ny, nx_per_rank, ny_per_rank
-    integer, dimension(:,:), allocatable :: global_board, local_current, local_new
-    logical :: local_steady = .false., global_steady = .false.
+    integer, parameter :: max_nx = 50000, max_ny = 50000
+    integer :: generation_number, global_nx, global_ny
+    integer, dimension(:,:), allocatable :: global_board
+    logical :: local_steady = .false.
 
     !! CLI args
     integer :: argl
@@ -23,22 +23,10 @@ program game_of_life
 
     !! IO args
     character(len=:), allocatable :: io_error_message
-    integer :: num_ranks_x, num_ranks_y, x_start, y_start, x_end, y_end
-
-    !! Timing
-    real :: start_time, end_time
 
     !! MPI args
     integer :: ierr, rank, nprocs
-    integer :: dims(2), coords(2)
-    logical :: periods(2), error_found = .false.
-    type(DomainDecomposition) :: domainDecomp, domainDecomp_i
-
-    !! MPI args for rank 0 only
-    integer :: coords_i(2), neighbours_i(4), y_start_i, x_start_i, local_ny_i, local_nx_i
-
-    !! Misc
-    integer :: i, j
+    logical :: error_found = .false.
 
     ! MPI Init
     call MPI_Init(ierr)
@@ -87,68 +75,7 @@ program game_of_life
     call MPI_Bcast(global_nx, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
     call MPI_Bcast(global_ny, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
 
-    ! Create 2D Cartesian topology
-    dims = 0
-    call MPI_Dims_create(nprocs, 2, dims, ierr)   ! Automatically split into num_ranks_x x num_ranks_y grid
-    periods = [ .false., .false. ]
-    call MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, .true., domainDecomp%communicator, ierr)
-    domainDecomp_i%communicator = domainDecomp%communicator
-
-    call get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, y_start, &
-                          x_start, local_ny, local_nx)
-
-    allocate(local_current(local_nx+2, local_ny+2))
-    allocate(local_new(local_nx+2, local_ny+2))
-    local_current = 0
-    local_new = 0
-
-    ! Scatter global board
-    if (rank == 0) then
-        do i = 1, nprocs - 1
-            call get_local_grid_info(domainDecomp_i, i, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords_i, &
-                y_start_i, x_start_i, local_ny_i, local_nx_i)
-
-            call MPI_Send(global_board(x_start_i:x_start_i+local_nx_i-1, y_start_i:y_start_i+local_ny_i-1), &
-                local_nx_i*local_ny_i, MPI_INTEGER, i, 0, MPI_COMM_WORLD, ierr)
-        end do
-
-        local_current(2:local_nx+1, 2:local_ny+1) = global_board(1:local_nx, 1:local_ny)
-    else
-        call MPI_Recv(local_current(2:local_nx+1, 2:local_ny+1), local_nx*local_ny, MPI_INTEGER, &
-                      0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE, ierr)
-    endif
-
-    call MPI_Barrier(domainDecomp%communicator, ierr)
-    start_time = MPI_Wtime()
-
-    generation_number = 0
-    local_steady = .false.
-
-    do while (.not. local_steady .and. generation_number < max_generations)
-        ! Exchange ghost cells with neighbors
-        call exchange_boundaries(local_current, ny_per_rank, nx_per_rank, domainDecomp)
-
-        ! Evolution
-        call evolve_board(local_current, local_new)
-        call check_for_steady_state(local_current, local_new, local_steady)
-
-        call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, domainDecomp%communicator, ierr)
-        local_steady = global_steady
-
-        local_current(2:local_nx+1, 2:local_ny+1) = local_new(2:local_nx+1, 2:local_ny+1)
-
-        generation_number = generation_number + 1
-    end do
-
-    end_time = MPI_Wtime()
-
-    if (rank == 0) then
-        if (local_steady) then
-            print *, "Reached steady state after ", generation_number, " generations. Time: ", end_time - start_time
-        else
-            print *, "Did NOT reach steady state after ", generation_number, " generations. Time: ", end_time - start_time
-        end if
-    end if
+    call find_steady_state(local_steady, generation_number, MPI_COMM_WORLD, nprocs, global_board, global_ny, global_nx)
 
     call MPI_Finalize(ierr)
 end program game_of_life

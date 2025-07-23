@@ -18,6 +18,114 @@ module game_of_life_mod
 
 contains
 
+    subroutine find_steady_state(steady_state, generation_number, base_mpi_communicator, nprocs, global_board, global_ny, global_nx)
+        logical, intent(out) :: steady_state
+        integer, intent(out) :: generation_number
+        integer, dimension(:,:), allocatable, intent(inout) :: global_board
+        integer, intent(in) :: base_mpi_communicator, nprocs, global_ny, global_nx
+
+        !! Board args
+        integer, parameter :: max_generations = 100
+        integer :: local_nx, local_ny, nx_per_rank, ny_per_rank
+        integer, dimension(:,:), allocatable :: local_current, local_new
+        logical :: local_steady, global_steady
+        integer :: x_start, y_start, x_end, y_end
+
+        !! MPI args
+        integer :: ierr, rank, mpi_req
+        integer :: dims(2), coords(2)
+        logical :: periods(2)
+        type(DomainDecomposition) :: domainDecomp
+
+        !! MPI args for rank 0 only
+        integer :: coords_i(2), neighbours_i(4), y_start_i, x_start_i, local_ny_i, local_nx_i
+
+        !! Timing
+        real :: start_time, end_time
+
+        !! Misc
+        integer :: i, j
+
+        local_steady = .false.
+        global_steady = .false.
+
+
+        ! Create 2D Cartesian topology
+        dims = 0
+        call MPI_Dims_create(nprocs, 2, dims, ierr)   ! Automatically split into num_ranks_x x num_ranks_y grid
+        periods = [ .false., .false. ]
+        call MPI_Cart_create(base_mpi_communicator, 2, dims, periods, .true., domainDecomp%communicator, ierr)
+        call MPI_Comm_rank(domainDecomp%communicator, rank, ierr)
+
+        call get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, y_start, &
+                            x_start, local_ny, local_nx)
+
+        allocate(local_current(local_nx+2, local_ny+2))
+        allocate(local_new(local_nx+2, local_ny+2))
+        local_current = 0
+        local_new = 0
+
+        ! Scatter global board
+        if (rank == 0) then
+            do i = 1, nprocs - 1
+
+                call MPI_RECV(y_start_i, 1, MPI_INTEGER, i, i*100, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
+                call MPI_RECV(x_start_i, 1, MPI_INTEGER, i, i*100 + 1, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
+                call MPI_RECV(local_ny_i, 1, MPI_INTEGER, i, i*100 + 2, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
+                call MPI_RECV(local_nx_i, 1, MPI_INTEGER, i, i*100 + 3, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
+
+                write (*,*) "i", i, "starts", y_start_i, x_start_i, "locals", local_ny_i, local_nx_i
+
+                call MPI_Send(global_board(x_start_i:x_start_i+local_nx_i-1, y_start_i:y_start_i+local_ny_i-1), &
+                    local_nx_i*local_ny_i, MPI_INTEGER, i, i*100 + 4, domainDecomp%communicator, ierr)
+            end do
+
+            local_current(2:local_nx+1, 2:local_ny+1) = global_board(1:local_nx, 1:local_ny)
+        else
+            call MPI_ISEND(y_start, 1, MPI_INTEGER, 0, rank*100, domainDecomp%communicator, mpi_req, ierr)
+            call MPI_ISEND(x_start, 1, MPI_INTEGER, 0, rank*100 + 1, domainDecomp%communicator, mpi_req, ierr)
+            call MPI_ISEND(local_ny, 1, MPI_INTEGER, 0, rank*100 + 2, domainDecomp%communicator, mpi_req, ierr)
+            call MPI_ISEND(local_nx, 1, MPI_INTEGER, 0, rank*100 + 3, domainDecomp%communicator, mpi_req, ierr)
+
+            call MPI_Recv(local_current(2:local_nx+1, 2:local_ny+1), local_nx*local_ny, MPI_INTEGER, &
+                        0, rank*100 + 4, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
+        endif
+
+        local_new = local_current
+
+        call MPI_Barrier(domainDecomp%communicator, ierr)
+        start_time = MPI_Wtime()
+
+        generation_number = 0
+        local_steady = .false.
+
+        do while (.not. local_steady .and. generation_number < max_generations)
+            ! Exchange ghost cells with neighbors
+            call exchange_boundaries(local_current, local_ny, local_nx, domainDecomp)
+
+            ! Evolution
+            call evolve_board(local_current, local_new)
+            call check_for_steady_state(local_current, local_new, local_steady)
+
+            call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, domainDecomp%communicator, ierr)
+            local_steady = global_steady
+
+            local_current = local_new
+
+            generation_number = generation_number + 1
+        end do
+
+        end_time = MPI_Wtime()
+
+        if (rank == 0) then
+            if (local_steady) then
+                print *, "Reached steady state after ", generation_number, " generations. Time: ", end_time - start_time
+            else
+                print *, "Did NOT reach steady state after ", generation_number, " generations. Time: ", end_time - start_time
+            end if
+        end if
+    end subroutine find_steady_state
+
     subroutine get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
                                 y_start, x_start, local_ny, local_nx)
         type(DomainDecomposition), intent(inout) :: domainDecomp
@@ -27,6 +135,7 @@ contains
         integer :: mpierr, num_ranks_y, num_ranks_x
 
         call MPI_Cart_coords(domainDecomp%communicator, rank, 2, coords, mpierr)
+        ! This does not work if called by one rank to work out the neighbours of the other
         call MPI_Cart_shift(domainDecomp%communicator, 0, 1, domainDecomp%neighbours(DOWN), domainDecomp%neighbours(UP), mpierr)
         call MPI_Cart_shift(domainDecomp%communicator, 1, 1, domainDecomp%neighbours(LEFT), domainDecomp%neighbours(RIGHT), mpierr)
 
@@ -181,9 +290,9 @@ contains
 
         allocate(character(num_xs) :: output)
 
-        do x=1, num_xs
+        do y=1, num_ys
             output = ""
-            do y=1, num_ys
+            do x=1, num_xs
                 if (current_board(x,y) == 1) then
                     output = trim(output)//"#"
                 else

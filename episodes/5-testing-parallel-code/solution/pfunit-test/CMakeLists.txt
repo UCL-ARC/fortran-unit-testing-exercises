@@ -81,3 +81,17 @@ add_pfunit_ctest (pfunit_exchange_boundaries_tests
   LINK_LIBRARIES sut # your application library
   MAX_PES 4
   )
+
+# find_steady_state tests
+set(test_find_steady_state_src ${test_srcs})
+list(FILTER test_find_steady_state_src INCLUDE REGEX ".*test_find_steady_state.pf")
+
+add_pfunit_ctest (pfunit_find_steady_state_tests
+  TEST_SOURCES ${test_find_steady_state_src}
+  LINK_LIBRARIES sut # your application library
+  MAX_PES 8
+  )
+
+
+
+# Having a registry file <something>.inc with all of the test module names will reduce linking time and produce one executable. However may only produce one ctest.
