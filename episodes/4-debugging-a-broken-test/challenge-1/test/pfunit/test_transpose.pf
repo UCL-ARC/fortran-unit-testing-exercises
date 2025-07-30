@@ -1,0 +1,75 @@
+module test_transpose
+    use funit
+    use matrix_transforms, only : transpose
+    implicit none
+
+    public
+
+    @testParameter
+    type, extends(AbstractTestParameter) :: test_transpose_params
+        real, dimension(:,:), allocatable :: input_matrix
+        real, dimension(:,:), allocatable :: expected_output_matrix
+        character(len=100) :: description
+    contains
+        procedure :: toString => test_transpose_params_toString
+    end type test_transpose_params
+
+    @TestCase(testParameters={test_transpose_testsuite()}, constructor=newTest)
+    type, extends(ParameterizedTestCase) :: test_transpose_test_case
+        type(test_transpose_params) :: params
+    end type test_transpose_test_case
+
+contains
+
+    function test_transpose_testsuite() result(params)
+        type(test_transpose_params) :: params(2)
+
+        real, dimension(3,3) :: input_matrix, expected_output_matrix
+
+        input_matrix(1,:) = [1,0,0]
+        input_matrix(2,:) = [0,1,0]
+        input_matrix(3,:) = [0,0,1]
+
+        expected_output_matrix = input_matrix
+
+        params(1) = test_transpose_params(input_matrix, expected_output_matrix, "3x3 Identity")
+
+        input_matrix(1,:) = [1,4,0]
+        input_matrix(2,:) = [6,1,0]
+        input_matrix(3,:) = [0,3,1]
+
+        expected_output_matrix(1,:) = [1,6,0]
+        expected_output_matrix(2,:) = [4,1,3]
+        expected_output_matrix(3,:) = [0,0,1]
+
+        params(2) = test_transpose_params(input_matrix, expected_output_matrix, "3x3 Asymmetric")
+    end function test_transpose_testsuite
+
+    @Test
+    subroutine TestTranspose(this)
+        class(test_transpose_test_case), intent(inout) :: this
+
+        real, dimension(:,:), allocatable :: actual_output_matrix
+
+        allocate(actual_output_matrix(size(this%params%input_matrix, 1), size(this%params%input_matrix, 2)))
+        actual_output_matrix = this%params%input_matrix
+
+        call transpose(actual_output_matrix)
+
+        @assertEqual(this%params%expected_output_matrix, actual_output_matrix, 1e-5)
+    end subroutine TestTranspose
+
+    function newTest(testParameter) result(tst)
+        type(test_transpose_test_case) :: tst
+        type(test_transpose_params), intent(in) :: testParameter
+
+        tst%params = testParameter
+    end function newTest
+
+    function test_transpose_params_toString(this) result(string)
+        class(test_transpose_params), intent(in) :: this
+        character(:), allocatable :: string
+
+        string = trim(this%description)
+    end function test_transpose_params_toString
+end module test_transpose
