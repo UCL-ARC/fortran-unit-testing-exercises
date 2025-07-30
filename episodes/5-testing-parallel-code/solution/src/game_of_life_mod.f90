@@ -18,8 +18,9 @@ module game_of_life_mod
 
 contains
 
-    subroutine find_steady_state(steady_state, generation_number, base_mpi_communicator, nprocs, global_board, global_ny, global_nx)
-        logical, intent(out) :: steady_state
+    subroutine find_steady_state(global_steady, generation_number, base_mpi_communicator, nprocs, global_board, global_ny, &
+                                 global_nx)
+        logical, intent(out) :: global_steady
         integer, intent(out) :: generation_number
         integer, dimension(:,:), allocatable, intent(inout) :: global_board
         integer, intent(in) :: base_mpi_communicator, nprocs, global_ny, global_nx
@@ -28,7 +29,7 @@ contains
         integer, parameter :: max_generations = 100
         integer :: local_nx, local_ny, nx_per_rank, ny_per_rank
         integer, dimension(:,:), allocatable :: local_current, local_new
-        logical :: local_steady, global_steady
+        logical :: local_steady
         integer :: x_start, y_start, x_end, y_end
 
         !! MPI args
@@ -73,8 +74,6 @@ contains
                 call MPI_RECV(x_start_i, 1, MPI_INTEGER, i, i*100 + 1, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
                 call MPI_RECV(local_ny_i, 1, MPI_INTEGER, i, i*100 + 2, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
                 call MPI_RECV(local_nx_i, 1, MPI_INTEGER, i, i*100 + 3, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
-
-                write (*,*) "i", i, "starts", y_start_i, x_start_i, "locals", local_ny_i, local_nx_i
 
                 call MPI_Send(global_board(x_start_i:x_start_i+local_nx_i-1, y_start_i:y_start_i+local_ny_i-1), &
                     local_nx_i*local_ny_i, MPI_INTEGER, i, i*100 + 4, domainDecomp%communicator, ierr)
@@ -172,40 +171,40 @@ contains
         ! Vertical exchange
         if (domainDecomp%neighbours(UP) >= 0) then
             ! Send top halo up
-            call MPI_ISEND(board(2:local_nx+1,local_ny+1), local_nx, MPI_INTEGER, domainDecomp%neighbours(UP), 0, &
+            call MPI_ISEND(board(:,local_ny+1), local_nx+2, MPI_INTEGER, domainDecomp%neighbours(UP), 0, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive top halo from the above rank
-            CALL MPI_RECV(board(2:local_nx+1,local_ny+2), local_nx, MPI_INTEGER, domainDecomp%neighbours(UP), 1, &
+            CALL MPI_RECV(board(:,local_ny+2), local_nx+2, MPI_INTEGER, domainDecomp%neighbours(UP), 1, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
         if (domainDecomp%neighbours(DOWN) >= 0) then
             ! Send the bottom halo down
-            call MPI_ISEND(board(2:local_nx+1,2), local_nx, MPI_INTEGER, domainDecomp%neighbours(DOWN), 1, &
+            call MPI_ISEND(board(:,2), local_nx+2, MPI_INTEGER, domainDecomp%neighbours(DOWN), 1, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive the bottom halo from the below rank
-            CALL MPI_RECV(board(2:local_nx+1,1), local_nx, MPI_INTEGER, domainDecomp%neighbours(DOWN), 0, &
+            CALL MPI_RECV(board(:,1), local_nx+2, MPI_INTEGER, domainDecomp%neighbours(DOWN), 0, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
 
         ! Horizontal exchange
         if (domainDecomp%neighbours(LEFT) >= 0) then
             ! Send the left halo left
-            call MPI_ISEND(board(2,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(LEFT), 2, &
+            call MPI_ISEND(board(2,:), local_ny+2, MPI_INTEGER, domainDecomp%neighbours(LEFT), 2, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive the left halo from the left
-            CALL MPI_RECV(board(1,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(LEFT), 3, &
+            CALL MPI_RECV(board(1,:), local_ny+2, MPI_INTEGER, domainDecomp%neighbours(LEFT), 3, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
         if (domainDecomp%neighbours(RIGHT) >= 0) then
             ! Send the right halo right
-            call MPI_ISEND(board(local_nx+1,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 3, &
+            call MPI_ISEND(board(local_nx+1,:), local_ny+2, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 3, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive the right halo from the right
-            CALL MPI_RECV(board(local_nx+2,2:local_ny+1), local_ny, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 2, &
+            CALL MPI_RECV(board(local_nx+2,:), local_ny+2, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 2, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
     end subroutine exchange_boundaries
@@ -290,9 +289,9 @@ contains
 
         allocate(character(num_xs) :: output)
 
-        do y=1, num_ys
+        do x=1, num_xs
             output = ""
-            do x=1, num_xs
+            do y=1, num_ys
                 if (current_board(x,y) == 1) then
                     output = trim(output)//"#"
                 else

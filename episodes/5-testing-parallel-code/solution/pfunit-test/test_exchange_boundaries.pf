@@ -58,25 +58,25 @@ contains
                 if (num_ranks == 2 ) then
                     if (rank == 0) then
                         neighbours(UP, i) = 1 ! Top halo should be received from rank 1
-                        expected_output_board(2:nx+1, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
                     else if (rank == 1) then
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
-                        expected_output_board(2:nx+1, 1, i) = neighbours(DOWN, i)
+                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
                     end if
                 
                 ! Define neighbours and expected halos for num_ranks == 3 test case
                 else if (num_ranks == 3) then
                     if (rank == 0) then
                         neighbours(UP, i) = 1 ! Top halo should be received from rank 1
-                        expected_output_board(2:nx+1, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
                     else if (rank == 1) then
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
                         neighbours(UP, i) = 2 ! Top halo should be received from rank 2
-                        expected_output_board(2:nx+1, 1, i) = neighbours(DOWN, i)
-                        expected_output_board(2:nx+1, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
                     else if (rank == 2) then
                         neighbours(DOWN, i) = 1 ! Bottom halo should be received from rank 1
-                        expected_output_board(2:nx+1, 1, i) = neighbours(DOWN, i)
+                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
                     end if
 
                 ! Define neighbours and expected halos for num_ranks == 4 test case
@@ -84,23 +84,23 @@ contains
                     if (rank == 0) then
                         neighbours(UP, i) = 2 ! Top halo should be received from rank 2
                         neighbours(RIGHT, i) = 1 ! Right halo should be received from rank 1
-                        expected_output_board(2:nx+1, ny+2, i) = neighbours(UP, i)
-                        expected_output_board(nx+2, 2:ny+1, i) = neighbours(RIGHT, i)
+                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(nx+2, :, i) = neighbours(RIGHT, i)
                     else if (rank == 1) then
                         neighbours(LEFT, i) = 0 ! Left halo should be received from rank 0
                         neighbours(UP, i) = 3 ! Top halo should be received from rank 3
-                        expected_output_board(1, 2:ny+1, i) = neighbours(LEFT, i)
-                        expected_output_board(2:nx+1, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(1, :, i) = neighbours(LEFT, i)
                     else if (rank == 2) then
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
                         neighbours(RIGHT, i) = 3 ! Right halo should be received from rank 3
-                        expected_output_board(2:nx+1, 1, i) = neighbours(DOWN, i)
-                        expected_output_board(nx+2, 2:ny+1, i) = neighbours(RIGHT, i)
+                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
+                        expected_output_board(nx+2, :, i) = neighbours(RIGHT, i)
                     else if (rank == 3) then
                         neighbours(DOWN, i) = 1 ! Bottom halo should be received from rank 1
                         neighbours(LEFT, i) = 2 ! Left halo should be received from rank 2
-                        expected_output_board(2:nx+1, 1, i) = neighbours(DOWN, i)
-                        expected_output_board(1, 2:ny+1, i) = neighbours(LEFT, i)
+                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
+                        expected_output_board(1, :, i) = neighbours(LEFT, i)
                     end if
                     
                 end if
@@ -127,9 +127,15 @@ contains
         allocate(actual_board(size(this%params%input_board, 1), size(this%params%input_board, 2)))
         actual_board = this%params%input_board(:,:,rank_index)
 
-        call exchange_boundaries(actual_board, this%params%ny, this%params%ny, DomainDecomposition(this%getMpiCommunicator(), this%params%neighbours(:,rank_index)))
+        call exchange_boundaries(actual_board, this%params%ny, this%params%nx, DomainDecomposition(this%getMpiCommunicator(), this%params%neighbours(:,rank_index)))
 
-        @assertEqual(this%params%expected_output_board(:,:,rank_index), actual_board, "Unexpected output_board")
+        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,2:this%params%ny+1,rank_index), actual_board(2:this%params%nx+1,2:this%params%ny+1), "Unexpected centre of board")
+
+        ! For simplicity, do not check corners as these cannot be 100% known at this point due to timings of MPI messages
+        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,1,rank_index), actual_board(2:this%params%nx+1,1), "Unexpected bottom halo")
+        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,this%params%ny+2,rank_index), actual_board(2:this%params%nx+1,this%params%ny+2), "Unexpected top halo")
+        @assertEqual(this%params%expected_output_board(1,2:this%params%ny+1,rank_index), actual_board(1,2:this%params%ny+1), "Unexpected left halo")
+        @assertEqual(this%params%expected_output_board(this%params%nx+2,2:this%params%ny+1,rank_index), actual_board(this%params%nx+2,2:this%params%ny+1), "Unexpected right halo")
 
         deallocate(actual_board)
     end subroutine TestExchangeBoundaries

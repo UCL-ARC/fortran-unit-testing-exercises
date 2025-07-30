@@ -38,7 +38,7 @@ contains
         integer, dimension(:,:,:), allocatable :: global_board
         integer :: global_ny, global_nx
 
-        max_num_ranks = 4
+        max_num_ranks = 8
         allocate(params(max_num_ranks))
         
         expected_steady_state = .true.
@@ -58,15 +58,10 @@ contains
         !  13 | 0  0  0  0  0
         ! Global board only needs to be set for rank 0 as this will be distributed to other ranks
         global_board = 0
-        ! global_board(9,9:11,1)  = [0,1,0]
-        ! global_board(10,9:11,1) = [1,1,1]
-        ! global_board(11,9:11,1) = [1,0,1]
-        ! global_board(12,9:11,1) = [0,1,0]
-
-        global_board(28:30,15,1) = [0,1,0]
-        global_board(28:30,16,1) = [1,1,1]
-        global_board(28:30,17,1) = [1,0,1]
-        global_board(28:30,18,1) = [0,1,0]
+        global_board(9,9:11,1)  = [0,1,0]
+        global_board(10,9:11,1) = [1,1,1]
+        global_board(11,9:11,1) = [1,0,1]
+        global_board(12,9:11,1) = [0,1,0]
         
         do i = 1, max_num_ranks
             params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, global_ny, global_nx)
@@ -104,10 +99,12 @@ contains
         
         ! if (rank_index == 1) call draw_board(global_board)
 
+        @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
         if (this%params%expected_steady_state) then
             @assertTrue(actual_steady_state, "Unexpected steady_state value")
+        else
+            @assertFalse(actual_steady_state, "Unexpected steady_state value")
         end if
-        @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
     end subroutine TestFindSteadyState
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
