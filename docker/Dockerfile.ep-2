@@ -3,7 +3,7 @@ FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 # Episode 3
 COPY episodes/2-intro-to-fortran-unit-tests /2-intro-to-fortran-unit-tests
 
-RUN cd /2-intro-to-fortran-unit-tests/solution
+WORKDIR /2-intro-to-fortran-unit-tests/solution
 
 # build with cmake
 RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
