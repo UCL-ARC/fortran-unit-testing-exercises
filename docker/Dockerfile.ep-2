@@ -5,12 +5,5 @@ COPY episodes/2-intro-to-fortran-unit-tests /2-intro-to-fortran-unit-tests
 
 WORKDIR /2-intro-to-fortran-unit-tests/solution
 
-# build with cmake
-RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
-    cmake --build build-cmake
-
-# test with ctest
-RUN ctest --test-dir build-cmake --output-on-failure
-
 # test with fpm
 RUN fpm test
