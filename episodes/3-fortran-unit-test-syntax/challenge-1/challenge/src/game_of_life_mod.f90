@@ -42,7 +42,7 @@ contains
                 call evolve_board(current_board, new_board)
                 call check_for_steady_state(current_board, new_board, steady_state)
                 current_board = new_board
-                call draw_board(current_board)
+                if (animate) call draw_board(current_board)
 
                 generation_number = generation_number + 1
             end if

@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::find_steady_state
 module veggies_find_steady_state_test
-    use game_of_life_mod, only : find_steady_state, draw_board
+    use game_of_life_mod, only : find_steady_state
     use veggies, only:            &
         assert_equals,            &
         assert_that,              &
