@@ -5,7 +5,8 @@ module game_of_life_mod
 
 contains
 
-    subroutine find_steady_state(steady_state, generation_number, current_board)
+    subroutine find_steady_state(animate, steady_state, generation_number, current_board)
+        logical, intent(in) :: animate
         logical, intent(out) :: steady_state
         integer, intent(out) :: generation_number
         integer, dimension(:,:), allocatable, intent(inout) :: current_board
@@ -24,13 +25,18 @@ contains
         new_board = 0
 
         ! Clear the terminal screen
-        call system ("clear")
+        if (animate) call system ("clear")
 
         ! Iterate until we reach a steady state
+        steady_state = .false.
+        generation_number = 0
+        mod_ms_step = 0
         do while(.not. steady_state .and. generation_number < max_generations)
             ! Advance the simulation in the steps of the requested number of milliosecons
-            call date_and_time(VALUES=date_time_values)
-            mod_ms_step = mod(date_time_values(8), ms_per_step)
+            if (animate) then
+                call date_and_time(VALUES=date_time_values)
+                mod_ms_step = mod(date_time_values(8), ms_per_step)
+            end if
 
             if (mod_ms_step == 0) then
                 call evolve_board(current_board, new_board)

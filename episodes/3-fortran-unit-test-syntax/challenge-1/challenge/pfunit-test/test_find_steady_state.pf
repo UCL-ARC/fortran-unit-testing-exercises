@@ -34,7 +34,7 @@ contains
 
         logical :: expected_steady_state
         integer :: expected_generation_number
-        integer, dimension(:,:,:), allocatable :: board
+        integer, dimension(:,:), allocatable :: board
 
         
         !  Steady state should be reached after 17 iterations
@@ -75,7 +75,7 @@ contains
 
         integer, dimension(:,:), allocatable :: board
         
-        call find_steady_state(actual_steady_state, actual_generation_number, this%params%board)
+        call find_steady_state(.false., actual_steady_state, actual_generation_number, this%params%board)
         
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
         if (this%params%expected_steady_state) then
@@ -102,8 +102,6 @@ contains
         new_params%board = board
         new_params%expected_steady_state = expected_steady_state
         new_params%expected_generation_number = expected_generation_number
-        new_params%ny = ny
-        new_params%nx = nx
 
     end function new_find_steady_state_test_params
 

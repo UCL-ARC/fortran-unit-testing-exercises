@@ -47,7 +47,7 @@ program game_of_life
         stop
     end if
 
-    call find_steady_state(steady_state, generation_number, current_board)
+    call find_steady_state(.true., steady_state, generation_number, current_board)
 
     if (steady_state) then
         write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"

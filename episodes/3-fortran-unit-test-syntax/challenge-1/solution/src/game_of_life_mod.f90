@@ -29,6 +29,8 @@ contains
         if (animate) call system ("clear")
 
         ! Iterate until we reach a steady state
+        steady_state = .false.
+        generation_number = 0
         mod_ms_step = 0
         do while(.not. steady_state .and. generation_number < max_generations)
             ! Advance the simulation in the steps of the requested number of milliosecons
