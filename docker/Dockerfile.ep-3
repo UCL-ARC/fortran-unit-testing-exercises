@@ -1,4 +1,4 @@
-FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:latest
+FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 
 # Episode 3
 COPY episodes/3-fortran-unit-test-syntax/challenge-1/solution /solution

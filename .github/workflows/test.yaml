@@ -33,5 +33,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       
+      - name: Test episode 1
+        run: docker build . -f docker/Dockerfile.ep-1
+      
       - name: Test episode 3
         run: docker build . -f docker/Dockerfile.ep-3
