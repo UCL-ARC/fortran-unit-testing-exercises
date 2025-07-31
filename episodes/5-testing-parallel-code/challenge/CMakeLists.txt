@@ -28,16 +28,6 @@ target_link_libraries("${PROJECT_NAME}" "${TO_LINK_TO_SRC}")
 enable_testing()
 
 #--------------------------------------#
-#               veggies                #
-#--------------------------------------#
-# add_subdirectory("veggies-test")
-
-#--------------------------------------#
-#             test-drive               #
-#--------------------------------------#
-# add_subdirectory("test-drive-test")
-
-#--------------------------------------#
 #               pFUnit                 #
 #--------------------------------------#
-add_subdirectory("pfunit-test")
+add_subdirectory("test")

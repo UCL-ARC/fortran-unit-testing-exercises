@@ -91,7 +91,3 @@ add_pfunit_ctest (pfunit_find_steady_state_tests
   LINK_LIBRARIES sut # your application library
   MAX_PES 8
   )
-
-
-
-# Having a registry file <something>.inc with all of the test module names will reduce linking time and produce one executable. However may only produce one ctest.
