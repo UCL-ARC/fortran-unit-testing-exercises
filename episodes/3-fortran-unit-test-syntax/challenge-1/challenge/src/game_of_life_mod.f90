@@ -32,8 +32,8 @@ contains
         generation_number = 0
         mod_ms_step = 0
         do while(.not. steady_state .and. generation_number < max_generations)
-            ! Advance the simulation in the steps of the requested number of milliosecons
             if (animate) then
+                ! Advance the simulation in the steps of the requested number of milliseconds
                 call date_and_time(VALUES=date_time_values)
                 mod_ms_step = mod(date_time_values(8), ms_per_step)
             end if

@@ -7,6 +7,7 @@ module game_of_life_mod
 contains
 
     ! FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
+    ! FIX3: Extract the file IO into a module procedure to allow it to be tested.
     subroutine find_steady_state(animate, steady_state, generation_number, current_board)
         logical, intent(in) :: animate
         logical, intent(out) :: steady_state
@@ -34,8 +35,8 @@ contains
         generation_number = 0
         mod_ms_step = 0
         do while(.not. steady_state .and. generation_number < max_generations)
-            ! Advance the simulation in the steps of the requested number of milliosecons
             if (animate) then
+                ! Advance the simulation in the steps of the requested number of milliseconds
                 call date_and_time(VALUES=date_time_values)
                 mod_ms_step = mod(date_time_values(8), ms_per_step)
             end if

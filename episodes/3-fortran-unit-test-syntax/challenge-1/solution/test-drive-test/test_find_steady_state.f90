@@ -25,29 +25,6 @@ contains
     subroutine find_steady_state_test_suite(testsuite)
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-        logical :: expected_steady_state
-        integer :: expected_generation_number
-        integer, dimension(:,:), allocatable :: board
-
-
-        !  Steady state should be reached after 17 iterations
-        !       8  9 10 11 12
-        !      -- -- -- -- --
-        !   8 | 0  0  0  0  0
-        !   9 | 0  0  1  0  0
-        !  10 | 0  1  1  1  0
-        !  11 | 0  1  0  1  0
-        !  12 | 0  0  1  0  0
-        !  13 | 0  0  0  0  0
-        expected_steady_state = .true.
-        expected_generation_number = 17
-        allocate(board(31,31))
-        board = 0
-        board(9, 9:11) = [0,1,0]
-        board(10,9:11) = [1,1,1]
-        board(11,9:11) = [1,0,1]
-        board(12,9:11) = [0,1,0]
-
         testsuite = [ &
             new_unittest("test_find_steady_state_exploder",test_find_steady_state_exploder) &
         ]
