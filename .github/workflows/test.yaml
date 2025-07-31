@@ -35,6 +35,9 @@ jobs:
       
       - name: Test episode 1
         run: docker build . -f docker/Dockerfile.ep-1
+
+      - name: Test episode 2
+        run: docker build . -f docker/Dockerfile.ep-2
       
       - name: Test episode 3
         run: docker build . -f docker/Dockerfile.ep-3
