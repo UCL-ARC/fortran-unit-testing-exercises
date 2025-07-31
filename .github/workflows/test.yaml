@@ -5,16 +5,12 @@ on:
   push:
     branches:
       - main
-    paths:
-      - episodes/*
   pull_request:
     types:
       - opened
       - ready_for_review
       - reopened
       - synchronize
-    paths:
-      - episodes/*
 
 concurrency:
   cancel-in-progress: true

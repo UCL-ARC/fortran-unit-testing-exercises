@@ -29,6 +29,7 @@ set(
   tests
   "evolve_board"
   "check_for_steady_state"
+  "find_steady_state"
   "read_model_from_file"
 )
 set(

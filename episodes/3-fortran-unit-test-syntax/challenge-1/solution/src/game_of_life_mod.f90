@@ -6,7 +6,51 @@ module game_of_life_mod
 
 contains
 
-    ! Q1_FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
+    subroutine find_steady_state(animate, steady_state, generation_number, current_board)
+        logical, intent(in) :: animate
+        logical, intent(out) :: steady_state
+        integer, intent(out) :: generation_number
+        integer, dimension(:,:), allocatable, intent(inout) :: current_board
+
+        integer, dimension(:,:), allocatable :: new_board
+
+        !! Board args
+        integer, parameter :: max_generations = 100
+
+        !! Animation args
+        integer, dimension(8) :: date_time_values
+        integer :: mod_ms_step
+        integer, parameter :: ms_per_step = 250
+
+        allocate(new_board(size(current_board,1), size(current_board, 2)))
+        new_board = 0
+
+        ! Clear the terminal screen
+        if (animate) call system ("clear")
+
+        ! Iterate until we reach a steady state
+        steady_state = .false.
+        generation_number = 0
+        mod_ms_step = 0
+        do while(.not. steady_state .and. generation_number < max_generations)
+            if (animate) then
+                ! Advance the simulation in the steps of the requested number of milliseconds
+                call date_and_time(VALUES=date_time_values)
+                mod_ms_step = mod(date_time_values(8), ms_per_step)
+            end if
+
+            if (mod_ms_step == 0) then
+                call evolve_board(current_board, new_board)
+                call check_for_steady_state(current_board, new_board, steady_state)
+                current_board = new_board
+                if (animate) call draw_board(current_board)
+
+                generation_number = generation_number + 1
+            end if
+
+        end do
+    end subroutine find_steady_state
+
     !> Evolve the board into the state of the next iteration
     subroutine evolve_board(current_board, new_board)
         !> The board as it currently is before this iteration
@@ -43,7 +87,6 @@ contains
         enddo
     end subroutine evolve_board
 
-    ! Q1_FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Check if we have reached steady state, i.e. current and new board match
     subroutine check_for_steady_state(current_board, new_board, steady_state)
         !> The board as it currently is before this iteration
@@ -70,7 +113,6 @@ contains
         steady_state = .true.
     end subroutine check_for_steady_state
 
-    ! Q1_FIX2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Output the current board to the terminal
     subroutine draw_board(current_board)
         !> The board as it currently is for this iteration
@@ -101,7 +143,6 @@ contains
         deallocate(output)
     end subroutine draw_board
 
-    ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
     !> Populate the a board from the provided file
     subroutine read_model_from_file(input_fname, max_nrow, max_ncol, board, io_error_message)
         !> The name of the file to read in the board
