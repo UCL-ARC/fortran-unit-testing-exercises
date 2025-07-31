@@ -1,0 +1,55 @@
+# Based on https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
+---
+name: Build, test and publish parent docker image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-parent-docker-image.yml
+      - docker/Dockerfile.parent
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-parent
+
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: always.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push-parent-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Lowercase image name
+        run: |
+          IMAGE_NAME="$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> "${GITHUB_ENV}"
+
+      - name: Build and push to ghcr
+        uses: connoraird/build-push@add-push-to-registry-flag
+        with:
+          dockerfile_path: ./docker/Dockerfile.parent
+          image_name: ${{ env.IMAGE_NAME }}
+          tags: |
+            latest
+          context: .
+          push_to_registry: true
+          registry_address: ${{ env.REGISTRY }}
+          registry_username: ${{ github.actor }}
+          registry_password: ${{ github.token }}
