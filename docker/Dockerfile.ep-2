@@ -1,0 +1,8 @@
+FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
+
+COPY episodes/2-intro-to-fortran-unit-tests /2-intro-to-fortran-unit-tests
+
+WORKDIR /2-intro-to-fortran-unit-tests/solution
+
+# test with fpm
+RUN fpm test

@@ -1,6 +1,5 @@
 FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 
-# Episode 3
 COPY episodes/1-into-to-unit-tests /1-into-to-unit-tests
 
 # test with fpm
