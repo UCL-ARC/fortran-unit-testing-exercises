@@ -21,12 +21,17 @@ jobs:
   testing:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      attestations: read
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      
-      - name: Build parent image
-        run: docker build . -f docker/Dockerfile.parent -t fortran-unit-testing-exercises
       
       - name: Test episode 3
         run: docker build . -f docker/Dockerfile.ep-3
