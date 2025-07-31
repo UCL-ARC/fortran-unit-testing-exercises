@@ -5,7 +5,7 @@ COPY episodes/4-debugging-a-broken-test /4-debugging-a-broken-test
 WORKDIR /4-debugging-a-broken-test
 
 # Fix intentional bug in code
-RUN sed -i -E 's/\s*matrix(row, col) = temp_matrix(row, col)/matrix(col, row) = temp_matrix(row, col)/g' src/matrix_transforms.f90
+RUN sed -i -E 's/.*matrix(row, col) = temp_matrix(row, col)/matrix(col, row) = temp_matrix(row, col)/g' src/matrix_transforms.f90
 
 # build tests inc veggies with cmake
 RUN sed -i -E 's/.*add_subdirectory\(\"test/test-drive\"\)/#add_subdirectory\(\"test/test-drive\"\)/g' CMakeLists.txt && \
