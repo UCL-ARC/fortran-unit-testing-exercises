@@ -48,6 +48,7 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}
           tags: |
             latest
+            type=ref,event=branch
           context: .
           push_to_registry: true
           registry_address: ${{ env.REGISTRY }}
