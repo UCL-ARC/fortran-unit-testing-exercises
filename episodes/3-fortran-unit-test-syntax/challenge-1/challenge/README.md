@@ -5,7 +5,7 @@ You will also find a copy of [the veggies tests from the episode-2 solution](../
 in [veggies-test](./veggies-test/)
 
 Now, take a look at the partially implemented tests within [pfunit-test](./pfunit-test/) and [test-drive-test](./test-drive-test/). The sections to be completed have
-been labelled by a comments prefixed with `TASK`.
+been labelled by comments prefixed with `TASK`.
 
 1. Can you implement the unfinished sections in pfunit-test?
 2. Can you implement the unfinished sections in test-drive-test?

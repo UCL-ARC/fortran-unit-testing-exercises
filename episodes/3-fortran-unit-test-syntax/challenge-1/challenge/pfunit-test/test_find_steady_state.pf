@@ -1,0 +1,124 @@
+!> Module for testing the subroutine game_of_life::find_steady_state
+module test_find_steady_state
+    use game_of_life_mod, only : find_steady_state
+    use funit
+    implicit none
+
+    !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
+    @testParameter(constructor=new_find_steady_state_test_params)
+    type, extends(AbstractTestParameter) :: find_steady_state_test_params
+        integer, dimension(:,:), allocatable :: board
+    
+        ! These will be the same for all ranks
+        logical :: expected_steady_state
+        integer :: expected_generation_number
+    contains
+        procedure :: toString => find_steady_state_test_params_toString
+    end type find_steady_state_test_params
+
+    !> Type to define a single find_steady_state test case
+    @TestCase(testParameters={getParameters()}, constructor=newTest)
+    type, extends(ParameterizedTestCase) :: find_steady_state_test_case
+        type(find_steady_state_test_params) :: params
+    end type find_steady_state_test_case
+
+contains
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Test Suites
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Test suite for the game_of_life::find_steady_state subroutine
+    function getParameters() result(params)
+        type(find_steady_state_test_params), allocatable :: params(:)
+
+        logical :: expected_steady_state
+        integer :: expected_generation_number
+        integer, dimension(:,:,:), allocatable :: board
+
+        
+        !  Steady state should be reached after 17 iterations
+        !       8  9 10 11 12
+        !      -- -- -- -- --
+        !   8 | 0  0  0  0  0
+        !   9 | 0  0  1  0  0
+        !  10 | 0  1  1  1  0
+        !  11 | 0  1  0  1  0
+        !  12 | 0  0  1  0  0
+        !  13 | 0  0  0  0  0
+        expected_steady_state = .true.
+        expected_generation_number = 17
+        allocate(board(31,31))
+        board = 0
+        board(9, 9:11) = [0,1,0]
+        board(10,9:11) = [1,1,1]
+        board(11,9:11) = [1,0,1]
+        board(12,9:11) = [0,1,0]
+        
+        params = [ &
+            find_steady_state_test_params(board, expected_steady_state, expected_generation_number) &
+        ]
+        
+    end function getParameters
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Assertion functions
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Check for the expected output of the game_of_life::find_steady_state subroutine
+    @Test
+    subroutine TestFindSteadyState(this)
+        class(find_steady_state_test_case), intent(inout) :: this
+
+        logical :: actual_steady_state
+        integer :: actual_generation_number
+
+        integer, dimension(:,:), allocatable :: board
+        
+        call find_steady_state(actual_steady_state, actual_generation_number, this%params%board)
+        
+        @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
+        if (this%params%expected_steady_state) then
+            @assertTrue(actual_steady_state, "Unexpected steady_state value")
+        else
+            @assertFalse(actual_steady_state, "Unexpected steady_state value")
+        end if
+    end subroutine TestFindSteadyState
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number, ny, nx) result(new_params)
+        integer, dimension(:,:), allocatable, intent(in) :: board
+        logical, intent(in) :: expected_steady_state
+        integer, intent(in) :: expected_generation_number
+        integer, intent(in) :: ny, nx
+
+        type(find_steady_state_test_params) new_params
+
+        allocate(new_params%board(size(board, 1), size(board, 2)))
+        
+        new_params%board = board
+        new_params%expected_steady_state = expected_steady_state
+        new_params%expected_generation_number = expected_generation_number
+        new_params%ny = ny
+        new_params%nx = nx
+
+    end function new_find_steady_state_test_params
+
+    function newTest(testParameter) result(tst)
+        type(find_steady_state_test_case) :: tst
+        type(find_steady_state_test_params), intent(in) :: testParameter
+
+        tst%params = testParameter
+    end function newTest
+
+    function find_steady_state_test_params_toString(this) result(string)
+        class (find_steady_state_test_params), intent(in) :: this
+        character(:), allocatable :: string
+
+        string = "No message"
+
+    end function find_steady_state_test_params_toString
+end module test_find_steady_state
