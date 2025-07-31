@@ -1,15 +1,28 @@
 FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 
-# Episode 3
-COPY episodes/3-fortran-unit-test-syntax/challenge-1/solution /solution
+COPY episodes/3-fortran-unit-test-syntax /3-fortran-unit-test-syntax
 
-# build with cmake
-RUN cd /solution && \
+WORKDIR /3-fortran-unit-test-syntax/solution
+
+# build tests inc veggies with cmake
+RUN sed -i -E 's/.*add_subdirectory\(\"test-drive-test\"\)/#add_subdirectory\(\"test-drive-test\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"pfunit-test\"\)/#add_subdirectory\(\"pfunit-test\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"veggies-test\"\)/add_subdirectory\(\"veggies-test\"\)/g' CMakeLists.txt && \
+    cmake -B build-cmake-veggies -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+    cmake --build build-cmake-veggies
+
+# build tests without veggies with cmake
+RUN sed -i -E 's/.*add_subdirectory\(\"test-drive-test\"\)/add_subdirectory\(\"test-drive-test\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"pfunit-test\"\)/add_subdirectory\(\"pfunit-test\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"veggies-test\"\)/#add_subdirectory\(\"veggies-test\"\)/g' CMakeLists.txt && \
     cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
     cmake --build build-cmake
 
-# test with ctest
-RUN cd /solution/build-cmake && ctest
+# test veggies with ctest
+RUN ctest --test-dir build-cmake-veggies --output-on-failure
+
+# test testdrive and pfunit with ctest
+RUN ctest --test-dir build-cmake --output-on-failure
 
 # test with fpm
-RUN cd /solution && fpm test
+RUN fpm test
