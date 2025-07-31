@@ -42,7 +42,7 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> "${GITHUB_ENV}"
 
       - name: Build and push to ghcr
-        uses: aleskxyz/build-push
+        uses: aleskxyz/build-push@main
         with:
           dockerfile_path: ./docker/Dockerfile.parent
           image_name: ${{ env.IMAGE_NAME }}
