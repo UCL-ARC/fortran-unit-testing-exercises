@@ -2,15 +2,21 @@ FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 
 COPY episodes/5-testing-parallel-code /5-testing-parallel-code
 
+# Create a non-root user grant access totest dir and change to user
+# This is require to prevent running MPI as root
+RUN useradd -ms /bin/bash testuser
+RUN chown -R testuser:testuser /5-testing-parallel-code
+USER testuser
+
 WORKDIR /5-testing-parallel-code/challenge
 
 # Fix intentional bug in code
-RUN mv ../solution/test_find_steady_state.pf test/ && \
+RUN mv ../solution/test_find_steady_state.pf ./test/ && \
     sed -i -E 's/.*LINK_LIBRARIES sut.*/LINK_LIBRARIES sut MAX_PES 8/g' test/CMakeLists.txt
 
 # build tests with cmake
 RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
     cmake --build build-cmake
 
-# test with ctest
-RUN ctest --test-dir build-cmake --output-on-failure
+# test with ctest, allowing MPI to oversubscribe
+RUN PRTE_MCA_rmaps_default_mapping_policy=":oversubscribe" ctest --test-dir build-cmake --output-on-failure
