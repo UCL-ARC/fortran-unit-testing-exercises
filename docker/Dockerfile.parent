@@ -5,7 +5,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y gfortran-14 git wget valgrind 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-14
 RUN wget -O /usr/bin/fpm https://github.com/fortran-lang/fpm/releases/download/v0.10.1/fpm-0.10.1-linux-x86_64 && chmod 555 /usr/bin/fpm
 RUN apt update && apt install -y locales && rm -rf /var/lib/apt/lists/* && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+RUN apt update && apt install -y openmpi-bin openmpi-doc libopenmpi-dev
 
 # Build pfunit
 COPY scripts/build-pfunit.sh /solution/build-pfunit.sh
-RUN ./solution/build-pfunit.sh -b -p /pfunit
+RUN /solution/build-pfunit.sh -b -p /pfunit
+
+# Allow MPI to oversubscribe
+ENV PRTE_MCA_rmaps_default_mapping_policy=":oversubscribe"
