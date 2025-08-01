@@ -89,5 +89,4 @@ list(FILTER test_find_steady_state_src INCLUDE REGEX ".*test_find_steady_state.p
 add_pfunit_ctest (pfunit_find_steady_state_tests
   TEST_SOURCES ${test_find_steady_state_src}
   LINK_LIBRARIES sut # your application library
-  MAX_PES 8
   )
