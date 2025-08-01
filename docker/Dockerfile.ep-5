@@ -6,6 +6,7 @@ COPY episodes/5-testing-parallel-code /5-testing-parallel-code
 # This is require to prevent running MPI as root
 RUN useradd -ms /bin/bash testuser
 RUN chown -R testuser:testuser /5-testing-parallel-code
+USER testuser
 
 WORKDIR /5-testing-parallel-code/challenge
 
@@ -16,8 +17,6 @@ RUN mv ../solution/test_find_steady_state.pf ./test/ && \
 # build tests with cmake
 RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
     cmake --build build-cmake
-
-USER testuser
 
 # test with ctest, allowing MPI to oversubscribe
 RUN PRTE_MCA_rmaps_default_mapping_policy=":oversubscribe" ctest --test-dir build-cmake --output-on-failure
