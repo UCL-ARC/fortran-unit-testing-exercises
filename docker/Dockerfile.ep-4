@@ -1,0 +1,31 @@
+FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
+
+COPY episodes/4-debugging-a-broken-test /4-debugging-a-broken-test
+
+WORKDIR /4-debugging-a-broken-test
+
+# Fix intentional bug in code
+RUN sed -i -E 's/.*matrix\(row, col\) = temp_matrix\(row, col\)/matrix\(col, row\) = temp_matrix\(row, col\)/g' src/matrix_transforms.f90
+
+# build tests inc veggies with cmake
+RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/#add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/#add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
+    cmake -B build-cmake-veggies -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+    cmake --build build-cmake-veggies
+
+# build tests without veggies with cmake
+RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/#add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
+    cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+    cmake --build build-cmake
+
+# test veggies with ctest
+RUN ctest --test-dir build-cmake-veggies --output-on-failure
+
+# test testdrive and pfunit with ctest
+RUN ctest --test-dir build-cmake --output-on-failure
+
+# test with fpm
+RUN fpm test

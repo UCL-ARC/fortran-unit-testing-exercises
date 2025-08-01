@@ -1,3 +1,5 @@
 *.egg-info
 .venv
 **.mod
+**build
+**build-cmake
