@@ -37,7 +37,6 @@ contains
         integer, dimension(:,:), allocatable :: test_board
         character(len=:), allocatable :: test_io_error_message
 
-
         allocate(params(6))
 
         allocate(test_board(31, 31))

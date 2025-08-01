@@ -19,7 +19,6 @@ module test_evolve_board
         type(evolve_board_test_params) :: params
     end type evolve_board_test_case
 
-
 contains
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -156,7 +155,6 @@ contains
         write(buffer,'(i2, "x", i2, " board with ", a)') &
             nrow, ncol, trim(this%description)
         string = trim(buffer)
-
     end function evolve_board_test_params_toString
 
 end module test_evolve_board

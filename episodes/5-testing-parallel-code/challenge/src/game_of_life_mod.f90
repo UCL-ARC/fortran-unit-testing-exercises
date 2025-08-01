@@ -1,4 +1,3 @@
-! Q1_FIX_1: Moving these procedures into a separate file allows them to be used within a test file
 module game_of_life_mod
     ! allow(C121)
     use mpi
@@ -304,7 +303,6 @@ contains
         deallocate(output)
     end subroutine draw_board
 
-    ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
     !> Populate the a board from the provided file
     subroutine read_model_from_file(input_fname, max_nx, max_ny, board, io_error_message)
         !> The name of the file to read in the board
