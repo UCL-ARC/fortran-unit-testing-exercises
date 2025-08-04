@@ -1,8 +1,11 @@
 module test_read_model_from_file
     use game_of_life_mod, only : read_model_from_file
+    ! allow(C121)
     use funit
 
     implicit none
+
+    public
 
     ! TASK: Define a parameter type `read_model_from_file_test_params` to be used for testing game_of_life::read_model_from_file
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
@@ -57,20 +60,25 @@ contains
         write(*,*) "Hello"
 
         allocate(character(len=80) :: test_io_error_message)
-        
-        params(1) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true.)
+
+        params(1) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, &
+                                                     .true.)
 
         test_io_error_message = "nrow must be a positive integer less than     10 found     31"
-        params(2) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, .false.)
+        params(2) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, &
+                                                     .false.)
 
         test_io_error_message = "ncol must be a positive integer less than     10 found     31"
-        params(3) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, .false.)
+        params(3) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, &
+                                                     .false.)
 
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
-        params(4) = read_model_from_file_test_params("test-models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, .false.)
+        params(4) = read_model_from_file_test_params("test-models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, &
+                                                     .false.)
 
         test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
-        params(5) = read_model_from_file_test_params("test-models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, .false.)
+        params(5) = read_model_from_file_test_params("test-models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, &
+                                                     .false.)
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"
         params(6) = read_model_from_file_test_params("does/not/exist.dat", 100, 100, test_board, test_io_error_message, .false.)
@@ -87,7 +95,8 @@ contains
         integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
-        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, actual_io_error_message)
+        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, &
+                                  actual_io_error_message)
 
         if (this%params%model_is_valid) then
             call VerifyCheckReadModelFromFileValidModel(this%params, actual_board, actual_io_error_message)
@@ -96,7 +105,7 @@ contains
         end if
     end subroutine TestCheckReadModelFromFile
 
-    ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert 
+    ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert
     !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with a valid model

@@ -1,6 +1,7 @@
 module test_transpose
-    use funit
     use matrix_transforms, only : transpose
+    ! allow(C121)
+    use funit
     implicit none
 
     public

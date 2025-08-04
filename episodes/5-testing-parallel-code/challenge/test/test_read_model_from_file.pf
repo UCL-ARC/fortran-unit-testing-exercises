@@ -1,8 +1,11 @@
 module test_read_model_from_file
     use game_of_life_mod, only : read_model_from_file
+    ! allow(C121)
     use funit
 
     implicit none
+
+    public
 
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
     @testParameter
@@ -43,7 +46,6 @@ contains
         test_board = 0
 
         allocate(character(len=80) :: test_io_error_message)
-        
         params(1) = read_model_from_file_test_params( &
             "test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true. &
         )

@@ -1,14 +1,17 @@
 !> Module for testing the subroutine game_of_life::find_steady_state
 module test_find_steady_state
     use game_of_life_mod, only : find_steady_state
+    ! allow(C121)
     use funit
     implicit none
+
+    public
 
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
     @testParameter(constructor=new_find_steady_state_test_params)
     type, extends(AbstractTestParameter) :: find_steady_state_test_params
         integer, dimension(:,:), allocatable :: board
-    
+
         ! These will be the same for all ranks
         logical :: expected_steady_state
         integer :: expected_generation_number
@@ -36,7 +39,7 @@ contains
         integer :: expected_generation_number
         integer, dimension(:,:), allocatable :: board
 
-        
+
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
         !      -- -- -- -- --
@@ -54,11 +57,11 @@ contains
         board(10,9:11) = [1,1,1]
         board(11,9:11) = [1,0,1]
         board(12,9:11) = [0,1,0]
-        
+
         params = [ &
             find_steady_state_test_params(board, expected_steady_state, expected_generation_number) &
         ]
-        
+
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -74,9 +77,9 @@ contains
         integer :: actual_generation_number
 
         integer, dimension(:,:), allocatable :: board
-        
+
         call find_steady_state(.false., actual_steady_state, actual_generation_number, this%params%board)
-        
+
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
         if (this%params%expected_steady_state) then
             @assertTrue(actual_steady_state, "Unexpected steady_state value")
@@ -94,10 +97,10 @@ contains
         logical, intent(in) :: expected_steady_state
         integer, intent(in) :: expected_generation_number
 
-        type(find_steady_state_test_params) new_params
+        type(find_steady_state_test_params) :: new_params
 
         allocate(new_params%board(size(board, 1), size(board, 2)))
-        
+
         new_params%board = board
         new_params%expected_steady_state = expected_steady_state
         new_params%expected_generation_number = expected_generation_number

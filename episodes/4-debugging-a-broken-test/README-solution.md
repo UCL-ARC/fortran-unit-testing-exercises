@@ -74,18 +74,18 @@ Again, the pFUnit output shown below indicates that the failing test is from the
 ```
     Start 2: pfunit_transpose_tests
 1/1 Test #2: pfunit_transpose_tests ...........***Failed  Error regular expression found in output. Regex=[Encountered 1 or more failures/errors during testing]  0.01 sec
- 
+
 
  Start: <test_transpose_suite.TestTranspose[3x3 Identity][3x3 Identity]>
 .   end: <test_transpose_suite.TestTranspose[3x3 Identity][3x3 Identity]>
- 
+
 
  Start: <test_transpose_suite.TestTranspose[3x3 Asymmetric][3x3 Asymmetric]>
 . Failure in <test_transpose_suite.TestTranspose[3x3 Asymmetric][3x3 Asymmetric]>
 F   end: <test_transpose_suite.TestTranspose[3x3 Asymmetric][3x3 Asymmetric]>
 
 Time:         0.000 seconds
-  
+
 Failure
  in: 
 test_transpose_suite.TestTranspose[3x3 Asymmetric][3x3 Asymmetric]
@@ -96,7 +96,7 @@ ArrayAssertEqual failure:
         Actual: <6.00000000>
     Difference: <2.00000000> (greater than tolerance of 0.999999975E-5)
       at index: [2,1]
-  
+
  FAILURES!!!
 Tests run: 2, Failures: 1, Errors: 0
 , Disabled: 0
@@ -145,7 +145,7 @@ We can fix the src with the following change
 --- a/episodes/4-debugging-a-broken-test/challenge-1/src/matrix_transforms.f90
 +++ b/episodes/4-debugging-a-broken-test/challenge-1/src/matrix_transforms.f90
 @@ -20,7 +20,7 @@ contains
- 
+
          do row = 1, nrow
              do col = 1, ncol
 -                matrix(row, col) = temp_matrix(row, col)

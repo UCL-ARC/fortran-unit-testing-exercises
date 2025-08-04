@@ -107,7 +107,7 @@ then
                 exit 1
             fi
             current_pfunit_version=$(git describe --exact-match --tags)
-            
+
             if [ "$current_pfunit_version" != "$pfunit_version" ]
             then
                 echo "pFUnit version $current_pfunit_version found but $pfunit_version was requested. Please switch versions or remove the existing clone."
@@ -122,7 +122,7 @@ then
             popd > /dev/null
         fi
     fi
-    
+
     echo "Building pFUnit from source"
     cmake $pfunit_src_path -B $pfunit_src_path/build -DINSTALL_PATH=$PFUNIT_INSTALLED_PATH -DMPI=YES -DCMAKE_Fortran_COMPILER=mpif90 -DOPENMP=YES
     cmake --build $pfunit_src_path/build "-j$num_build_threads" --target install

@@ -1,8 +1,11 @@
 !> Module for testing the subroutine game_of_life::exchange_boundaries
 module test_exchange_boundaries
     use game_of_life_mod, only : exchange_boundaries, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    ! allow(C121)
     use pfunit
     implicit none
+
+    public
 
     !> Type to bundle inputs and expected outputs of game_of_life::exchange_boundaries
     @testParameter(constructor=new_exchange_boundaries_test_params)
@@ -49,7 +52,7 @@ contains
 
             do i = 1, num_ranks
                 rank = i-1
-                
+
                 ! Fill boards with the rank of the process
                 input_board(:,:,i) = rank
                 expected_output_board(:,:,i) = rank
@@ -63,7 +66,7 @@ contains
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
                         expected_output_board(:, 1, i) = neighbours(DOWN, i)
                     end if
-                
+
                 ! Define neighbours and expected halos for num_ranks == 3 test case
                 else if (num_ranks == 3) then
                     if (rank == 0) then
@@ -102,7 +105,7 @@ contains
                         expected_output_board(:, 1, i) = neighbours(DOWN, i)
                         expected_output_board(1, :, i) = neighbours(LEFT, i)
                     end if
-                    
+
                 end if
             end do
             params(num_ranks) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ny, nx, neighbours)
@@ -155,13 +158,13 @@ contains
         integer, intent(in) :: ny, nx
         integer, dimension(:,:), allocatable, intent(in) :: neighbours
 
-        type(exchange_boundaries_test_params) new_params
+        type(exchange_boundaries_test_params) :: new_params
 
         allocate(new_params%input_board(size(input_board, 1), size(input_board, 2), size(input_board, 3)))
         allocate(new_params%expected_output_board(size(expected_output_board, 1), size(expected_output_board, 2), &
                                                   size(expected_output_board, 3)))
         allocate(new_params%neighbours(size(neighbours, 1), size(neighbours, 2)))
-        
+
         new_params%input_board = input_board
         new_params%expected_output_board = expected_output_board
         new_params%ny = ny

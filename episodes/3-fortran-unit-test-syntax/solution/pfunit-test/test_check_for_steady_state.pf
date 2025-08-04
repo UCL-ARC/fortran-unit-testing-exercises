@@ -1,8 +1,11 @@
 !> Module for testing the subroutine game_of_life::check_for_steady_state
 module test_check_for_steady_state
     use game_of_life_mod, only : check_for_steady_state
+    ! allow(C121)
     use funit
     implicit none
+
+    public
 
     ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
@@ -46,7 +49,7 @@ contains
         integer, dimension(:,:), allocatable :: test_current_board, test_new_board
 
         allocate(params(6))
-        
+
         nrow = 31
         ncol = 31
 

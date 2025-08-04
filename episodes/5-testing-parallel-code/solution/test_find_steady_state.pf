@@ -1,14 +1,17 @@
 !> Module for testing the subroutine game_of_life::find_steady_state
 module test_find_steady_state
     use game_of_life_mod, only : find_steady_state, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    ! allow(C121)
     use pfunit
     implicit none
+
+    public
 
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
     @testParameter(constructor=new_find_steady_state_test_params)
     type, extends(MPITestParameter) :: find_steady_state_test_params
         integer, dimension(:,:,:), allocatable :: global_board
-    
+
         ! These will be the same for all ranks
         logical :: expected_steady_state
         integer :: expected_generation_number
@@ -32,7 +35,7 @@ contains
         type(find_steady_state_test_params), allocatable :: params(:)
 
         integer :: max_num_ranks, num_ranks, rank, i
-        
+
         logical :: expected_steady_state
         integer :: expected_generation_number
         integer, dimension(:,:,:), allocatable :: global_board
@@ -40,8 +43,8 @@ contains
 
         max_num_ranks = 8
         allocate(params(max_num_ranks))
-        
-        
+
+
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
         !      -- -- -- -- --
@@ -62,11 +65,12 @@ contains
         global_board(10,9:11,1) = [1,1,1]
         global_board(11,9:11,1) = [1,0,1]
         global_board(12,9:11,1) = [0,1,0]
-        
+
         do i = 1, max_num_ranks
-            params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, global_ny, global_nx)
+            params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, &
+                                                      global_ny, global_nx)
         end do
-        
+
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -87,13 +91,13 @@ contains
         integer, dimension(:,:), allocatable ::global_board
 
         rank_index = this%getProcessRank() + 1
-        
+
         allocate(global_board(size(this%params%global_board, 1), size(this%params%global_board, 2)))
         global_board = this%params%global_board(:,:,rank_index)
-        
+
         call find_steady_state(actual_steady_state, actual_generation_number, global_board, this%params%global_ny, &
             this%params%global_nx, this%getMpiCommunicator(), this%getNumProcessesRequested())
-        
+
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
         if (this%params%expected_steady_state) then
             @assertTrue(actual_steady_state, "Unexpected steady_state value")
@@ -106,16 +110,17 @@ contains
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    function new_find_steady_state_test_params(global_board, expected_steady_state, expected_generation_number, global_ny, global_nx) result(new_params)
+    function new_find_steady_state_test_params(global_board, expected_steady_state, expected_generation_number, global_ny, &
+                                               global_nx) result(new_params)
         integer, dimension(:,:,:), allocatable, intent(in) :: global_board
         logical, intent(in) :: expected_steady_state
         integer, intent(in) :: expected_generation_number
         integer, intent(in) :: global_ny, global_nx
 
-        type(find_steady_state_test_params) new_params
+        type(find_steady_state_test_params) :: new_params
 
         allocate(new_params%global_board(size(global_board, 1), size(global_board, 2), size(global_board, 3)))
-        
+
         new_params%global_board = global_board
         new_params%expected_steady_state = expected_steady_state
         new_params%expected_generation_number = expected_generation_number

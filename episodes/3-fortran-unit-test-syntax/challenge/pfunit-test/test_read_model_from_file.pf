@@ -1,8 +1,11 @@
 module test_read_model_from_file
     use game_of_life_mod, only : read_model_from_file
+    ! allow(C121)
     use funit
 
     implicit none
+
+    public
 
     ! TASK: Define a parameter type `read_model_from_file_test_params` to be used for testing game_of_life::read_model_from_file
     ! Your changes here...
@@ -38,7 +41,8 @@ contains
         integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
-        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, actual_io_error_message)
+        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, &
+                                  actual_io_error_message)
 
         if (this%params%model_is_valid) then
             call VerifyCheckReadModelFromFileValidModel(this%params, actual_board, actual_io_error_message)
@@ -47,7 +51,7 @@ contains
         end if
     end subroutine TestCheckReadModelFromFile
 
-    ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert 
+    ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert
     !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
 

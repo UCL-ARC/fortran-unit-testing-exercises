@@ -1,7 +1,10 @@
 module test_evolve_board
     use game_of_life_mod, only : evolve_board
+    ! allow(C121)
     use funit
     implicit none
+
+    public
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     @testParameter
