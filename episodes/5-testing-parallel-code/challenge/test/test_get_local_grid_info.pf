@@ -1,0 +1,234 @@
+!> Module for testing the subroutine game_of_life::get_local_grid_info
+module test_get_local_grid_info
+    use game_of_life_mod, only : get_local_grid_info, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    use pfunit
+    implicit none
+
+    !> Type to bundle inputs and expected outputs of game_of_life::get_local_grid_info
+    @testParameter(constructor=new_get_local_grid_info_test_params)
+    type, extends(MPITestParameter) :: get_local_grid_info_test_params
+        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), local_ny(:), local_nx(:)
+    end type get_local_grid_info_test_params
+
+    !> Type to define a single get_local_grid_info test case
+    @TestCase(testParameters={getParameters()}, constructor=newTest)
+    type, extends(MPITestCase) :: get_local_grid_info_test_case
+        type(get_local_grid_info_test_params) :: params
+        integer :: global_ny, global_nx, dims(2)
+        type(DomainDecomposition) :: domainDecomp
+    contains
+        procedure :: setUp
+    end type get_local_grid_info_test_case
+
+contains
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! State setup (Given)
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Setup the variables shared by each rank - global_ny/x, the cartesian communicator and rank dimensions.
+    subroutine setUp(this)
+        class(get_local_grid_info_test_case), intent(inout) :: this
+
+        integer :: ierr
+
+        this%global_ny = 31
+        this%global_nx = 31
+
+        this%dims = 0
+        call MPI_Dims_create(this%getNumProcesses(), 2, this%dims, ierr) 
+        call MPI_Cart_create(this%getMpiCommunicator(), 2, this%dims, [.false.,.false.], .true., this%domainDecomp%communicator, ierr)
+    end subroutine setUp
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Test Suites
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Test suite for the game_of_life::get_local_grid_info subroutine
+    function getParameters() result(params)
+        type(get_local_grid_info_test_params), allocatable :: params(:)
+
+        integer :: max_num_ranks, num_ranks, rank, i
+        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), local_ny(:), local_nx(:)
+
+        max_num_ranks = 4
+        allocate(params(max_num_ranks))
+        
+        allocate(ny_per_rank(max_num_ranks))
+        allocate(nx_per_rank(max_num_ranks))
+        allocate(coords(2,max_num_ranks))
+        allocate(neighbours(4,max_num_ranks))
+        allocate(y_start(max_num_ranks))
+        allocate(x_start(max_num_ranks))
+        allocate(local_ny(max_num_ranks))
+        allocate(local_nx(max_num_ranks))
+
+        do num_ranks = 1, max_num_ranks
+            ! Initialise neighbours to catch any mistakes in parameter setup
+            neighbours = -2
+
+            do i = 1, num_ranks
+                rank = i-1
+
+                ! Define expected outputs for 1 rank
+                if (num_ranks == 1) then
+                    ny_per_rank(i) = 31
+                    nx_per_rank(i) = 31
+                    coords(:,i) = [0,0]
+                    y_start(i) = 1
+                    x_start(i) = 1
+                    local_ny(i) = 31
+                    local_nx(i) = 31
+
+                ! Define expected outputs for 2 ranks
+                else if (num_ranks == 2) then
+                    ny_per_rank(i) = 15
+                    nx_per_rank(i) = 31
+                    x_start(i) = 1
+                    local_nx(i) = 31
+                    if (rank == 0) then
+                        coords(:,i) = [0,0]
+                        neighbours(UP,i) = 1
+                        y_start(i) = 1
+                        local_ny(i) = 15
+                    else if (rank == 1) then
+                        coords(:,i) = [1,0]
+                        neighbours(DOWN,i) = 0
+                        y_start(i) = 16
+                        local_ny(i) = 16
+                    end if
+
+                ! Define expected outputs for 3 ranks
+                else if (num_ranks == 3) then
+                    ny_per_rank(:) = 10
+                    nx_per_rank(:) = 31
+                    x_start(:) = 1
+                    local_nx(:) = 31
+                    if (rank == 0) then
+                        coords(:,i) = [0,0]
+                        neighbours(UP,i) = 1
+                        y_start(i) = 1
+                        local_ny(i) = 10
+                    else if (rank == 1) then
+                        coords(:,i) = [1,0]
+                        neighbours(DOWN,i) = 0
+                        neighbours(UP,i) = 2
+                        y_start(i) = 11
+                        local_ny(i) = 10
+                    else if (rank == 2) then
+                        coords(:,i) = [2,0]
+                        neighbours(DOWN,i) = 1
+                        y_start(i) = 21
+                        local_ny(i) = 11
+                    end if
+
+                ! Define expected outputs for 4 ranks
+                else if (num_ranks == 4) then
+                    ny_per_rank(i) = 15
+                    nx_per_rank(i) = 15
+                    if (rank == 0) then
+                        coords(:,i) = [0,0]
+                        neighbours(UP,i) = 2
+                        neighbours(RIGHT,i) = 1
+                        y_start(i) = 1
+                        x_start(i) = 1
+                        local_ny(i) = 15
+                        local_nx(i) = 15
+                    else if (rank == 1) then
+                        coords(:,i) = [0,1]
+                        neighbours(LEFT,i) = 0
+                        neighbours(UP,i) = 3
+                        y_start(i) = 1
+                        x_start(i) = 16
+                        local_ny(i) = 15
+                        local_nx(i) = 16
+                    else if (rank == 2) then
+                        coords(:,i) = [1,0]
+                        neighbours(DOWN,i) = 0
+                        neighbours(RIGHT,i) = 3
+                        y_start(i) = 16
+                        x_start(i) = 1
+                        local_ny(i) = 16
+                        local_nx(i) = 15
+                    else if (rank == 3) then
+                        coords(:,i) = [1,1]
+                        neighbours(DOWN,i) = 1
+                        neighbours(LEFT,i) = 2
+                        y_start(i) = 16
+                        x_start(i) = 16
+                        local_ny(i) = 16
+                        local_nx(i) = 16
+                    end if
+
+                end if
+            end do
+            params(num_ranks) = get_local_grid_info_test_params(num_ranks, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+        end do
+    end function getParameters
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Assertion functions
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Check for the expected output of the game_of_life::get_local_grid_info subroutine
+    @Test
+    subroutine TestGetLocalGridInfo(this)
+        class(get_local_grid_info_test_case), intent(inout) :: this
+
+        integer :: global_ny, global_nx, cart_comm, ny_per_rank, nx_per_rank, coords(2), y_start, x_start, local_ny, local_nx, ierr
+        type(DomainDecomposition) :: domainDecomp
+
+        integer :: rank, rank_index
+        
+        rank = this%getProcessRank()
+        rank_index = rank + 1
+
+        call get_local_grid_info(this%domainDecomp, rank, this%dims, this%global_ny, this%global_nx, &
+            ny_per_rank, nx_per_rank, coords, y_start, x_start, local_ny, local_nx)
+        
+        @assertEqual(this%params%ny_per_rank(rank_index), ny_per_rank, "Unexpected value for ny_per_rank")
+        @assertEqual(this%params%nx_per_rank(rank_index), nx_per_rank, "Unexpected value for nx_per_rank")
+        @assertEqual(this%params%coords(:,rank_index), coords, "Unexpected value for coords")
+        @assertEqual(this%params%neighbours(:,rank_index), this%domainDecomp%neighbours, "Unexpected value for neighbours")
+        @assertEqual(this%params%y_start(rank_index), y_start, "Unexpected value for y_start")
+        @assertEqual(this%params%x_start(rank_index), x_start, "Unexpected value for x_start")
+        @assertEqual(this%params%local_ny(rank_index), local_ny, "Unexpected value for local_ny")
+        @assertEqual(this%params%local_nx(rank_index), local_nx, "Unexpected value for local_nx")
+    end subroutine TestGetLocalGridInfo
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Contructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    function new_get_local_grid_info_test_params(ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx) result(new_params)
+        integer, allocatable, intent(in) :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), local_ny(:), local_nx(:)
+
+        type(get_local_grid_info_test_params) new_params
+
+        allocate(new_params%ny_per_rank(size(ny_per_rank, 1)))
+        allocate(new_params%nx_per_rank(size(nx_per_rank, 1)))
+        allocate(new_params%coords(size(coords, 1), size(coords, 2)))
+        allocate(new_params%neighbours(size(neighbours, 1), size(neighbours, 2)))
+        allocate(new_params%y_start(size(y_start, 1)))
+        allocate(new_params%x_start(size(x_start, 1)))
+        allocate(new_params%local_ny(size(local_ny, 1)))
+        allocate(new_params%local_nx(size(local_nx, 1)))
+
+        new_params%ny_per_rank = ny_per_rank
+        new_params%nx_per_rank = nx_per_rank
+        new_params%coords = coords
+        new_params%neighbours = neighbours
+        new_params%y_start = y_start
+        new_params%x_start = x_start
+        new_params%local_ny = local_ny
+        new_params%local_nx = local_nx
+
+    end function new_get_local_grid_info_test_params
+
+    function newTest(testParameter) result(tst)
+        type(get_local_grid_info_test_case) :: tst
+        type(get_local_grid_info_test_params), intent(in) :: testParameter
+
+        tst%params = testParameter
+    end function newTest
+end module test_get_local_grid_info

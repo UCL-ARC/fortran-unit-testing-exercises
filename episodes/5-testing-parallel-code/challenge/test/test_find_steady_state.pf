@@ -50,7 +50,7 @@ contains
         expected_generation_number = 17
         allocate(board(31,31))
         board = 0
-        board(9, 9:11) = [0,1,0]
+        board(9,9:11)  = [0,1,0]
         board(10,9:11) = [1,1,1]
         board(11,9:11) = [1,0,1]
         board(12,9:11) = [0,1,0]

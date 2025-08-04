@@ -124,7 +124,7 @@ then
     fi
     
     echo "Building pFUnit from source"
-    cmake $pfunit_src_path -B $pfunit_src_path/build -DINSTALL_PATH=$PFUNIT_INSTALLED_PATH -DMPI=YES
+    cmake $pfunit_src_path -B $pfunit_src_path/build -DINSTALL_PATH=$PFUNIT_INSTALLED_PATH -DMPI=YES -DCMAKE_Fortran_COMPILER=mpif90 -DOPENMP=YES
     cmake --build $pfunit_src_path/build "-j$num_build_threads" --target install
 
     echo ""
