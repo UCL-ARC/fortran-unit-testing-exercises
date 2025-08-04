@@ -12,7 +12,6 @@ module test_find_steady_state
         ! These will be the same for all ranks
         logical :: expected_steady_state
         integer :: expected_generation_number
-        integer :: ny, nx
     contains
         procedure :: toString => find_steady_state_test_params_toString
     end type find_steady_state_test_params
@@ -35,8 +34,7 @@ contains
 
         logical :: expected_steady_state
         integer :: expected_generation_number
-        integer, dimension(:,:,:), allocatable :: board
-        integer :: ny, nx
+        integer, dimension(:,:), allocatable :: board
 
         
         !  Steady state should be reached after 17 iterations
@@ -50,17 +48,15 @@ contains
         !  13 | 0  0  0  0  0
         expected_steady_state = .true.
         expected_generation_number = 17
-        ny = 31
-        nx = 31
-        allocate(board(nx,ny))
+        allocate(board(31,31))
         board = 0
-        board(9, 9:11) = [0,1,0]
+        board(9,9:11)  = [0,1,0]
         board(10,9:11) = [1,1,1]
         board(11,9:11) = [1,0,1]
         board(12,9:11) = [0,1,0]
         
         params = [ &
-            find_steady_state_test_params(board, expected_steady_state, expected_generation_number, ny, nx) &
+            find_steady_state_test_params(board, expected_steady_state, expected_generation_number) &
         ]
         
     end function getParameters
@@ -79,7 +75,7 @@ contains
 
         integer, dimension(:,:), allocatable :: board
         
-        call find_steady_state(actual_steady_state, actual_generation_number, this%params%board, this%params%ny, this%params%nx)
+        call find_steady_state(.false., actual_steady_state, actual_generation_number, this%params%board)
         
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
         if (this%params%expected_steady_state) then
@@ -93,11 +89,10 @@ contains
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number, ny, nx) result(new_params)
+    function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number) result(new_params)
         integer, dimension(:,:), allocatable, intent(in) :: board
         logical, intent(in) :: expected_steady_state
         integer, intent(in) :: expected_generation_number
-        integer, intent(in) :: ny, nx
 
         type(find_steady_state_test_params) new_params
 
@@ -106,8 +101,6 @@ contains
         new_params%board = board
         new_params%expected_steady_state = expected_steady_state
         new_params%expected_generation_number = expected_generation_number
-        new_params%ny = ny
-        new_params%nx = nx
 
     end function new_find_steady_state_test_params
 

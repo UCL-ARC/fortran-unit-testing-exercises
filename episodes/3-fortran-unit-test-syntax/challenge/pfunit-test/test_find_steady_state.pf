@@ -89,11 +89,10 @@ contains
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number, ny, nx) result(new_params)
+    function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number) result(new_params)
         integer, dimension(:,:), allocatable, intent(in) :: board
         logical, intent(in) :: expected_steady_state
         integer, intent(in) :: expected_generation_number
-        integer, intent(in) :: ny, nx
 
         type(find_steady_state_test_params) new_params
 

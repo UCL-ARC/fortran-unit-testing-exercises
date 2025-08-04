@@ -7,8 +7,7 @@
 program game_of_life
     ! allow(C121)
     use mpi
-    use game_of_life_mod, only : evolve_board, check_for_steady_state, read_model_from_file, exchange_boundaries, &
-        get_local_grid_info, DomainDecomposition, find_steady_state
+    use game_of_life_mod, only : read_model_from_file, find_steady_state
     implicit none
 
     !! Board args
@@ -75,7 +74,15 @@ program game_of_life
     call MPI_Bcast(global_nx, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
     call MPI_Bcast(global_ny, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
 
-    call find_steady_state(local_steady, generation_number, MPI_COMM_WORLD, nprocs, global_board, global_ny, global_nx)
+    call find_steady_state(local_steady, generation_number, global_board, global_ny, global_nx, MPI_COMM_WORLD, nprocs)
+
+    if (rank == 0) then
+        if (local_steady) then
+            write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"
+        else
+            write(*,'(a,i6,a)') "Did NOT Reach steady after ", generation_number, " generations"
+        end if
+    end if
 
     call MPI_Finalize(ierr)
 end program game_of_life

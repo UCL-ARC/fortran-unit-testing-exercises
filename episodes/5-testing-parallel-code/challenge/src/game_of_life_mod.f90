@@ -17,12 +17,13 @@ module game_of_life_mod
 
 contains
 
-    subroutine find_steady_state(global_steady, generation_number, base_mpi_communicator, nprocs, global_board, global_ny, &
-                                 global_nx)
+    subroutine find_steady_state(global_steady, generation_number, global_board, global_ny, global_nx, base_mpi_communicator, &
+                                 nprocs)
         logical, intent(out) :: global_steady
         integer, intent(out) :: generation_number
         integer, dimension(:,:), allocatable, intent(inout) :: global_board
-        integer, intent(in) :: base_mpi_communicator, nprocs, global_ny, global_nx
+        integer, intent(in) :: global_ny, global_nx
+        integer, intent(in) :: base_mpi_communicator, nprocs
 
         !! Board args
         integer, parameter :: max_generations = 100
@@ -92,7 +93,6 @@ contains
         local_new = local_current
 
         call MPI_Barrier(domainDecomp%communicator, ierr)
-        start_time = MPI_Wtime()
 
         generation_number = 0
         local_steady = .false.
@@ -112,16 +112,6 @@ contains
 
             generation_number = generation_number + 1
         end do
-
-        end_time = MPI_Wtime()
-
-        if (rank == 0) then
-            if (local_steady) then
-                print *, "Reached steady state after ", generation_number, " generations. Time: ", end_time - start_time
-            else
-                print *, "Did NOT reach steady state after ", generation_number, " generations. Time: ", end_time - start_time
-            end if
-        end if
     end subroutine find_steady_state
 
     subroutine get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
