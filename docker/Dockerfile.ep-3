@@ -5,16 +5,16 @@ COPY episodes/3-fortran-unit-test-syntax /3-fortran-unit-test-syntax
 WORKDIR /3-fortran-unit-test-syntax/solution
 
 # build tests inc veggies with cmake
-RUN sed -i -E 's/.*add_subdirectory\(\"test-drive-test\"\)/#add_subdirectory\(\"test-drive-test\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"pfunit-test\"\)/#add_subdirectory\(\"pfunit-test\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"veggies-test\"\)/add_subdirectory\(\"veggies-test\"\)/g' CMakeLists.txt && \
+RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/#add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/#add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
     cmake -B build-cmake-veggies -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
     cmake --build build-cmake-veggies
 
 # build tests without veggies with cmake
-RUN sed -i -E 's/.*add_subdirectory\(\"test-drive-test\"\)/add_subdirectory\(\"test-drive-test\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"pfunit-test\"\)/add_subdirectory\(\"pfunit-test\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"veggies-test\"\)/#add_subdirectory\(\"veggies-test\"\)/g' CMakeLists.txt && \
+RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
+    sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/#add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
     cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
     cmake --build build-cmake
 

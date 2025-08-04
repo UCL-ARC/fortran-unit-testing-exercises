@@ -4,6 +4,11 @@ name = "episode-2-challenge-1-solution"
 veggies.git = "https://gitlab.com/everythingfunctional/veggies"
 veggies.tag = "main"
 
+[build]
+auto-executables = false
+auto-tests = false
+auto-examples = false
+
 [[executable]]
 name = "game-of-life"
 source-dir = "src"

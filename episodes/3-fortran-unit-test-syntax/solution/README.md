@@ -19,10 +19,10 @@ cd build-cmake
 ctest
 ```
 
-## Question 1 - Can you implement the unfinished sections in pfunit-test?
+## Question 1 - Can you implement the unfinished sections in test/pfunit?
 
-Completed pFUnit tests can be found in [pfunit-test](./pfunit-test/).
+Completed pFUnit tests can be found in [test/pfunit](./test/pfunit/).
 
-## Question 2 - Can you implement the unfinished sections in test-drive-test?
+## Question 2 - Can you implement the unfinished sections in test/test-drive?
 
-Completed test-drive tests can be found in [test-drive-test](./test-drive-test/).
+Completed test-drive tests can be found in [test/test-drive](./test/test-drive/).

@@ -14,8 +14,8 @@ FetchContent_MakeAvailable("veggies")
 configure_file(${CMAKE_SOURCE_DIR}/test/veggies/CTestCustom.cmake ${CMAKE_BINARY_DIR})
 
 # Ensure test data is available at runtime
-file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
-        "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
+file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test/models"
+        "${CMAKE_CURRENT_BINARY_DIR}/test/models" SYMBOLIC)
 
 # Define test files
 set(PROJ_VEGGIES_DIR "${PROJECT_SOURCE_DIR}/test/veggies")

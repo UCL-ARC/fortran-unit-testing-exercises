@@ -25,11 +25,11 @@ contains
     ! TASK: Write the subroutine `read_model_from_file_test_suite` which populates testsuites for testing
     !       game_of_life::read_model_from_file including tests of the following scenarios.
     !
-    !       1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
-    !       2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
-    !       3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
-    !       4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
-    !       5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
+    !       1. Reading a valid model (i.e. test/models/zeros_31_31.dat) populates the board as expected
+    !       2. Reading a model (test/models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
+    !       3. Reading a model (test/models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
+    !       4. Reading a model (test/models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
+    !       5. Reading a model (test/models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
     !       6. Reading a model which doesn't exist populates the error message es expected
     !
     !> Test suite for the game_of_life::read_model_from_file subroutine
@@ -53,13 +53,13 @@ contains
 
     ! TASK: Write test subroutines for each of the above scenarios
 
-    !> 1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
+    !> 1. Reading a valid model (i.e. test/models/zeros_31_31.dat) populates the board as expected
     subroutine test_read_model_from_file_zeros_31_31(error)
         type(error_type), allocatable, intent(out) :: error
 
         type(read_model_from_file_test_params) :: inputs
 
-        inputs%input_fname = "test-models/zeros_31_31.dat"
+        inputs%input_fname = "test/models/zeros_31_31.dat"
         inputs%max_nrow = 100
         inputs%max_ncol = 100
         allocate(inputs%expected_board(31, 31))
@@ -68,13 +68,13 @@ contains
         call check_read_model_from_file_valid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31
 
-    !> 2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
+    !> 2. Reading a model (test/models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
     subroutine test_read_model_from_file_zeros_31_31_low_max_nrow(error)
         type(error_type), allocatable, intent(out) :: error
 
         type(read_model_from_file_test_params) :: inputs
 
-        inputs%input_fname = "test-models/zeros_31_31.dat"
+        inputs%input_fname = "test/models/zeros_31_31.dat"
         inputs%max_nrow = 10
         inputs%max_ncol = 100
         inputs%expected_io_error_message = "nrow must be a positive integer less than     10 found     31"
@@ -82,13 +82,13 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31_low_max_nrow
 
-    !> 3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
+    !> 3. Reading a model (test/models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
     subroutine test_read_model_from_file_zeros_31_31_low_max_ncol(error)
         type(error_type), allocatable, intent(out) :: error
 
         type(read_model_from_file_test_params) :: inputs
 
-        inputs%input_fname = "test-models/zeros_31_31.dat"
+        inputs%input_fname = "test/models/zeros_31_31.dat"
         inputs%max_nrow = 100
         inputs%max_ncol = 10
         inputs%expected_io_error_message = "ncol must be a positive integer less than     10 found     31"
@@ -96,13 +96,13 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_zeros_31_31_low_max_ncol
 
-    !> 4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
+    !> 4. Reading a model (test/models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
     subroutine test_read_model_from_file_empty_minus10_10(error)
         type(error_type), allocatable, intent(out) :: error
 
         type(read_model_from_file_test_params) :: inputs
 
-        inputs%input_fname = "test-models/empty_-10_10.dat"
+        inputs%input_fname = "test/models/empty_-10_10.dat"
         inputs%max_nrow = 100
         inputs%max_ncol = 100
         inputs%expected_io_error_message = "nrow must be a positive integer less than    100 found    -10"
@@ -110,13 +110,13 @@ contains
         call check_read_model_from_file_invalid_model(error, inputs)
     end subroutine test_read_model_from_file_empty_minus10_10
 
-    !> 5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
+    !> 5. Reading a model (test/models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
     subroutine test_read_model_from_file_empty_10_minus10(error)
         type(error_type), allocatable, intent(out) :: error
 
         type(read_model_from_file_test_params) :: inputs
 
-        inputs%input_fname = "test-models/empty_10_-10.dat"
+        inputs%input_fname = "test/models/empty_10_-10.dat"
         inputs%max_nrow = 100
         inputs%max_ncol = 100
         inputs%expected_io_error_message = "ncol must be a positive integer less than    100 found    -10"

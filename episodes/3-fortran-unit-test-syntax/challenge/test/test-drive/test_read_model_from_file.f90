@@ -18,30 +18,30 @@ contains
     ! TASK: Write the subroutine `read_model_from_file_test_suite` which populates testsuites for testing
     !       game_of_life::read_model_from_file including tests of the following scenarios.
     !
-    !       1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
-    !       2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
-    !       3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
-    !       4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
-    !       5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
+    !       1. Reading a valid model (i.e. test/models/zeros_31_31.dat) populates the board as expected
+    !       2. Reading a model (test/models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
+    !       3. Reading a model (test/models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
+    !       4. Reading a model (test/models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
+    !       5. Reading a model (test/models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
     !       6. Reading a model which doesn't exist populates the error message es expected
     !
     ! Your changes here...
 
     ! TASK: Write test subroutines for each of the above scenarios
 
-    !> 1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
+    !> 1. Reading a valid model (i.e. test/models/zeros_31_31.dat) populates the board as expected
     ! Your changes here...
 
-    !> 2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
+    !> 2. Reading a model (test/models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
     ! Your changes here...
 
-    !> 3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
+    !> 3. Reading a model (test/models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
     ! Your changes here...
 
-    !> 4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
+    !> 4. Reading a model (test/models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
     ! Your changes here...
 
-    !> 5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
+    !> 5. Reading a model (test/models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
     ! Your changes here...
 
     !> 6. Reading a model which doesn't exist populates the error message es expected
