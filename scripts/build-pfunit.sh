@@ -10,6 +10,7 @@ DEFAULT_PFUNIT_VERSION="v4.12.0"
 
 clean=false
 build=false
+test=false
 pfunit_src_path="$DEFAULT_PFUNIT_SRC_PATH"
 pfunit_version="$DEFAULT_PFUNIT_VERSION"
 
@@ -21,6 +22,7 @@ help() {
   echo "    -h | --help                 Display this help message."
   echo "    -c | --clean                Clean all build artifacts."
   echo "    -b | --build                Build pFUnit."
+  echo "    -t | --test                 Test a pFUnit installation."
   echo "    -p | --path                 Absolute path into which pFUnit should be built. Defaults to $DEFAULT_PFUNIT_SRC_PATH."
   echo "    -v | --version <version>    The version of pFUnit to install. Defaults to $DEFAULT_PFUNIT_VERSION."
   exit 0
@@ -50,6 +52,11 @@ while [ $# -gt 0 ] ; do
             shift 1
             continue
             ;;
+        -t | --test)
+            test=true
+            shift 1
+            continue
+            ;;
         -p | --path)
             pfunit_src_path=$2
             PFUNIT_INSTALLED_PATH="$pfunit_src_path/build/installed"
@@ -71,9 +78,9 @@ while [ $# -gt 0 ] ; do
 done
 
 # if nothing to do, tell user
-if [[ "$build" == "false" && "$clean" == "false" ]]
+if [[ "$build" == "false" && "$clean" == "false" && "$test" == "false" ]]
 then
-    echo "Nothing to do. Please specify at least one of --clean or --build. Use --help for details"
+    echo "Nothing to do. Please specify at least one of --clean, --build or --test. Use --help for details"
     exit 0
 fi
 
@@ -130,4 +137,15 @@ then
     echo ""
     echo "Successfully built pFUnit. To use installation, add the following to cmake flags"
     echo "  -DCMAKE_PREFIX_PATH=$PFUNIT_INSTALLED_PATH"
+fi
+
+if [ "$test" == "true" ]
+then
+    if [ "$pfunit_src_path" == "" ]
+    then
+        echo "Testing pFUnit requested but no root dir for pFUnit provided. Please provide a path using --pfunit-dir."
+        exit 0
+    else
+        ctest --test-dir "$pfunit_src_path/build" --output-on-failure
+    fi
 fi
