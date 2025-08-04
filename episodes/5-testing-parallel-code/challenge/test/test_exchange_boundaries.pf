@@ -127,15 +127,21 @@ contains
         allocate(actual_board(size(this%params%input_board, 1), size(this%params%input_board, 2)))
         actual_board = this%params%input_board(:,:,rank_index)
 
-        call exchange_boundaries(actual_board, this%params%ny, this%params%nx, DomainDecomposition(this%getMpiCommunicator(), this%params%neighbours(:,rank_index)))
+        call exchange_boundaries(actual_board, this%params%ny, this%params%nx, DomainDecomposition(this%getMpiCommunicator(), &
+                                 this%params%neighbours(:,rank_index)))
 
-        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,2:this%params%ny+1,rank_index), actual_board(2:this%params%nx+1,2:this%params%ny+1), "Unexpected centre of board")
+        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,2:this%params%ny+1,rank_index), &
+                     actual_board(2:this%params%nx+1,2:this%params%ny+1), "Unexpected centre of board")
 
         ! For simplicity, do not check corners as these cannot be 100% known at this point due to timings of MPI messages
-        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,1,rank_index), actual_board(2:this%params%nx+1,1), "Unexpected bottom halo")
-        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,this%params%ny+2,rank_index), actual_board(2:this%params%nx+1,this%params%ny+2), "Unexpected top halo")
-        @assertEqual(this%params%expected_output_board(1,2:this%params%ny+1,rank_index), actual_board(1,2:this%params%ny+1), "Unexpected left halo")
-        @assertEqual(this%params%expected_output_board(this%params%nx+2,2:this%params%ny+1,rank_index), actual_board(this%params%nx+2,2:this%params%ny+1), "Unexpected right halo")
+        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,1,rank_index), actual_board(2:this%params%nx+1,1), &
+                     "Unexpected bottom halo")
+        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,this%params%ny+2,rank_index), &
+                     actual_board(2:this%params%nx+1,this%params%ny+2), "Unexpected top halo")
+        @assertEqual(this%params%expected_output_board(1,2:this%params%ny+1,rank_index), actual_board(1,2:this%params%ny+1), &
+                     "Unexpected left halo")
+        @assertEqual(this%params%expected_output_board(this%params%nx+2,2:this%params%ny+1,rank_index), &
+                     actual_board(this%params%nx+2,2:this%params%ny+1), "Unexpected right halo")
 
         deallocate(actual_board)
     end subroutine TestExchangeBoundaries
@@ -152,7 +158,8 @@ contains
         type(exchange_boundaries_test_params) new_params
 
         allocate(new_params%input_board(size(input_board, 1), size(input_board, 2), size(input_board, 3)))
-        allocate(new_params%expected_output_board(size(expected_output_board, 1), size(expected_output_board, 2), size(expected_output_board, 3)))
+        allocate(new_params%expected_output_board(size(expected_output_board, 1), size(expected_output_board, 2), &
+                                                  size(expected_output_board, 3)))
         allocate(new_params%neighbours(size(neighbours, 1), size(neighbours, 2)))
         
         new_params%input_board = input_board

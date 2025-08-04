@@ -7,7 +7,8 @@ module test_get_local_grid_info
     !> Type to bundle inputs and expected outputs of game_of_life::get_local_grid_info
     @testParameter(constructor=new_get_local_grid_info_test_params)
     type, extends(MPITestParameter) :: get_local_grid_info_test_params
-        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), local_ny(:), local_nx(:)
+        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), &
+                                local_ny(:), local_nx(:)
     end type get_local_grid_info_test_params
 
     !> Type to define a single get_local_grid_info test case
@@ -37,7 +38,8 @@ contains
 
         this%dims = 0
         call MPI_Dims_create(this%getNumProcesses(), 2, this%dims, ierr) 
-        call MPI_Cart_create(this%getMpiCommunicator(), 2, this%dims, [.false.,.false.], .true., this%domainDecomp%communicator, ierr)
+        call MPI_Cart_create( &
+            this%getMpiCommunicator(), 2, this%dims, [.false.,.false.], .true., this%domainDecomp%communicator, ierr)
     end subroutine setUp
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -49,7 +51,8 @@ contains
         type(get_local_grid_info_test_params), allocatable :: params(:)
 
         integer :: max_num_ranks, num_ranks, rank, i
-        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), local_ny(:), local_nx(:)
+        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), &
+                                local_ny(:), local_nx(:)
 
         max_num_ranks = 4
         allocate(params(max_num_ranks))
@@ -162,7 +165,9 @@ contains
 
                 end if
             end do
-            params(num_ranks) = get_local_grid_info_test_params(num_ranks, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx)
+            params(num_ranks) = get_local_grid_info_test_params( &
+                num_ranks, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx &
+            )
         end do
     end function getParameters
 
@@ -175,8 +180,7 @@ contains
     subroutine TestGetLocalGridInfo(this)
         class(get_local_grid_info_test_case), intent(inout) :: this
 
-        integer :: global_ny, global_nx, cart_comm, ny_per_rank, nx_per_rank, coords(2), y_start, x_start, local_ny, local_nx, ierr
-        type(DomainDecomposition) :: domainDecomp
+        integer :: ny_per_rank, nx_per_rank, coords(2), y_start, x_start, local_ny, local_nx, ierr
 
         integer :: rank, rank_index
         
@@ -200,8 +204,10 @@ contains
     ! Contructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    function new_get_local_grid_info_test_params(ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx) result(new_params)
-        integer, allocatable, intent(in) :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), local_ny(:), local_nx(:)
+    function new_get_local_grid_info_test_params(ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, &
+                                                 local_nx) result(new_params)
+        integer, allocatable, intent(in) :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), &
+                                            local_ny(:), local_nx(:)
 
         type(get_local_grid_info_test_params) new_params
 
