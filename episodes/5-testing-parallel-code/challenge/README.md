@@ -1,4 +1,4 @@
-# Episode 5: Rewrite serial test as a parallel test.
+# Testing parallel code - Challenege: Rewrite serial test as a parallel test.
 
 In [src](./src) there is a hybrid MPI-OpenMP parallel implementation of the
 Conway's game of life code we have seen in previous exercises. 

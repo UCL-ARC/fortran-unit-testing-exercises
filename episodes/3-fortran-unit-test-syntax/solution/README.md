@@ -1,4 +1,4 @@
-# Episode 3 - Challenge 1 - Solution: Rewrite veggies tests using test-drive and pFUnit
+# Fortran Unit Test Syntax - Solution: Rewrite veggies tests using test-drive and pFUnit
 
 This solution can be built with either FPM or CMake.
 

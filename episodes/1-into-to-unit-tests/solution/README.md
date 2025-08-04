@@ -1,4 +1,4 @@
-# Introduction to unit testing - Challenge 2 - Solution: Unit test bad practices
+# Introduction to unit testing - Solution: Unit test bad practices
 
 ## Questions 1
 
@@ -25,8 +25,7 @@ There are several issues with `maths_test`
 > If you are familiar with veggies, try to implement your suggested changes.
 
 The solution here is a single test file [maths_test_solution.f90](./maths_test_solution.f90) written
-using Veggies. To run these solution tests, update which module is used within [test/main.f90](../main.f90)
-from `maths_test` to `maths_test_solution`. Then run the tests as before with... 
+using Veggies. To use this solution, replace the contents of [challenge/test/maths_test.f90](../challenge/test/maths_test.f90) with the solution. Then run the tests as before with... 
 
 ```sh
 fpm test
