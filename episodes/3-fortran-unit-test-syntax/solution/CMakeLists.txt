@@ -19,14 +19,14 @@ enable_testing()
 #--------------------------------------#
 #               veggies                #
 #--------------------------------------#
-# add_subdirectory("veggies-test")
+add_subdirectory("test/veggies")
 
 #--------------------------------------#
 #             test-drive               #
 #--------------------------------------#
-add_subdirectory("test-drive-test")
+# add_subdirectory("test/test-drive")
 
 #--------------------------------------#
 #               pFUnit                 #
 #--------------------------------------#
-add_subdirectory("pfunit-test")
+add_subdirectory("test/pfunit")

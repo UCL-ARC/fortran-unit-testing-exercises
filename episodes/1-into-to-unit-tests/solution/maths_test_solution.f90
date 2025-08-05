@@ -1,4 +1,4 @@
-module maths_test_solution
+module maths_test
     use maths, only : double, factorial
     use veggies, only: &
             assert_equals, &
@@ -94,4 +94,4 @@ contains
         end select
     end function test_factorial
 
-end module maths_test_solution
+end module maths_test

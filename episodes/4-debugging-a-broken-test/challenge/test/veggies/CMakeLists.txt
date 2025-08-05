@@ -11,26 +11,19 @@ FetchContent_Declare(
 FetchContent_MakeAvailable("veggies")
 
 # Ignore tests from test-drive itself
-configure_file(${CMAKE_SOURCE_DIR}/veggies-test/CTestCustom.cmake ${CMAKE_BINARY_DIR})
-
-# Ensure test data is available at runtime
-file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
-        "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
+configure_file(${CMAKE_SOURCE_DIR}/test/veggies/CTestCustom.cmake ${CMAKE_BINARY_DIR})
 
 # Define test files
-set(PROJ_VEGGIES_DIR "${PROJECT_SOURCE_DIR}/veggies-test")
+set(PROJ_VEGGIES_DIR "${PROJECT_SOURCE_DIR}/test/veggies")
 
 # Filter out the main.f90 files. We can only have one main() function in our tests
 set(PROJ_SRC_FILES_EXEC_MAIN ${PROJ_SRC_FILES})
-list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*game_of_life.f90")
+list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*main.f90")
 
 # Unit testing
 set(
   tests
-  "evolve_board"
-  "check_for_steady_state"
-  "find_steady_state"
-  "read_model_from_file"
+  "transpose"
 )
 set(
   test-srcs

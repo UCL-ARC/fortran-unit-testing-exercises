@@ -2,5 +2,14 @@ FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 
 COPY episodes/1-into-to-unit-tests /1-into-to-unit-tests
 
-# test with fpm
-RUN cd /1-into-to-unit-tests && fpm test
+WORKDIR /1-into-to-unit-tests/challenge
+
+# test challenge with fpm
+RUN fpm test
+
+# clean build 
+RUN rm -rf build
+
+# Test solution with fpm
+RUN mv ../solution/maths_test_solution.f90 test/maths_test.f90 && \
+    fpm test

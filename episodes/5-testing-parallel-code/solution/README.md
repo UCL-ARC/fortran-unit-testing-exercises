@@ -1,4 +1,4 @@
-# Episode 5 - Solution: Rewrite serial test as a parallel test.
+# Testing parallel code - Solution: Rewrite serial test as a parallel test.
 
 A parallel solution is provided in the form of the file
 [test_find_steady_state.pf](./test_find_steady_state.pf). This file contains

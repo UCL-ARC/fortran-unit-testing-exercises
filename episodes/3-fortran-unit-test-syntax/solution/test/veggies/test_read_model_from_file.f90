@@ -43,7 +43,7 @@ contains
         test_board = 0
 
         valid_model_file_data(1) = example_t( &
-            read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message) &
+            read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message) &
         )
 
         deallocate(test_board)
@@ -52,22 +52,22 @@ contains
 
         test_io_error_message = "nrow must be a positive integer less than     10 found     31"
         invalid_model_file_data(1) = example_t( &
-            read_model_from_file_test_params("test-models/zeros_31_31.dat", 10, 100, null(), test_io_error_message) &
+            read_model_from_file_test_params("test/models/zeros_31_31.dat", 10, 100, null(), test_io_error_message) &
         )
 
         test_io_error_message = "ncol must be a positive integer less than     10 found     31"
         invalid_model_file_data(2) = example_t( &
-            read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 10, null(), test_io_error_message) &
+            read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 10, null(), test_io_error_message) &
         )
 
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
         invalid_model_file_data(3) = example_t( &
-            read_model_from_file_test_params("test-models/empty_-10_10.dat", 100, 100, null(), test_io_error_message) &
+            read_model_from_file_test_params("test/models/empty_-10_10.dat", 100, 100, null(), test_io_error_message) &
         )
 
         test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
         invalid_model_file_data(4) = example_t( &
-            read_model_from_file_test_params("test-models/empty_10_-10.dat", 100, 100, null(), test_io_error_message) &
+            read_model_from_file_test_params("test/models/empty_10_-10.dat", 100, 100, null(), test_io_error_message) &
         )
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"
@@ -99,7 +99,7 @@ contains
         class(input_t), intent(in) :: input
         type(result_t) :: result_
 
-        integer, dimension(:,:), allocatable ::actual_board
+        integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
         select type (input)

@@ -4,7 +4,7 @@ enable_testing()
 set(CMAKE_Fortran_FLAGS "-fopenmp")
 
 # Ensure test data is available at runtime
-file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test-models"
+file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test/models"
         "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
 
 # Filter out the main.f90 files. We can only have one main() function in our tests
@@ -24,7 +24,7 @@ target_link_libraries(sut "${TO_LINK_TO_SRC}")
 # List all  test files
 file(GLOB
   test_srcs
-  "${PROJECT_SOURCE_DIR}/pfunit-test/*.pf"
+  "${PROJECT_SOURCE_DIR}/test/pfunit/*.pf"
 )
 
 #########################

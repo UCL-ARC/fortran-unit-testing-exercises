@@ -1,4 +1,4 @@
-# Episode 2 - Challenge 1 - Solution: Identify bad practice for unit testing Fortran
+# Introduction to Unit Testing in Fortran - Solution: Identify bad practice for unit testing Fortran
 
 The solution provided here is an entirely self-contained project which can be built using FPM.
 

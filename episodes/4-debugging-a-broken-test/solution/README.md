@@ -1,4 +1,4 @@
-# Episode 4 - Challenge 1 - Solution: Debugging a failing unit test
+# Understanding test output - Solution: Debugging a failing unit test
 
 ## 1. Which tests are failing?
 

@@ -4,7 +4,6 @@ set(testdrive_url "https://github.com/fortran-lang/test-drive")
 set(TEST_DRIVE_BUILD_TESTING OFF CACHE BOOL "Disable test-drive internal tests")
 
 # Download test-drive sources
-if(NOT TARGET test-drive)
 message(STATUS "Retrieving test-drive from ${testdrive_url}")
 include(FetchContent)
 FetchContent_Declare(
@@ -13,7 +12,6 @@ FetchContent_Declare(
     GIT_TAG "HEAD"
     )
 FetchContent_MakeAvailable("test-drive")
-endif()
 
 # Allows using test-drive via target_link_libraries()
 add_library("test-drive::test-drive" INTERFACE IMPORTED)
@@ -27,7 +25,12 @@ if(NOT EXISTS "${TEST_DRIVE_BINARY_DIR}/include")
 endif()
 
 # Define test files
-set(PROJ_TEST_DRIVE_DIR "${PROJECT_SOURCE_DIR}/test-drive-test")
+set(PROJ_TEST_DRIVE_DIR "${PROJECT_SOURCE_DIR}/test/test-drive")
+
+# Ensure test data is available at runtime
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test")
+file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test/models"
+        "${CMAKE_CURRENT_BINARY_DIR}/test/models" SYMBOLIC)
 
 # Filter out the main.f90 files. We can only have one main() function in our tests
 set(PROJ_SRC_FILES_EXEC_MAIN ${PROJ_SRC_FILES})

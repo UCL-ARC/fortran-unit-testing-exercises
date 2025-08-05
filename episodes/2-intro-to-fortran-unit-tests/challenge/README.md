@@ -1,4 +1,4 @@
-# Episode 2 - Challenge 1: Identify bad practice for unit testing Fortran
+# Introduction to Unit Testing in Fortran - Challenge: Identify bad practice for unit testing Fortran
 
 Take a look at the [src](./src) code provided. This is an implementation of
 [Conway's game of life](http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). The program

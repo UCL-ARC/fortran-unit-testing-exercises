@@ -3,4 +3,4 @@
 **.mod
 **build
 **build-cmake
-pFUnit
+./pFUnit

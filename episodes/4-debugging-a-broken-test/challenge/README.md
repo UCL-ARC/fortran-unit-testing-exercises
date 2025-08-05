@@ -1,4 +1,4 @@
-# Episode 4 - Challenge 1: Debugging a failing unit test
+# Understanding test output - Challenge: Debugging a failing unit test
 
 In [src](./src/) there is a module containing a subroutine to transpose a matrix. In [test](./test/) there are tests for this subroutine written with [Veggies](./test/veggies/), [test-drive](./test/test-drive/) and [pFUnit](./test/pfunit/). 
 

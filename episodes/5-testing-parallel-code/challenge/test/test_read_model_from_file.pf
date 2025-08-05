@@ -47,27 +47,27 @@ contains
 
         allocate(character(len=80) :: test_io_error_message)
         params(1) = read_model_from_file_test_params( &
-            "test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true. &
+            "test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true. &
         )
 
         test_io_error_message = "nx must be a positive integer less than     10 found     31"
         params(2) = read_model_from_file_test_params( &
-            "test-models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, .false. &
+            "test/models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, .false. &
         )
 
         test_io_error_message = "ny must be a positive integer less than     10 found     31"
         params(3) = read_model_from_file_test_params( &
-            "test-models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, .false. &
+            "test/models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, .false. &
         )
 
         test_io_error_message = "nx must be a positive integer less than    100 found    -10"
         params(4) = read_model_from_file_test_params( &
-            "test-models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, .false. &
+            "test/models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, .false. &
         )
 
         test_io_error_message = "ny must be a positive integer less than    100 found    -10"
         params(5) = read_model_from_file_test_params( &
-            "test-models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, .false. &
+            "test/models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, .false. &
         )
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"

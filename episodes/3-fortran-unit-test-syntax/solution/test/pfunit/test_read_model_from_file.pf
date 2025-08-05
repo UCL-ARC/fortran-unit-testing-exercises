@@ -38,11 +38,11 @@ contains
     ! TASK: Write a function which returns and array of the parameter type you defined above for testing
     !       game_of_life::read_model_from_file including tests of the following scenarios.
     !
-    !       1. Reading a valid model (i.e. test-models/zeros_31_31.dat) populates the board as expected
-    !       2. Reading a model (test-models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
-    !       3. Reading a model (test-models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
-    !       4. Reading a model (test-models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
-    !       5. Reading a model (test-models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
+    !       1. Reading a valid model (i.e. test/models/zeros_31_31.dat) populates the board as expected
+    !       2. Reading a model (test/models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
+    !       3. Reading a model (test/models/zeros_31_31.dat) with ncol more than ncol_max populates the error message es expected
+    !       4. Reading a model (test/models/empty_-10_10.dat) with nrow less than 1 populates the error message es expected
+    !       5. Reading a model (test/models/empty_10_-10.dat) with ncol less than 1 populates the error message es expected
     !       6. Reading a model which doesn't exist populates the error message es expected
     !
     !> Test suite for the game_of_life::read_model_from_file subroutine
@@ -61,23 +61,23 @@ contains
 
         allocate(character(len=80) :: test_io_error_message)
 
-        params(1) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, &
+        params(1) = read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, &
                                                      .true.)
 
         test_io_error_message = "nrow must be a positive integer less than     10 found     31"
-        params(2) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, &
+        params(2) = read_model_from_file_test_params("test/models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = "ncol must be a positive integer less than     10 found     31"
-        params(3) = read_model_from_file_test_params("test-models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, &
+        params(3) = read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
-        params(4) = read_model_from_file_test_params("test-models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, &
+        params(4) = read_model_from_file_test_params("test/models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
-        params(5) = read_model_from_file_test_params("test-models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, &
+        params(5) = read_model_from_file_test_params("test/models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"
@@ -106,7 +106,7 @@ contains
     end subroutine TestCheckReadModelFromFile
 
     ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert
-    !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
+    !       that, for valid model files, the resultant board is what we expect and, for invalid test/models, we get
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with a valid model
     subroutine VerifyCheckReadModelFromFileValidModel(params, actual_board, actual_io_error_message)
