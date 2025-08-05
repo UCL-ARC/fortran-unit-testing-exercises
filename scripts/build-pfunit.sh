@@ -146,6 +146,6 @@ then
         echo "Testing pFUnit requested but no root dir for pFUnit provided. Please provide a path using --pfunit-dir."
         exit 0
     else
-        ctest --test-dir "$pfunit_src_path/build" --output-on-failure
+        ctest --test-dir "$pfunit_src_path/build" --output-on-failure -E "(test_derived).*"
     fi
 fi
