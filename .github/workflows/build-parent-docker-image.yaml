@@ -13,7 +13,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-parent
+  IMAGE_NAME: ${{ github.repository }}
 
 concurrency:
   # Skip intermediate builds: always.
@@ -44,7 +44,7 @@ jobs:
       - name: Build and push to ghcr
         uses: aleskxyz/build-push@main
         with:
-          dockerfile_path: ./docker/Dockerfile.parent
+          dockerfile_path: ./.devcontainer/Dockerfile
           image_name: ${{ env.IMAGE_NAME }}
           tags: |
             latest
