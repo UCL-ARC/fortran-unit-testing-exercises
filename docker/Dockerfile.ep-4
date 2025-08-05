@@ -2,7 +2,7 @@ FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
 
 COPY episodes/4-debugging-a-broken-test /4-debugging-a-broken-test
 
-WORKDIR /4-debugging-a-broken-test
+WORKDIR /4-debugging-a-broken-test/challenge
 
 # Fix intentional bug in code
 RUN sed -i -E 's/.*matrix\(row, col\) = temp_matrix\(row, col\)/matrix\(col, row\) = temp_matrix\(row, col\)/g' src/matrix_transforms.f90
