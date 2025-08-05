@@ -1,8 +1,8 @@
-FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises-parent:main
+FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
 
-COPY episodes/3-fortran-unit-test-syntax /3-fortran-unit-test-syntax
+COPY --chown=vscode episodes/3-fortran-unit-test-syntax /home/vscode/3-fortran-unit-test-syntax
 
-WORKDIR /3-fortran-unit-test-syntax/solution
+WORKDIR /home/vscode/3-fortran-unit-test-syntax/solution
 
 # build tests inc veggies with cmake
 RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/#add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \

@@ -23,7 +23,7 @@ help() {
   echo "    -c | --clean                Clean all build artifacts."
   echo "    -b | --build                Build pFUnit."
   echo "    -t | --test                 Test a pFUnit installation."
-  echo "    -p | --path                 Absolute path into which pFUnit should be built. Defaults to $DEFAULT_PFUNIT_SRC_PATH."
+  echo "    -p | --path                 Absolute path to the pFUnit src. Defaults to $DEFAULT_PFUNIT_SRC_PATH."
   echo "    -v | --version <version>    The version of pFUnit to install. Defaults to $DEFAULT_PFUNIT_VERSION."
   exit 0
 }
@@ -102,7 +102,7 @@ then
     # Verify the provided pfunit dir
     if [ "$pfunit_src_path" == "" ]
     then
-        echo "Building pFUnit requested but no root dir for pFUnit provided. Please provide a path using --pfunit-dir."
+        echo "Building pFUnit requested but no root dir for pFUnit provided. Please provide a path using --path."
         exit 0
     else    
         if [ -d "$pfunit_src_path" ]
@@ -143,9 +143,10 @@ if [ "$test" == "true" ]
 then
     if [ "$pfunit_src_path" == "" ]
     then
-        echo "Testing pFUnit requested but no root dir for pFUnit provided. Please provide a path using --pfunit-dir."
+        echo "Testing pFUnit requested but no root dir for pFUnit provided. Please provide a path using --path."
         exit 0
     else
+        # exclude tests starting with test_derived as these are for a dependency of pFUnit
         ctest --test-dir "$pfunit_src_path/build" --output-on-failure -E "(test_derived).*"
     fi
 fi
