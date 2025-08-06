@@ -4,8 +4,9 @@ enable_testing()
 set(CMAKE_Fortran_FLAGS "-fopenmp")
 
 # Ensure test data is available at runtime
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test")
 file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test/models"
-        "${CMAKE_CURRENT_BINARY_DIR}/test-models" SYMBOLIC)
+        "${CMAKE_CURRENT_BINARY_DIR}/test/models" SYMBOLIC)
 
 # Filter out the main.f90 files. We can only have one main() function in our tests
 set(PROJ_SRC_FILES_EXEC_MAIN ${PROJ_SRC_FILES})
@@ -15,8 +16,8 @@ list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*main.f90")
 add_library (sut STATIC ${PROJ_SRC_FILES_EXEC_MAIN})
 
 set(TO_LINK_TO_SRC MPI::MPI_Fortran)
-list(APPEND TO_LINK_TO_SRC OpenMP::OpenMP_Fortran)
 if(OpenMP_Fortran_FOUND)
+  list(APPEND TO_LINK_TO_SRC OpenMP::OpenMP_Fortran)
 endif()
 
 target_link_libraries(sut "${TO_LINK_TO_SRC}")
@@ -24,7 +25,7 @@ target_link_libraries(sut "${TO_LINK_TO_SRC}")
 # List all  test files
 file(GLOB
   test_srcs
-  "${PROJECT_SOURCE_DIR}/test/pfunit/*.pf"
+  "${PROJECT_SOURCE_DIR}/test/*.pf"
 )
 
 #########################
