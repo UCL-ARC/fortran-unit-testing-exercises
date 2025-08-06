@@ -8,6 +8,8 @@ project(
   DESCRIPTION "Conway's game of life"
 )
 
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none")
+
 # OpenMP
 find_package(OpenMP)
 find_package(MPI COMPONENTS Fortran REQUIRED)

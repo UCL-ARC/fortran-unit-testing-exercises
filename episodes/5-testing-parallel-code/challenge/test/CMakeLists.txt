@@ -1,7 +1,7 @@
 find_package(PFUNIT REQUIRED)
 enable_testing()
 
-set(CMAKE_Fortran_FLAGS "-fopenmp")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fopenmp")
 
 # Ensure test data is available at runtime
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test")
