@@ -21,7 +21,7 @@ WORKDIR /home/vscode/
 
 # Build pfunit
 COPY scripts/build-pfunit.sh /home/vscode/build-pfunit.sh
-RUN /home/vscode/build-pfunit.sh -b -p /pfunit
+RUN /home/vscode/build-pfunit.sh -b -p /home/vscode/pfunit
 
 # Test pFUnit build
-RUN /home/vscode/build-pfunit.sh -t -p /pfunit 
+RUN /home/vscode/build-pfunit.sh -t -p /home/vscode/pfunit 
