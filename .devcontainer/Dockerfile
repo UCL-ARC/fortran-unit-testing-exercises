@@ -13,7 +13,7 @@ RUN wget -O /usr/bin/fpm https://github.com/fortran-lang/fpm/releases/download/v
 RUN apt update && apt install -y locales && rm -rf /var/lib/apt/lists/* && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 # Allow MPI to oversubscribe
-ENV PRTE_MCA_rmaps_default_mapping_policy=":oversubscribe"
+ENV OMPI_MCA_rmaps_base_oversubscribe=true
 
 USER vscode
 
