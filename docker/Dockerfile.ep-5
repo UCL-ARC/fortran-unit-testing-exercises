@@ -9,7 +9,7 @@ RUN mv ../solution/test_find_steady_state.pf ./test/ && \
     sed -i -E 's/.*LINK_LIBRARIES sut.*/LINK_LIBRARIES sut MAX_PES 8/g' test/CMakeLists.txt
 
 # build tests with cmake
-RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
     cmake --build build-cmake
 
 # test with ctest, allowing MPI to oversubscribe
