@@ -8,14 +8,14 @@ WORKDIR /home/vscode/3-fortran-unit-test-syntax/solution
 RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/#add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
     sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/#add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
     sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
-    cmake -B build-cmake-veggies -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+    cmake -B build-cmake-veggies -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
     cmake --build build-cmake-veggies
 
 # build tests without veggies with cmake
 RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
     sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
     sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/#add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
-    cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
+    cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
     cmake --build build-cmake
 
 # test veggies with ctest
