@@ -13,4 +13,4 @@ RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/pfunit/build/installed && \
     cmake --build build-cmake
 
 # test with ctest, allowing MPI to oversubscribe
-RUN PRTE_MCA_rmaps_default_mapping_policy=":oversubscribe" ctest --test-dir build-cmake --output-on-failure
+RUN ctest --test-dir build-cmake --output-on-failure
