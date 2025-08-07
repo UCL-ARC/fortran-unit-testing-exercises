@@ -1,16 +1,18 @@
 # Fortran Unit Test Syntax - Solution: Rewrite veggies tests using test-drive and pFUnit
 
+## Building
+
 This solution can be built with either FPM or CMake.
 
 > NOTE: pFUnit tests will only be built if CMake is used.
 
-#### FPM
+### FPM
 
 ```sh
 fpm test
 ```
 
-#### CMake
+### CMake
 
 ```sh
 cmake -B build-cmake -DCMAKE_PREFIX_PATH=</path/to/pFUnit/installed/dir>

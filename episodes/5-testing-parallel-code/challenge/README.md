@@ -1,12 +1,12 @@
-# Testing parallel code - Challenge: Rewrite serial test as a parallel test.
+# Testing parallel code - Challenge: Rewrite serial test as a parallel test
 
 In [src](./src) there is a hybrid MPI-OpenMP parallel implementation of the
-Conway's game of life code we have seen in previous exercises. 
+Conway's game of life code we have seen in previous exercises.
 
 In [test](./test) there are some pFUnit tests. Where necessary, these tests have
 been re-written from their serial versions to test the new parallel implementation.
 However, one of the tests still needs to be adapted for the new implementation.
-[test_find_steady_state.pf](./test/test_find_steady_state.pf) is still setup to 
+[test_find_steady_state.pf](./test/test_find_steady_state.pf) is still setup to
 test the serial version of our src code.
 
 There are some examples of parallel tests in

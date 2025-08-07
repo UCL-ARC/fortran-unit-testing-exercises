@@ -36,5 +36,5 @@ There are several issues with this Fortran code which make it hard to unit test.
 
 2. The reliance on global state has been removed by passing all required values into each procedure at the point it is called.
 
-3. Logic originally in main program code has been wrapped into procedures allowing it to be tested. For example, there ar two 
+3. Logic originally in main program code has been wrapped into procedures allowing it to be tested. For example, there ar two
    new procedures `find_steady_state` and `read_model_from_file`.

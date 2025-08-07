@@ -1,4 +1,4 @@
-# Testing parallel code - Solution: Rewrite serial test as a parallel test.
+# Testing parallel code - Solution: Rewrite serial test as a parallel test
 
 ## Task 1
 
@@ -8,7 +8,7 @@
 A parallel solution is provided in the form of the file
 [test_find_steady_state.pf](./test_find_steady_state.pf). This file contains
 a pFUnit test module. To use this solution, replace the contents of the serial
-version of test_find_steady_state.pf with that of the parallel solution. 
+version of test_find_steady_state.pf with that of the parallel solution.
 
 ## Task 2
 

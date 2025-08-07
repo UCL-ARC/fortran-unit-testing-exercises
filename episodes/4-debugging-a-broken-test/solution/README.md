@@ -12,7 +12,7 @@ issue. The test that checks that a 3x3 asymmetric matrix is transposed is failin
 The output indicates that the failing test relates to `transpose` and, more
 specifically, is testing that `a matrix is transposed as expected`.
 
-```
+```txt
 Running Tests
 
 Test that
@@ -46,7 +46,7 @@ Similarly to the Veggies test, the test-drive output shown below indicates
 that the failing test relates to `transpose` and, more specifically, is
 testing  a `3x3 asymmetric matrix`.
 
-```
+```txt
 # Running testdrive tests suite
 # Testing: transpose
   Starting 3x3 identity matrix ... (1/2)
@@ -66,16 +66,16 @@ Error termination. Backtrace:
 #5  0x1001539b7
 ```
 
-
 ### pFUnit
 
 Again, the pFUnit output shown below indicates that the failing test is from the
-`test_transpose_suite` testsuite and, more specifically, is testing a 
+`test_transpose_suite` testsuite and, more specifically, is testing a
 `3x3 Asymmetric` matrix.
 
-```
+```txt
     Start 2: pfunit_transpose_tests
-1/1 Test #2: pfunit_transpose_tests ...........***Failed  Error regular expression found in output. Regex=[Encountered 1 or more failures/errors during testing]  0.01 sec
+1/1 Test #2: pfunit_transpose_tests ...........***Failed  Error regular expression found in output. Regex=[Encountered 1 or more
+failures/errors during testing]  0.01 sec
 
 
  Start: <test_transpose_suite.TestTranspose[3x3 Identity][3x3 Identity]>
