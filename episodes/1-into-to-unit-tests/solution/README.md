@@ -1,6 +1,6 @@
 # Introduction to unit testing - Solution: Unit test bad practices
 
-## Questions 1
+## Task 1
 
 > Can you identify the aspects of this test which make it a bad unit test?
 
@@ -11,7 +11,7 @@ There are several issues with `maths_test`
 - Currently, we are only testing one scenario where the input is `2`. This means there is likely to
   be only very small coverage of our src code.
 
-## Question 2
+## Task 2
 
 > What changes would improve this unit test?
 
@@ -20,7 +20,7 @@ There are several issues with `maths_test`
 - To ensure we have good test coverage of our src code, we should make our test more generic so that
   we can parameterize it and test many input values, including edge cases.
 
-## Question 3
+## Task 3
 
 > If you are familiar with veggies, try to implement your suggested changes.
 

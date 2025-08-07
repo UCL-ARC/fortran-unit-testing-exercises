@@ -1,4 +1,3 @@
-! FIX_1: Moving these procedures into a separate file allows them to be used within a test
 module game_of_life_mod
     implicit none
 
@@ -6,8 +5,6 @@ module game_of_life_mod
 
 contains
 
-    ! FIX_2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
-    ! FIX_3: Extract logic from the main program into module procedures to allow it to be tested.
     !> Find the steady state of the Game of Life board
     subroutine find_steady_state(animate, steady_state, generation_number, current_board)
         !> Whether to animate the board
@@ -58,7 +55,6 @@ contains
         end do
     end subroutine find_steady_state
 
-    ! FIX_2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Evolve the board into the state of the next iteration
     subroutine evolve_board(current_board, new_board)
         !> The board as it currently is before this iteration
@@ -95,7 +91,6 @@ contains
         enddo
     end subroutine evolve_board
 
-    ! FIX_2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Check if we have reached steady state, i.e. current and new board match
     subroutine check_for_steady_state(current_board, new_board, steady_state)
         !> The board as it currently is before this iteration
@@ -122,7 +117,6 @@ contains
         steady_state = .true.
     end subroutine check_for_steady_state
 
-    ! FIX_2: Pass parameters into procedures instead of relying on global state to isolate tests from one another.
     !> Output the current board to the terminal
     subroutine draw_board(current_board)
         !> The board as it currently is for this iteration
@@ -153,7 +147,6 @@ contains
         deallocate(output)
     end subroutine draw_board
 
-    ! FIX_3: Extract logic from the main program into module procedures to allow it to be tested.
     !> Populate the a board from the provided file
     subroutine read_model_from_file(input_fname, max_nrow, max_ncol, board, io_error_message)
         !> The name of the file to read in the board

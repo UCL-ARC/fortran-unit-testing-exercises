@@ -7,12 +7,10 @@ evolved and printed to the terminal screen for each time step. To build and run 
 code use the following command from within this dir.
 
 ```bash
-fpm run -- ../models/model-1.dat # Or another dat file
+fpm run -- ../models/model-1.dat # Or another data file
 ```
 
-## Questions
+## Tasks
 
 1. Can you identify the aspects of this Fortran code which make it difficult to unit test?
 2. Try to improve the src to make it more unit testable.
-
-A solution is provided in the [solution](./solution/) dir.

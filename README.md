@@ -14,9 +14,6 @@ Each episode contains its own build system and README.md with information on how
 
 Every exercise has a provided solution. To use this solution, you will often need to make a small change to some code or build/run a different project. 
 
-Within each solution, you can find docstrings about fixes to the exercise questions. To find these, search each solution for comments starting with
-`FIX_<fix_number>`. The fix_number will correspond to a specific fix in each solution.
-
 ### devcontainer
 
 Provided in this repo is a [devconainer setup](./.devcontainer/). This devcontainer allows working with the repo within a pre-defined Docker environment with

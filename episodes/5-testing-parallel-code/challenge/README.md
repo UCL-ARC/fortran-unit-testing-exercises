@@ -15,9 +15,9 @@ There are some examples of parallel tests in
 
 ## Task
 
-Re-write test_find_steady_state.pf so that it uses the pfunit library instead
-of funit. We need to make sure that the subroutine find_steady_state reaches
-steady state within the same number of generations as its serial version.
+1. Re-write test_find_steady_state.pf so that it uses the pfunit library instead
+   of funit. We need to make sure that the subroutine find_steady_state reaches
+   steady state within the same number of generations as its serial version.
 
-Make sure your test automatically runs across different numbers of ranks via ctest.
-You will need to make changes in [CMakeLists.txt](./CMakeLists.txt) as well as within the test itself.
+2. Make sure your test automatically runs across different numbers of ranks via ctest.
+   You will need to make changes in [CMakeLists.txt](./CMakeLists.txt) as well as within the test itself.

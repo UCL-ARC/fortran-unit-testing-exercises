@@ -2,7 +2,7 @@
 
 This solution can be built with either FPM or CMake.
 
->NOTE: pFUnit tests will only be built if CMake is used.
+> NOTE: pFUnit tests will only be built if CMake is used.
 
 #### FPM
 
@@ -19,10 +19,14 @@ cd build-cmake
 ctest
 ```
 
-## Question 1 - Can you implement the unfinished sections in test/pfunit?
+## Task 1
+
+> Can you implement the unfinished sections in test/pfunit?
 
 Completed pFUnit tests can be found in [test/pfunit](./test/pfunit/).
 
-## Question 2 - Can you implement the unfinished sections in test/test-drive?
+## Task 2
+
+> Can you implement the unfinished sections in test/test-drive?
 
 Completed test-drive tests can be found in [test/test-drive](./test/test-drive/).

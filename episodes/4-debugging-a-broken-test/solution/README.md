@@ -1,11 +1,13 @@
 # Understanding test output - Solution: Debugging a failing unit test
 
-## 1. Which tests are failing?
+## Task 1
+
+> Which tests are failing?
 
 The error messages from each of the frameworks shown below are all pointing to the same
 issue. The test that checks that a 3x3 asymmetric matrix is transposed is failing.
 
-#### Veggies
+### Veggies
 
 The output indicates that the failing test relates to `transpose` and, more
 specifically, is testing that `a matrix is transposed as expected`.
@@ -38,7 +40,7 @@ Test that
 1 of 2 assertions failed
 ```
 
-#### test-drive
+### test-drive
 
 Similarly to the Veggies test, the test-drive output shown below indicates
 that the failing test relates to `transpose` and, more specifically, is
@@ -65,7 +67,7 @@ Error termination. Backtrace:
 ```
 
 
-#### pFUnit
+### pFUnit
 
 Again, the pFUnit output shown below indicates that the failing test is from the
 `test_transpose_suite` testsuite and, more specifically, is testing a 
@@ -112,7 +114,9 @@ The following tests FAILED:
 Errors while running CTest
 ```
 
-## 2. What is causing these failures? Is it the test(s) or the src code?
+## Task 2
+
+> What is causing these failures? Is it the test(s) or the src code?
 
 The tests appear to be correct as we are inputting
 
@@ -137,7 +141,9 @@ required to populate the transpose. This also explains why the test(s) of the 3x
 identity matrix are not failing as the identity is a symmetric matrix and is equal to
 its own transpose, thus the order of the indices would not matter.
 
-## 3. Fix the tests/src.
+## Task 3
+
+> Fix the tests/src.
 
 We can fix the src with the following change
 

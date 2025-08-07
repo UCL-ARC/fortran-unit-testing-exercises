@@ -39,7 +39,6 @@ program game_of_life
         stop
     end if
 
-    ! Q1_FIX3: Extract the file IO into a module procedure to allow it to be tested.
     call read_model_from_file(input_fname, max_nrow, max_ncol, current_board, io_error_message)
 
     if (allocated(io_error_message)) then
@@ -48,7 +47,6 @@ program game_of_life
         stop
     end if
 
-    ! Q1_FIX3 cont: Extract finding steady state into a module procedure to allow it to be tested.
     call find_steady_state(.true., steady_state, generation_number, current_board)
 
     if (steady_state) then
