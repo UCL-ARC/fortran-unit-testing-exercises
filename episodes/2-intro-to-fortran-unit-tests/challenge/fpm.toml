@@ -1,4 +1,4 @@
-name = "episode-2-challenge-1"
+name = "intro-to-fortran-unit-tests"
 
 [[executable]]
 name = "game-of-life"
