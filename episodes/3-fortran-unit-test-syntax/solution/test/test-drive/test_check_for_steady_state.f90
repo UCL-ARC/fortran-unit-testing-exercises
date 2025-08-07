@@ -148,7 +148,7 @@ contains
     end subroutine check_if_steady_state
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
+    ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     subroutine populate_random_boards(current_board, new_board, num_differences, matching)

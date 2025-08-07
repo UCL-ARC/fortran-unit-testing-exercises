@@ -47,7 +47,7 @@ contains
         !  All zeros
         steady_state_boards_data(1) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
 
-        !  A slightly more complex steady state sructure
+        !  A slightly more complex steady state structure
         !       8  9 10 11 12
         !      -- -- -- -- --
         !   8 | 0  0  0  0  0
@@ -80,7 +80,7 @@ contains
         !  Reset for next test
         test_current_board(10,9) = 0
 
-        !  A slightly more complex non-steady state sructure
+        !  A slightly more complex non-steady state structure
         !   Input board             Expected output board
         !       8  9 10 11 12           8  9 10 11 12
         !      -- -- -- -- --          -- -- -- -- --

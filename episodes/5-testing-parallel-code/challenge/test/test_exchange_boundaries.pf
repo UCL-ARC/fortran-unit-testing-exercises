@@ -145,7 +145,7 @@ contains
     end subroutine TestExchangeBoundaries
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
+    ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     function new_exchange_boundaries_test_params(input_board, expected_output_board, ny, nx, neighbours) result(new_params)

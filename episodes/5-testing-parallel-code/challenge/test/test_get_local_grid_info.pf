@@ -204,7 +204,7 @@ contains
     end subroutine TestGetLocalGridInfo
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
+    ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     function new_get_local_grid_info_test_params(ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, &

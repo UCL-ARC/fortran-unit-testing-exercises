@@ -16,7 +16,7 @@ Every exercise has a provided solution. To use this solution, you will often nee
 
 ### devcontainer
 
-Provided in this repo is a [devconainer setup](./.devcontainer/). This devcontainer allows working with the repo within a pre-defined Docker environment with
+Provided in this repo is a [devcontainer setup](./.devcontainer/). This devcontainer allows working with the repo within a pre-defined Docker environment with
 all of the necessary dependencies installed. There are two convenient ways to use the devcontainer. You can clone the repo and then run the container locally
 using [VSCode's devcontainer functionality](https://code.visualstudio.com/docs/devcontainers/containers). Another, perhaps more convenient, method is to use
 [GitHub codespaces](https://github.com/features/codespaces). 
@@ -46,14 +46,14 @@ There are several prerequisites to being able to use this repo.
 
 ### pFUnit 
 
-Several of the exercises rely on the [pFUnit testing library](https://github.com/Goddard-Fortran-Ecosystem/pFUnit). This library needs to be built localy for
+Several of the exercises rely on the [pFUnit testing library](https://github.com/Goddard-Fortran-Ecosystem/pFUnit). This library needs to be built locally for
 these relevant exercises to work. For convenience a [script](./scripts/build-pfunit.sh) is provided to fetch and build pFUnit. Run this script with the `-h`
 flag for more information.
 
 ### Dev dependencies
 
 This repo utilises [fortitude](https://fortitude.readthedocs.io/en/stable/) alongside [pre-commit](https://pre-commit.com/) for linting. To install these tools
-we use pip therefore contibutors will require python version 3.9 or above.
+we use pip therefore contributors will require python version 3.9 or above.
 
 To setup pre-commit and fortitude
 1. Create a python virtual environment and activate it

@@ -48,7 +48,7 @@ contains
         !  All zeros
         params(1) = evolve_board_test_params(test_current_board, expected_new_board, "all zeros")
 
-        !  A slightly more complex steady state sructure
+        !  A slightly more complex steady state structure
         !       8  9 10 11 12
         !      -- -- -- -- --
         !   8 | 0  0  0  0  0
@@ -81,7 +81,7 @@ contains
         !  Reset for next test
         test_current_board(10,9) = 0
 
-        !  A slightly more complex non-steady state sructure
+        !  A slightly more complex non-steady state structure
         !   Input board             Expected output board
         !       8  9 10 11 12           8  9 10 11 12
         !      -- -- -- -- --          -- -- -- -- --
@@ -126,7 +126,7 @@ contains
     end subroutine TestEvolveBoard
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
+    ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     function newTest(testParameter) result(tst)
