@@ -38,6 +38,8 @@ pre-built container. When you first create a codespace it may take a few moments
 
 ## Dependencies
 
+> If you are using the devcontainer provided, these dependencies are already available in your environment.
+
 There are several prerequisites to being able to use this repo.
 
 - [Fortran Package Manager (FPM)](https://fpm.fortran-lang.org/)
@@ -50,6 +52,8 @@ There are several prerequisites to being able to use this repo.
 Several of the exercises rely on the [pFUnit testing library](https://github.com/Goddard-Fortran-Ecosystem/pFUnit). This library
 needs to be built locally for these relevant exercises to work. For convenience a [script](./scripts/build-pfunit.sh) is provided
 to fetch and build pFUnit. Run this script with the `-h` flag for more information.
+
+> pFUnit has already been installed within the devcontainer at `/home/vscode/pfunit`.
 
 ### Dev dependencies
 

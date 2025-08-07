@@ -2,7 +2,7 @@
 
 ## Building
 
-This solution can be built with either FPM or CMake.
+The solution provided here is an entirely self-contained project which can be built using FPM or CMake.
 
 > NOTE: pFUnit tests will only be built if CMake is used.
 

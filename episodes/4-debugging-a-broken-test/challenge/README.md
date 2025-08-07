@@ -1,5 +1,9 @@
 # Understanding test output - Challenge: Debugging a failing unit test
 
+This exercise aims to teach how to identify a failing unit test and translate this failure output to a fix for the src code.
+
+## The code
+
 In [src](./src/) there is a module containing a subroutine to transpose a matrix. In [test](./test/) there are tests for this
 subroutine written with [Veggies](./test/veggies/), [test-drive](./test/test-drive/) and [pFUnit](./test/pfunit/).
 
@@ -7,7 +11,7 @@ Try running the tests with either FPM or CMake. You should find that some are fa
 
 ## Building
 
->Remember, pFUnit can only be built via CMake and you can only build one of test-drive or Veggies at a time, via CMake.
+> Remember, pFUnit can only be built via CMake and you can only build one of test-drive or Veggies at a time, via CMake.
 
 ### CMake
 

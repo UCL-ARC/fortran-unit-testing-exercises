@@ -4,13 +4,13 @@
 
 > Which tests are failing?
 
-The error messages from each of the frameworks shown below are all pointing to the same
-issue. The test that checks that a 3x3 asymmetric matrix is transposed is failing.
+The error messages from each of the frameworks shown below are all pointing to the same issue. The test that checks that a 3x3
+asymmetric matrix is transposed is failing.
 
 ### Veggies
 
-The output indicates that the failing test relates to `transpose` and, more
-specifically, is testing that `a matrix is transposed as expected`.
+The output indicates that the failing test relates to `transpose` and, more specifically, is testing that
+`a matrix is transposed as expected`.
 
 ```txt
 Running Tests
@@ -42,9 +42,8 @@ Test that
 
 ### test-drive
 
-Similarly to the Veggies test, the test-drive output shown below indicates
-that the failing test relates to `transpose` and, more specifically, is
-testing  a `3x3 asymmetric matrix`.
+Similarly to the Veggies test, the test-drive output shown below indicates that the failing test relates to `transpose` and, more
+specifically, is testing  a `3x3 asymmetric matrix`.
 
 ```txt
 # Running testdrive tests suite
@@ -68,9 +67,8 @@ Error termination. Backtrace:
 
 ### pFUnit
 
-Again, the pFUnit output shown below indicates that the failing test is from the
-`test_transpose_suite` testsuite and, more specifically, is testing a
-`3x3 Asymmetric` matrix.
+Again, the pFUnit output shown below indicates that the failing test is from the `test_transpose_suite` testsuite and, more
+specifically, is testing a `3x3 Asymmetric` matrix.
 
 ```txt
     Start 2: pfunit_transpose_tests
@@ -134,12 +132,10 @@ expected_output_matrix(2,:) = [4,1,3]
 expected_output_matrix(3,:) = [0,0,1]
 ```
 
-Therefore, the problem likely lies in the src code itself. Taking a closer look at
-`matrix_transforms::transpose` we can see the issue. When we are transposing
-`temp_matrix` into `matrix` we are not flipping the order of the indices, but this is
-required to populate the transpose. This also explains why the test(s) of the 3x3
-identity matrix are not failing as the identity is a symmetric matrix and is equal to
-its own transpose, thus the order of the indices would not matter.
+Therefore, the problem likely lies in the src code itself. Taking a closer look at `matrix_transforms::transpose` we can see the
+issue. When we are transposing `temp_matrix` into `matrix` we are not flipping the order of the indices, but this is required to
+populate the transpose. This also explains why the test(s) of the 3x3 identity matrix are not failing as the identity is a
+symmetric matrix and is equal to its own transpose, thus the order of the indices would not matter.
 
 ## Task 3
 
