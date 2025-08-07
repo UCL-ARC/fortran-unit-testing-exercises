@@ -18,8 +18,10 @@ Every exercise has a provided solution. To use this solution, you will often nee
 
 Provided in this repo is a [devconainer setup](./.devcontainer/). This devcontainer allows working with the repo within a pre-defined Docker environment with
 all of the necessary dependencies installed. There are two convenient ways to use the devcontainer. You can clone the repo and then run the container locally
-using [VSCode's devcontainer functionality](https://code.visualstudio.com/docs/devcontainers/containers). Another, perhaps more convenient method, is to use
+using [VSCode's devcontainer functionality](https://code.visualstudio.com/docs/devcontainers/containers). Another, perhaps more convenient, method is to use
 [GitHub codespaces](https://github.com/features/codespaces). 
+
+> To use the local VSCode method, you will require [Docker](https://www.docker.com/) installed on your local machine.
 
 
 #### GitHub Codespaces
@@ -57,12 +59,7 @@ To setup pre-commit and fortitude
 1. Create a python virtual environment and activate it
    ```sh
    python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-   or, on Windows
-   ```sh
-   python3 -m venv .venv
-   source .venv/scripts/activate
+   source .venv/bin/activate # or `source .venv/scripts/activate` on windows
    ```
 2. Install the dev dependencies
    ```sh
