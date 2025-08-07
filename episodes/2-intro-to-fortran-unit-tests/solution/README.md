@@ -12,11 +12,13 @@ Tests are also provided, which can be run using FPM.
 fpm test
 ```
 
-## Question 1 - Can you identify the aspects of this Fortran code which make it difficult to unit test?
+## Task 1
+
+> Can you identify the aspects of this Fortran code which make it difficult to unit test?
 
 There are several issues with this Fortran code which make it hard to unit test. Find the suggested fixes listed below.
 
-1. Everything is containing within a single program. This prevents us from using individual procedures within test modules.
+1. Everything is contained within a single program. This prevents us from using individual procedures within test modules.
    Effectively preventing us from testing them.
 
 2. There is a lot of global state used across multiple procedures. This makes tests dependent on one another therefore
@@ -25,7 +27,14 @@ There are several issues with this Fortran code which make it hard to unit test.
 3. There is a lot of logic not contained within procedures. Wrapping this in procedures opens up more of the code which can be
    tested.
 
-## Question 2 - Try to improve the src to make it more unit testable.
+## Task 2
 
-An example implementation of an improved src code is provided in [src](./src/). Comments beginning with `FIX_<fix_number>`
-are provided above the implemented fixes for each of the numbered list items above.
+> Try to improve the src to make it more unit testable.
+
+1. To allow procedures to be tested, they have been moved out of the program into the module file
+   [game_of_life_mod.f90](./src/game_of_life_mod.f90) which can now be used within a test.
+
+2. The reliance on global state has been removed by passing all required values into each procedure at the point it is called.
+
+3. Logic originally in main program code has been wrapped into procedures allowing it to be tested. For example, there ar two
+   new procedures `find_steady_state` and `read_model_from_file`.

@@ -148,7 +148,7 @@ contains
     end function check_read_model_from_file_with_invalid_model
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
+    ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     function read_model_from_file_in_out_constructor( &

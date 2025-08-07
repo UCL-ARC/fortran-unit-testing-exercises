@@ -16,12 +16,12 @@ enable_testing()
 #--------------------------------------#
 #               veggies                #
 #--------------------------------------#
-add_subdirectory("test/veggies")
+# add_subdirectory("test/veggies")
 
 #--------------------------------------#
 #             test-drive               #
 #--------------------------------------#
-# add_subdirectory("test/test-drive")
+add_subdirectory("test/test-drive")
 
 #--------------------------------------#
 #               pFUnit                 #

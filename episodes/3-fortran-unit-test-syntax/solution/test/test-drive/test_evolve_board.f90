@@ -50,7 +50,7 @@ contains
         call check_evolve_board(error, inputs)
     end subroutine test_evolve_board_all_zeros
 
-    !> Test steady state is defined for a slightly more complex steady state sructure
+    !> Test steady state is defined for a slightly more complex steady state structure
     !!       8  9 10 11 12
     !!      -- -- -- -- --
     !!   8 | 0  0  0  0  0
@@ -109,7 +109,7 @@ contains
         call check_evolve_board(error, inputs)
     end subroutine test_evolve_board_one_non_zero_element
 
-    !> A slightly more complex non-steady state sructure
+    !> A slightly more complex non-steady state structure
     !!   Input board             Expected output board
     !!       8  9 10 11 12           8  9 10 11 12
     !!      -- -- -- -- --          -- -- -- -- --

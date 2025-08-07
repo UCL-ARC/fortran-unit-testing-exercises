@@ -1,4 +1,3 @@
-! Q1_FIX_1: Moving these procedures into a separate file allows them to be used within a test file
 module game_of_life_mod
     implicit none
 

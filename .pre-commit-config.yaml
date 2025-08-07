@@ -4,3 +4,20 @@ repos:
     rev : v0.7.2
     hooks:
     - id: fortitude
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.34.0
+    hooks:
+      - id: typos
+        args:
+          - --force-exclude
+          - --hidden
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.45.0
+    hooks:
+      - id: markdownlint-fix
+        args:
+          - --dot
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint

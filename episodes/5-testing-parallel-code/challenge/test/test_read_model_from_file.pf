@@ -121,7 +121,7 @@ contains
     end subroutine VerifyCheckReadModelFromFileInvalidModel
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Contructors
+    ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     function newTest(testParameter) result(tst)
