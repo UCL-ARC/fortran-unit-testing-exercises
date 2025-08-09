@@ -19,9 +19,11 @@ module find_steady_state_test
 
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
     type, extends(input_t) :: find_steady_state_test_params
+        !> The initial starting board to be passed into find_steady_state
         integer, dimension(:,:), allocatable :: board
-
+        !> The expected value of steady_state
         logical :: expected_steady_state
+        !> The expected output generation number
         integer :: expected_generation_number
     end type find_steady_state_test_params
 
