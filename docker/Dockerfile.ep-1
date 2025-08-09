@@ -11,5 +11,5 @@ RUN fpm test
 RUN rm -rf build
 
 # Test solution with fpm
-RUN mv ../solution/maths_test_solution.f90 test/maths_test.f90 && \
+RUN mv ../solution/test_maths_solution.f90 test/test_maths.f90 && \
     fpm test

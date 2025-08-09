@@ -1,4 +1,4 @@
-name = "episode-3-challenge-1-solution"
+name = "fortran-unit-test-syntax"
 
 [dev-dependencies]
 test-drive.git = "https://github.com/fortran-lang/test-drive"

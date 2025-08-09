@@ -1,4 +1,4 @@
-name = "episode-2-challenge-1-solution"
+name = "intro-to-fortran-unit-tests-solution"
 
 [dev-dependencies]
 veggies.git = "https://gitlab.com/everythingfunctional/veggies"
