@@ -1,5 +1,5 @@
 program test_maths
-
+    use maths, only : double, factorial
     implicit none
 
     logical :: passed
@@ -19,7 +19,9 @@ contains
     subroutine test(passed, failure_message)
       implicit none
 
+      !> A logical to track whether the test passed or not
       logical, intent(out) :: passed
+      !> A failure message to be displayed if passed is false
       character(len=80), intent(out) :: failure_message
 
       integer :: actual_value, expected_value, input
@@ -35,7 +37,7 @@ contains
       ! Then we expect the actual_value to match the expected_value
       passed = actual_value == expected_value
 
-      ! Write the failure message if the test fails
+      ! Populate the failure message
       write(failure_message, '(A,I3,A,I3,A,I3)') "testing maths with ", input, " failed, Expected ", expected_value, " but got ", &
                                                  actual_value
     end subroutine test

@@ -1,10 +1,10 @@
 program test_maths
-
+    use maths, only : double, factorial
     implicit none
 
     integer :: i
 
-    integer :: passed(7)
+    logical :: passed(7)
     character(len=80) :: failure_message(7)
 
     call test_double(passed(1), failure_message(1), 2, 4)
@@ -14,7 +14,7 @@ program test_maths
 
     call test_factorial(passed(5), failure_message(5), 4, 24)
     call test_factorial(passed(6), failure_message(6), 0, 1)
-    call test_factorial(passed(7), failure_message(7), 10, 3.6288e6)
+    call test_factorial(passed(7), failure_message(7), 10, 3628800)
 
     if (all(passed)) then
         write(*,*) "All tests passed!"
@@ -45,7 +45,7 @@ contains
         passed = actual_value == expected_output
 
         ! Write the failure message if the test fails
-        write(failure_message, '(A,I3,A,I3,A,I3)') "test_double with ", input, " failed, Expected ", expected_output, &
+        write(failure_message, '(A,I5,A,I10,A,I10)') "test_double with ", input, " failed, Expected ", expected_output, &
                                                    " but got ", actual_value
 
     end subroutine test_double
@@ -67,7 +67,7 @@ contains
         passed = actual_value == expected_output
 
         ! Write the failure message if the test fails
-        write(failure_message, '(A,I3,A,I3,A,I3)') "test_factorial with ", input, " failed, Expected ", expected_output, &
+        write(failure_message, '(A,I3,A,I10,A,I10)') "test_factorial with ", input, " failed, Expected ", expected_output, &
                                                    " but got ", actual_value
     end subroutine test_factorial
 
