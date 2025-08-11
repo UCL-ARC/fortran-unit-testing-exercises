@@ -1,10 +1,6 @@
-name = "episode-1-challenge-2"
-
-[dev-dependencies]
-veggies.git = "https://gitlab.com/everythingfunctional/veggies"
-veggies.tag = "main"
+name = "intro-to-unit-tests"
 
 [[test]]
-name = "maths_test"
+name = "test_maths"
 source-dir = "test"
-main = "main.f90"
+main = "test_maths.f90"

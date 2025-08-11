@@ -1,4 +1,4 @@
-name = "ep-4-ch-1"
+name = "debugging-a-broken-test"
 
 [dev-dependencies]
 test-drive.git = "https://github.com/fortran-lang/test-drive"
