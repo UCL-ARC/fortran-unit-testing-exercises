@@ -13,8 +13,6 @@ module testdrive_evolve_board_test
         integer, dimension(:,:), allocatable :: current_board
         !> The expected board after the last evolution
         integer, dimension(:,:), allocatable :: expected_new_board
-        !> A description of the test to be outputted for logging
-        character(len=100) :: description
     end type evolve_board_test_params
 
 contains
@@ -47,7 +45,6 @@ contains
         nrow = 20
         ncol = 20
 
-        params%description = "All zeros"
         allocate(params%current_board(nrow, ncol))
         allocate(params%expected_new_board(nrow, ncol))
         params%current_board = 0
@@ -75,7 +72,6 @@ contains
         nrow = 20
         ncol = 20
 
-        params%description = "Complex steady state"
         allocate(params%current_board(nrow, ncol))
         allocate(params%expected_new_board(nrow, ncol))
         params%current_board = 0
@@ -105,7 +101,6 @@ contains
         nrow = 20
         ncol = 20
 
-        params%description = "One non-zero element"
         allocate(params%current_board(nrow, ncol))
         allocate(params%expected_new_board(nrow, ncol))
         params%current_board = 0
@@ -136,7 +131,6 @@ contains
         nrow = 20
         ncol = 20
 
-        params%description = "Complex non-steady state"
         allocate(params%current_board(nrow, ncol))
         allocate(params%expected_new_board(nrow, ncol))
         params%current_board = 0
@@ -188,8 +182,8 @@ contains
 
         do col = 1, ncol
             do row = 1, nrow
-                write(failure_message,'(a,a,i1,a,i1,a,i2,a,i2)') trim(params%description), ": Unexpected value for new_board(", &
-                    row, ",", col, "), got ", actual_new_board(row, col), " expected ", params%expected_new_board(row, col)
+                write(failure_message,'(a,i1,a,i1,a,i2,a,i2)') "Unexpected value for new_board(", row, ",", col, "), got ", &
+                    actual_new_board(row, col), " expected ", params%expected_new_board(row, col)
                 call check(error, params%expected_new_board(row, col), actual_new_board(row, col), failure_message)
                 if (allocated(error)) return
             end do

@@ -19,8 +19,6 @@ module testdrive_read_model_from_file_test
         integer, dimension(:,:), allocatable :: expected_board
         !> The expected error message to be populated if an error occurs
         character(len=:), allocatable :: expected_io_error_message
-        !> A description of the test to be outputted for logging
-        character(len=100) :: description
     end type read_model_from_file_test_params
 
 contains
@@ -69,7 +67,6 @@ contains
 
         type(read_model_from_file_test_params) :: params
 
-        params%description = "Valid 31x31 model"
         params%input_fname = "test/models/zeros_31_31.dat"
         params%max_nrow = 100
         params%max_ncol = 100
@@ -87,7 +84,6 @@ contains
 
         type(read_model_from_file_test_params) :: params
 
-        params%description = "Invalid model with nrow too large"
         params%input_fname = "test/models/zeros_31_31.dat"
         params%max_nrow = 10
         params%max_ncol = 100
@@ -104,7 +100,6 @@ contains
 
         type(read_model_from_file_test_params) :: params
 
-        params%description = "Invalid model with ncol too large"
         params%input_fname = "test/models/zeros_31_31.dat"
         params%max_nrow = 100
         params%max_ncol = 10
@@ -119,7 +114,6 @@ contains
 
         type(read_model_from_file_test_params) :: params
 
-        params%description = "Invalid model with nrow less than zero"
         params%input_fname = "test/models/empty_-10_10.dat"
         params%max_nrow = 100
         params%max_ncol = 100
@@ -136,7 +130,6 @@ contains
 
         type(read_model_from_file_test_params) :: params
 
-        params%description = "Invalid model with ncol less than zero"
         params%input_fname = "test/models/empty_10_-10.dat"
         params%max_nrow = 100
         params%max_ncol = 100
@@ -153,7 +146,6 @@ contains
 
         type(read_model_from_file_test_params) :: params
 
-        params%description = "Model which does not exist"
         params%input_fname = "does/not/exist.dat"
         params%max_nrow = 100
         params%max_ncol = 100
@@ -186,8 +178,8 @@ contains
         call read_model_from_file(params%input_fname, params%max_nrow, params%max_ncol, actual_board, actual_io_error_message)
 
         ! Verify error message is not allocated
-        write(failure_message, '(a,a,a,a)') trim(params%description), &
-            ": Expected actual error message to not be allocate but found '", trim(actual_io_error_message), "'"
+        write(failure_message, '(a,a,a,a)') "Expected actual error message to not be allocate but found '", &
+            trim(actual_io_error_message), "'"
         call check(error, .not. allocated(actual_io_error_message), failure_message)
         if (allocated(error)) return
 
@@ -195,13 +187,13 @@ contains
         nrow = size(params%expected_board, 1)
         ncol = size(params%expected_board, 2)
 
-        write(failure_message, '(a,a,i3,a,i3)') trim(params%description), ": unexpected number of rows in actual board. Expected", &
-            nrow, " but found ", size(actual_board, 1)
+        write(failure_message, '(a,i3,a,i3)') "Unexpected number of rows in actual board. Expected", nrow, " but found ", &
+            size(actual_board, 1)
         call check(error, nrow, size(actual_board, 1), failure_message)
         if (allocated(error)) return
 
-        write(failure_message, '(a,a,i3,a,i3)') trim(params%description), &
-            ": unexpected number of columns in actual board. Expected", ncol, " but found ", size(actual_board, 2)
+        write(failure_message, '(a,i3,a,i3)') "Unexpected number of columns in actual board. Expected", ncol, " but found ", &
+            size(actual_board, 2)
         call check(error, ncol, size(actual_board, 2), failure_message)
         if (allocated(error)) return
 
@@ -231,17 +223,15 @@ contains
         call read_model_from_file(params%input_fname, params%max_nrow, params%max_ncol, actual_board, actual_io_error_message)
 
         ! Verify error message
-        write(failure_message, '(a,a)') trim(params%description), ": Expected actual error message to be allocate"
-        call check(error, allocated(actual_io_error_message), failure_message)
+        call check(error, allocated(actual_io_error_message), "Expected actual error message to be allocated")
         if (allocated(error)) return
 
-        write(failure_message, '(a,a,a,a,a,a)') trim(params%description), ": Expected error message '", &
-            trim(params%expected_io_error_message), "' but found '", trim(actual_io_error_message), "'"
+        write(failure_message, '(a,a,a,a,a)') "Expected error message '", trim(params%expected_io_error_message), &
+            "' but found '", trim(actual_io_error_message), "'"
         call check(error, params%expected_io_error_message, actual_io_error_message, failure_message)
         if (allocated(error)) return
 
-        write(failure_message, '(a,a)') trim(params%description), ": Expected actual board to not be allocated"
-        call check(error, .not. allocated(actual_board), failure_message)
+        call check(error, .not. allocated(actual_board), "Expected actual board to not be allocated")
         if (allocated(error)) return
     end subroutine check_read_model_from_file_invalid_model
 end module testdrive_read_model_from_file_test

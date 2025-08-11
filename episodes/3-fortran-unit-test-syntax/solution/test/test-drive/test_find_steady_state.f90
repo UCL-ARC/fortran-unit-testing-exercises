@@ -15,8 +15,6 @@ module testdrive_find_steady_state_test
         logical :: expected_steady_state
         !> The expected output generation number
         integer :: expected_generation_number
-        !> A description of the test to be outputted for logging
-        character(len=100) :: description
     end type find_steady_state_test_params
 
 contains
@@ -51,7 +49,6 @@ contains
         !  11 | 0  1  0  1  0
         !  12 | 0  0  1  0  0
         !  13 | 0  0  0  0  0
-        params%description = "Exploder initial state"
         params%expected_steady_state = .true.
         params%expected_generation_number = 17
         allocate(params%board(31,31))
@@ -87,14 +84,13 @@ contains
 
         call find_steady_state(.false., actual_steady_state, actual_generation_number, actual_board)
 
-
-        write(failure_message,'(a,a,i3,a,i3)') trim(params%description), ": Unexpected generation_number. Expected ", &
-            params%expected_generation_number, " but found ", actual_generation_number
+        write(failure_message,'(a,i3,a,i3)') "Unexpected generation_number. Expected ", params%expected_generation_number, &
+            " but found ", actual_generation_number
         call check(error, params%expected_generation_number, actual_generation_number, failure_message)
         if (allocated(error)) return
 
-        write(failure_message, '(a,a,L,a,L)') trim(params%description), ": Unexpected steady_state. Expected ", &
-            params%expected_steady_state, " but found ", actual_steady_state
+        write(failure_message, '(a,L,a,L)') "Unexpected steady_state. Expected ", params%expected_steady_state, " but found ", &
+            actual_steady_state
         call check(error, params%expected_steady_state, actual_steady_state, failure_message)
         if (allocated(error)) return
     end subroutine check_find_steady_state

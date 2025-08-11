@@ -17,8 +17,6 @@ module testdrive_check_for_steady_state_test
         integer, dimension(:,:), allocatable :: new_board
         !> The value of steady state expected to be returned with the above boards as inputs
         logical :: expected_steady_state
-        !> A description of the test to be outputted for logging
-        character(len=100) :: description
     end type check_for_steady_state_test_params
 
 contains
@@ -62,7 +60,6 @@ contains
 
         type(check_for_steady_state_test_params) :: params
 
-        params%description = "Matching boards with all zeros"
         call populate_random_boards(params%current_board, params%new_board, 0, .true.)
         params%expected_steady_state = .true.
 
@@ -78,7 +75,6 @@ contains
 
         type(check_for_steady_state_test_params) :: params
 
-        params%description = "Matching boards with all ones"
         call populate_random_boards(params%current_board, params%new_board, 1, .true.)
         params%expected_steady_state = .true.
 
@@ -94,7 +90,6 @@ contains
 
         type(check_for_steady_state_test_params) :: params
 
-        params%description = "Matching boards with up to 10 ones"
         call populate_random_boards(params%current_board, params%new_board, 10, .true.)
         params%expected_steady_state = .true.
 
@@ -110,7 +105,6 @@ contains
 
         type(check_for_steady_state_test_params) :: params
 
-        params%description = "Mismatched boards with all zeros and all ones"
         call populate_random_boards(params%current_board, params%new_board, 0, .false.)
         params%expected_steady_state = .false.
 
@@ -126,7 +120,6 @@ contains
 
         type(check_for_steady_state_test_params) :: params
 
-        params%description = "Mismatched boards with all ones and all zeros"
         call populate_random_boards(params%new_board, params%current_board, 0, .false.)
         params%expected_steady_state = .false.
 
@@ -142,7 +135,6 @@ contains
 
         type(check_for_steady_state_test_params) :: params
 
-        params%description = "Mismatched boards with up to 10 differences"
         call populate_random_boards(params%current_board, params%new_board, 10, .false.)
         params%expected_steady_state = .false.
 
@@ -166,8 +158,8 @@ contains
 
         call check_for_steady_state(params%current_board, params%new_board, actual_steady_state)
 
-        write(failure_message,'(a,a,L,a,L)') trim(params%description), ": Expected steady state status to be ", &
-            params%expected_steady_state, " but found ", actual_steady_state
+        write(failure_message,'(a,L,a,L)') "Expected steady state status to be ", params%expected_steady_state, " but found ", &
+            actual_steady_state
         call check(error, params%expected_steady_state .eqv. actual_steady_state, failure_message)
         if (allocated(error)) return
     end subroutine check_if_steady_state
