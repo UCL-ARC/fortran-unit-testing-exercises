@@ -30,11 +30,14 @@ program test_maths
 contains
     !> A unit test for the maths::double function.
     subroutine test_double(passed, failure_message, input, expected_output)
-        implicit none
-
+        !> true if the test was successful
         logical, intent(out) :: passed
+        !> A message to be logged if passed is false
         character(len=80), intent(out) :: failure_message
-        integer, intent(in) :: input, expected_output
+        !> The input to be passed into double
+        integer, intent(in) :: input
+        !> The output expected from double
+        integer, intent(in) :: expected_output
 
         integer :: actual_value
 
@@ -52,11 +55,14 @@ contains
 
     !> A unit test for the maths::factorial function.
     subroutine test_factorial(passed, failure_message, input, expected_output)
-        implicit none
-
+        !> true if the test was successful
         logical, intent(out) :: passed
+        !> A message to be logged if passed is false
         character(len=80), intent(out) :: failure_message
-        integer, intent(in) :: input, expected_output
+        !> The input to be passed into factorial
+        integer, intent(in) :: input
+        !> The output expected from factorial
+        integer, intent(in) :: expected_output
 
         integer :: actual_value
 

@@ -17,8 +17,6 @@ program test_maths
 contains
     !> A unit test for the maths module.
     subroutine test(passed, failure_message)
-      implicit none
-
       !> A logical to track whether the test passed or not
       logical, intent(out) :: passed
       !> A failure message to be displayed if passed is false
