@@ -21,6 +21,7 @@ contains
 
     !> Test suite for the game_of_life::evolve_board subroutine
     subroutine evolve_board_test_suite(testsuite)
+        !> An array of test cases which together define the test suite. Must of type unittest_type for testdrive to pick it up
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite = [ &

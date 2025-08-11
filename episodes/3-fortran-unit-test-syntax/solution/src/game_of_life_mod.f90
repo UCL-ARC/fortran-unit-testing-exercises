@@ -5,10 +5,15 @@ module game_of_life_mod
 
 contains
 
+    !> Find the steady state of the Game of Life board
     subroutine find_steady_state(animate, steady_state, generation_number, current_board)
+        !> Whether to animate the board
         logical, intent(in) :: animate
+        !> Whether the board has reached a steady state
         logical, intent(out) :: steady_state
+        !> The number of generations that have been processed
         integer, intent(out) :: generation_number
+        !> The current state of the board
         integer, dimension(:,:), allocatable, intent(inout) :: current_board
 
         integer, dimension(:,:), allocatable :: new_board
@@ -175,7 +180,7 @@ contains
             read(input_file_io,'(a)') text_to_discard ! Skip first line
             read(input_file_io,*) nrow, ncol
 
-            ! Verify the date_time_values read from the file
+            ! Verify the number of rows and columns read from the file
             if (nrow < 1 .or. nrow > max_nrow) then
                 allocate(character(100) :: io_error_message)
                 write (io_error_message,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow

@@ -11,8 +11,14 @@ module testdrive_check_for_steady_state_test
     ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     type :: check_for_steady_state_test_params
-        integer, dimension(:,:), allocatable :: current_board, new_board
+        !> A board representing the current board before the last evolution
+        integer, dimension(:,:), allocatable :: current_board
+        !> A board representing the new board after the last evolution
+        integer, dimension(:,:), allocatable :: new_board
+        !> The value of steady state expected to be returned with the above boards as inputs
         logical :: expected_steady_state
+        !> A description of the test to be outputted for logging
+        character(len=100) :: description
     end type check_for_steady_state_test_params
 
 contains
@@ -33,6 +39,7 @@ contains
     !
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     subroutine check_for_steady_state_test_suite(testsuite)
+        !> An array of test cases which together define the test suite. Must of type unittest_type for testdrive to pick it up
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite = [ &
@@ -49,82 +56,97 @@ contains
 
     !> Test matching boards with all zeros are in steady state
     subroutine test_check_for_steady_state_all_zeros(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%current_board, inputs%new_board, 0, .true.)
-        inputs%expected_steady_state = .true.
+        params%description = "Matching boards with all zeros"
+        call populate_random_boards(params%current_board, params%new_board, 0, .true.)
+        params%expected_steady_state = .true.
 
-        call check_if_steady_state(error, inputs)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_all_zeros
 
     !> 2. Test matching boards with all ones are in steady state
     !> Test matching boards with all ones are in steady state
     subroutine test_check_for_steady_state_all_ones(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%current_board, inputs%new_board, 1, .true.)
-        inputs%expected_steady_state = .true.
+        params%description = "Matching boards with all ones"
+        call populate_random_boards(params%current_board, params%new_board, 1, .true.)
+        params%expected_steady_state = .true.
 
-        call check_if_steady_state(error, inputs)
-
-        deallocate(inputs%current_board)
-        deallocate(inputs%new_board)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_all_ones
 
     !> 3. Test matching boards with up to 10 ones are in steady state
     !> Test matching boards with up to 10 ones are in steady state
     subroutine test_check_for_steady_state_up_to_ten_ones(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%current_board, inputs%new_board, 10, .true.)
-        inputs%expected_steady_state = .true.
+        params%description = "Matching boards with up to 10 ones"
+        call populate_random_boards(params%current_board, params%new_board, 10, .true.)
+        params%expected_steady_state = .true.
 
-        call check_if_steady_state(error, inputs)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_up_to_ten_ones
 
     !> 4. Test mismatched boards with all zeros and all ones are not in steady state
     !> Test mismatched boards with all zeros and all ones are not in steady state
     subroutine test_check_for_steady_state_all_zeros_all_ones(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%current_board, inputs%new_board, 0, .false.)
-        inputs%expected_steady_state = .false.
+        params%description = "Mismatched boards with all zeros and all ones"
+        call populate_random_boards(params%current_board, params%new_board, 0, .false.)
+        params%expected_steady_state = .false.
 
-        call check_if_steady_state(error, inputs)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_all_zeros_all_ones
 
     !> 5. Test mismatched boards with all ones and all zeros are not in steady state
     !> Test mismatched boards with all ones and all zeros are not in steady state
     subroutine test_check_for_steady_state_all_ones_all_zeros(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%new_board, inputs%current_board, 0, .false.)
-        inputs%expected_steady_state = .false.
+        params%description = "Mismatched boards with all ones and all zeros"
+        call populate_random_boards(params%new_board, params%current_board, 0, .false.)
+        params%expected_steady_state = .false.
 
-        call check_if_steady_state(error, inputs)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_all_ones_all_zeros
 
     !> 6. Test mismatched boards with with up to ten differences are not in steady state
     !> Test mismatched boards with with up to ten differences are not in steady state
     subroutine test_check_for_steady_state_up_to_ten_differences(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%current_board, inputs%new_board, 10, .false.)
-        inputs%expected_steady_state = .false.
+        params%description = "Mismatched boards with up to 10 differences"
+        call populate_random_boards(params%current_board, params%new_board, 10, .false.)
+        params%expected_steady_state = .false.
 
-        call check_if_steady_state(error, inputs)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_up_to_ten_differences
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -132,18 +154,21 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
-    subroutine check_if_steady_state(error, inputs)
+    subroutine check_if_steady_state(error, params)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
-        type(check_for_steady_state_test_params), intent(in) :: inputs
+        !> The current test parameters including inputs and expected outputs
+        type(check_for_steady_state_test_params), intent(in) :: params
 
         logical :: actual_steady_state
-        character(len=80) :: failure_message
+        character(len=100) :: failure_message
 
-        call check_for_steady_state(inputs%current_board, inputs%new_board, actual_steady_state)
+        call check_for_steady_state(params%current_board, params%new_board, actual_steady_state)
 
-        write(failure_message,'(a,L,a,L)') "Expected steady state status to be ", &
-            inputs%expected_steady_state, " but found ", actual_steady_state
-        call check(error, inputs%expected_steady_state .eqv. actual_steady_state, failure_message)
+        write(failure_message,'(a,a,L,a,L)') trim(params%description), ": Expected steady state status to be ", &
+            params%expected_steady_state, " but found ", actual_steady_state
+        call check(error, params%expected_steady_state .eqv. actual_steady_state, failure_message)
         if (allocated(error)) return
     end subroutine check_if_steady_state
 
@@ -151,9 +176,17 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    subroutine populate_random_boards(current_board, new_board, num_differences, matching)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+    !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
+    !> The two boards can either be created matching or with with different locations for their 1s and 0s.
+    subroutine populate_random_boards(board_1, board_2, num_differences, matching)
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_1
+        !> One of the baords to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_2
+        !> The number of elements of board_1 to switch to 1.
         integer, intent(in) :: num_differences
+        !> If true, board_1 and board_2 will match, otherwise board_2 will have it's ones and zeros inverted
+        !> and will have a different random selection of elements set to 0, compared with board_1's 1s.
         logical, intent(in) :: matching
 
         integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
@@ -162,14 +195,14 @@ contains
         ncol = 31
 
         ! Allocate arrays
-        allocate(current_board(nrow, ncol))
-        allocate(new_board(nrow, ncol))
-        current_board = 0
+        allocate(board_1(nrow, ncol))
+        allocate(board_2(nrow, ncol))
+        board_1 = 0
 
         if (matching) then
-            new_board = 0
+            board_2 = 0
         else
-            new_board = 1
+            board_2 = 1
         end if
 
         ! For both boards, set to requested number of elements to the opposite value
@@ -180,7 +213,7 @@ contains
             call random_number(rand_real)
             rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-            current_board(rand_row, rand_col) = 1
+            board_1(rand_row, rand_col) = 1
 
             if (.not. matching) then
                 ! Get random coordinates for new
@@ -189,13 +222,10 @@ contains
                 call random_number(rand_real)
                 rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-                new_board(rand_row, rand_col) = 0
+                board_2(rand_row, rand_col) = 0
             else
-                new_board(rand_row, rand_col) = 1
+                board_2(rand_row, rand_col) = 1
             end if
-
-
         end do
-
     end subroutine populate_random_boards
 end module testdrive_check_for_steady_state_test

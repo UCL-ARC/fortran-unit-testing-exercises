@@ -35,6 +35,7 @@ contains
 
     !> Test suite for the game_of_life::find_steady_state subroutine
     function find_steady_state_test_suite() result(tests)
+        !> The collection of tests which make up this test suite. Must be of type test_item_t to be picked up by veggies
         type(test_item_t) :: tests
 
         type(example_t) :: parameters(1)
@@ -80,7 +81,9 @@ contains
 
     !> Check for the expected output of the game_of_life::find_steady_state subroutine
     function check_find_steady_state(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         logical :: actual_steady_state

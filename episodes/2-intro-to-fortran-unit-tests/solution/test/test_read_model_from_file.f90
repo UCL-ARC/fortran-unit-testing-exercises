@@ -38,6 +38,7 @@ contains
 
     !> Test suite for the game_of_life::read_model_from_file subroutine
     function read_model_from_file_test_suite() result(tests)
+        !> The collection of tests which make up this test suite. Must be of type test_item_t to be picked up by veggies
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_board
@@ -59,34 +60,32 @@ contains
         !> Test a valid board of zeros but the number of rows is too large
         test_io_error_message = "nrow must be a positive integer less than     10 found     31"
         invalid_model_file_data(1) = example_t( &
-            read_model_from_file_test_params("test/models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message) &
+            read_model_from_file_test_params("test/models/zeros_31_31.dat", 10, 100, null(), test_io_error_message) &
         )
 
         !> Test a valid board of zeros but the number of columns is too large
         test_io_error_message = "ncol must be a positive integer less than     10 found     31"
         invalid_model_file_data(2) = example_t( &
-            read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message) &
+            read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 10, null(), test_io_error_message) &
         )
 
         !> Test an invalid board with a negative number of rows
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
         invalid_model_file_data(3) = example_t( &
-            read_model_from_file_test_params("test/models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message) &
+            read_model_from_file_test_params("test/models/empty_-10_10.dat", 100, 100, null(), test_io_error_message) &
         )
 
         !> Test an invalid board with a negative number of columns
         test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
         invalid_model_file_data(4) = example_t( &
-            read_model_from_file_test_params("test/models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message) &
+            read_model_from_file_test_params("test/models/empty_10_-10.dat", 100, 100, null(), test_io_error_message) &
         )
 
         !> Test trying to load a none existent file
         test_io_error_message = " *** Error when opening does/not/exist.dat"
         invalid_model_file_data(5) = example_t( &
-            read_model_from_file_test_params("does/not/exist.dat", 100, 100, test_board, test_io_error_message) &
+            read_model_from_file_test_params("does/not/exist.dat", 100, 100, null(), test_io_error_message) &
         )
-
-        deallocate(test_io_error_message)
 
         tests = describe( &
             "read_model_from_file", &
@@ -109,7 +108,9 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     function check_read_model_from_file(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable ::actual_board
@@ -134,7 +135,9 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     function check_read_model_from_file_with_invalid_model(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable ::actual_board

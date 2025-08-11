@@ -11,8 +11,13 @@ module test_check_for_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     @testParameter
     type, extends(AbstractTestParameter) :: check_for_steady_state_test_params
-        integer, dimension(:,:), allocatable :: current_board, new_board
+        !> A board representing the current board before the last evolution 
+        integer, dimension(:,:), allocatable :: current_board
+        !> A board representing the new board after the last evolution 
+        integer, dimension(:,:), allocatable :: new_board
+        !> The value of steady state expected to be returned with the above boards as inputs
         logical :: expected_steady_state
+        !> A description of the test to be outputted for logging
         character(len=100) :: description
     contains
         procedure :: toString => check_for_steady_state_test_params_toString
@@ -87,6 +92,8 @@ contains
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     @Test
     subroutine TestCheckIfSteadyState(this)
+        !> The current test case containing inputs and expected outputs. Must be of type check_for_steady_state_test_case to be
+        !> picked up by pFUnit
         class(check_for_steady_state_test_case), intent(inout) :: this
 
         logical :: actual_steady_state
@@ -103,26 +110,20 @@ contains
     ! TASK: Write a function which returns an instance of your new test case type from an inputted
     !       instance of your new parameter type.
     function newTest(testParameter) result(tst)
-        type(check_for_steady_state_test_case) :: tst
+        !> The parameters to define the new test case. Must be of type check_for_steady_state_test_params to be picked up by pFUnit
         type(check_for_steady_state_test_params), intent(in) :: testParameter
+        !> The test case to be populated with parameters. Must be of type check_for_steady_state_test_case to be picked up by pFUnit
+        type(check_for_steady_state_test_case) :: tst
 
-        integer :: nrow, ncol
-
-        nrow = size(testParameter%current_board, 1)
-        ncol = size(testParameter%current_board, 2)
-
-        allocate(tst%params%current_board(nrow, ncol))
-        allocate(tst%params%new_board(nrow, ncol))
-
-        tst%params%current_board = testParameter%current_board
-        tst%params%new_board = testParameter%new_board
-        tst%params%expected_steady_state = testParameter%expected_steady_state
+        tst%params = testParameter
     end function newTest
 
     ! TASK: Write a function which returns your new parameter type as a string. This is used to
     !       decsribe your test scenario in the cli output
     function check_for_steady_state_test_params_toString(this) result(string)
+        !> The parameters for this test case.
         class(check_for_steady_state_test_params), intent(in) :: this
+
         character(:), allocatable :: string
 
         character(len=80) :: buffer
@@ -142,9 +143,17 @@ contains
         string = trim(buffer)
     end function check_for_steady_state_test_params_toString
 
+    !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
+    !> The two boards can either be created matching or with with different locations for their 1s and 0s.
     subroutine populate_random_boards(current_board, new_board, num_differences, matching)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: current_board
+        !> One of the baords to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: new_board
+        !> The number of elements of board_1 to switch to 1.
         integer, intent(in) :: num_differences
+        !> If true, board_1 and board_2 will match, otherwise board_2 will have it's ones and zeros inverted
+        !> and will have a different random selection of elements set to 0, compared with board_1's 1s.
         logical, intent(in) :: matching
 
         integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val

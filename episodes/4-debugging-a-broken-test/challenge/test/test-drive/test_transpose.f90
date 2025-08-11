@@ -14,6 +14,7 @@ module testdrive_test_transpose
 contains
 
     subroutine test_transpose_testsuite(testsuite)
+        !> An array of test cases which together define the test suite. Must of type unittest_type for testdrive to pick it up
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite =[ &

@@ -38,6 +38,7 @@ contains
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     @Test
     subroutine TestCheckIfSteadyState(this)
+        !> The current test case including inputs and expected outputs
         class(check_for_steady_state_test_case), intent(inout) :: this
 
         logical :: actual_steady_state
@@ -59,23 +60,31 @@ contains
     !       decsribe your test scenario in the cli output
     ! Your changes here...
 
-    subroutine populate_random_boards(current_board, new_board, num_differences, matching)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+    !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
+    !> The two boards can either be created matching or with with different locations for their 1s and 0s.
+    subroutine populate_random_boards(board_1, board_2, num_differences, matching)
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_1
+        !> One of the baords to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_2
+        !> The number of elements of board_1 to switch to 1.
         integer, intent(in) :: num_differences
+        !> If true, board_1 and board_2 will match, otherwise board_2 will have it's ones and zeros inverted
+        !> and will have a different random selection of elements set to 0, compared with board_1's 1s.
         logical, intent(in) :: matching
 
         integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
         real :: rand_real
 
         ! Initialise
-        nrow = size(current_board, 1)
-        ncol = size(current_board, 2)
-        current_board = 0
+        nrow = size(board_1, 1)
+        ncol = size(board_1, 2)
+        board_1 = 0
 
         if (matching) then
-            new_board = 0
+            board_2 = 0
         else
-            new_board = 1
+            board_2 = 1
         end if
 
         ! For both boards, set to requested number of elements to the opposite value
@@ -86,7 +95,7 @@ contains
             call random_number(rand_real)
             rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-            current_board(rand_row, rand_col) = 1
+            board_1(rand_row, rand_col) = 1
 
             if (.not. matching) then
                 ! Get random coordinates for new
@@ -95,12 +104,10 @@ contains
                 call random_number(rand_real)
                 rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-                new_board(rand_row, rand_col) = 0
+                board_2(rand_row, rand_col) = 0
             else
-                new_board(rand_row, rand_col) = 1
+                board_2(rand_row, rand_col) = 1
             end if
-
-
         end do
 
     end subroutine populate_random_boards

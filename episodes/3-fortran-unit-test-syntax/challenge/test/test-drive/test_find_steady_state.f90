@@ -23,6 +23,7 @@ contains
 
     !> Test suite for the game_of_life::find_steady_state subroutine
     subroutine find_steady_state_test_suite(testsuite)
+        !> An array of test cases which together define the test suite. Must of type unittest_type for testdrive to pick it up
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite = [ &

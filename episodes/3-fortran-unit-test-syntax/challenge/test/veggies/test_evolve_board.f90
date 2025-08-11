@@ -17,7 +17,9 @@ module veggies_evolve_board_test
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     type, extends(input_t) :: evolve_board_test_params
+        !> The current board as it is inputted into evolve_board
         integer, dimension(:,:), allocatable :: current_board
+        !> The expected state of the new board after running evolve_board
         integer, dimension(:,:), allocatable :: expected_new_board
     end type evolve_board_test_params
 
@@ -29,6 +31,7 @@ contains
 
     !> Test suite for the game_of_life::evolve_board subroutine
     function evolve_board_test_suite() result(tests)
+        !> The collection of tests which make up this test suite. Must be of type test_item_t to be picked up by veggies
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
@@ -124,7 +127,9 @@ contains
 
     !> Check for the expected output of the game_of_life::evolve_board subroutine
     function check_evolve_board(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable ::actual_new_board
@@ -141,6 +146,5 @@ contains
             result_ = fail("Didn't get evolve_board_test_params")
 
         end select
-
     end function check_evolve_board
 end module veggies_evolve_board_test
