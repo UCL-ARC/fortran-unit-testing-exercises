@@ -31,8 +31,10 @@ contains
 
     ! TASK: Write test subroutines for each of the above scenarios (1. is already provided)
 
-    !> 1. Test matching boards with all zeros are in steady state
+    !> Test matching boards with all zeros are in steady state
     subroutine test_check_for_steady_state_all_zeros(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
         type(check_for_steady_state_test_params) :: params

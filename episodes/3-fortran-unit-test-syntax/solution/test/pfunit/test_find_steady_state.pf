@@ -8,7 +8,7 @@ module test_find_steady_state
     public
 
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
-    @testParameter(constructor=new_find_steady_state_test_params)
+    @testParameter
     type, extends(AbstractTestParameter) :: find_steady_state_test_params
         integer, dimension(:,:), allocatable :: board
 
@@ -91,21 +91,6 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number) result(new_params)
-        integer, dimension(:,:), allocatable, intent(in) :: board
-        logical, intent(in) :: expected_steady_state
-        integer, intent(in) :: expected_generation_number
-
-        type(find_steady_state_test_params) :: new_params
-
-        allocate(new_params%board(size(board, 1), size(board, 2)))
-
-        new_params%board = board
-        new_params%expected_steady_state = expected_steady_state
-        new_params%expected_generation_number = expected_generation_number
-
-    end function new_find_steady_state_test_params
 
     function newTest(testParameter) result(tst)
         type(find_steady_state_test_case) :: tst

@@ -9,8 +9,11 @@ module test_evolve_board
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     @testParameter
     type, extends(AbstractTestParameter) :: evolve_board_test_params
+        !> A board representing the current board before the last evolution
         integer, dimension(:,:), allocatable :: current_board
+        !> The expected board after the last evolution
         integer, dimension(:,:), allocatable :: expected_new_board
+        !> A description of the test to be outputted for logging
         character(len=100) :: description
     contains
         procedure :: toString => evolve_board_test_params_toString

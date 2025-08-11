@@ -178,8 +178,10 @@ contains
         call read_model_from_file(params%input_fname, params%max_nrow, params%max_ncol, actual_board, actual_io_error_message)
 
         ! Verify error message is not allocated
-        write(failure_message, '(a,a,a,a)') "Expected actual error message to not be allocate but found '", &
-            trim(actual_io_error_message), "'"
+        if (allocated(actual_io_error_message)) then
+            write(failure_message, '(a,a,a,a)') "Expected actual error message to not be allocate but found '", &
+                trim(actual_io_error_message), "'"
+        end if
         call check(error, .not. allocated(actual_io_error_message), failure_message)
         if (allocated(error)) return
 
