@@ -29,4 +29,4 @@ add_subdirectory("test/veggies")
 #--------------------------------------#
 #               pFUnit                 #
 #--------------------------------------#
-# add_subdirectory("test/pfunit")
+add_subdirectory("test/pfunit")
