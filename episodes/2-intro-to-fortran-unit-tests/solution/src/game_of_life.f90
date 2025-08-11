@@ -5,7 +5,7 @@
 ! Adapted from https://github.com/tuckerrc/game_of_life
 ! =======================================================
 program game_of_life
-    use game_of_life_mod, only :  read_model_from_file, find_steady_state
+    use game_of_life_mod, only : read_model_from_file, find_steady_state
 
     implicit none
 

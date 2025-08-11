@@ -142,9 +142,11 @@ contains
             call evolve_board(input%current_board, actual_new_board)
 
             result_ = assert_equals(input%expected_new_board, actual_new_board)
+
         class default
             result_ = fail("Didn't get evolve_board_test_params")
 
         end select
+
     end function check_evolve_board
 end module veggies_evolve_board_test

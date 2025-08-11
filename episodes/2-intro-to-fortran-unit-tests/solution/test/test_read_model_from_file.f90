@@ -123,9 +123,6 @@ contains
             result_ = assert_equals(input%expected_board, actual_board) .and. &
                       assert_not(allocated(actual_io_error_message))
 
-            if (allocated(actual_board)) then
-                deallocate(actual_board)
-            end if
         class default
             result_ = fail("Didn't get read_model_from_file_test_params")
 

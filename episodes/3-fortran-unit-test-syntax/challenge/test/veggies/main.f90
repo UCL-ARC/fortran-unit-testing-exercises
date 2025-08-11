@@ -11,7 +11,9 @@ program test_main
     if (.not.run()) stop 1
 
 contains
+    !> Run all tests within this project
     function run() result(passed)
+        !> true if all tests have passed successfully
         logical :: passed
 
         type(test_item_t) :: tests

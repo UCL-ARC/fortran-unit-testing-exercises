@@ -43,7 +43,6 @@ contains
         integer :: expected_generation_number
         integer, dimension(:,:), allocatable :: board
 
-
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
         !      -- -- -- -- --
@@ -103,8 +102,11 @@ contains
             else
                 result_ = result_ .and. assert_not(actual_steady_state)
             end if
+
         class default
-            result_ = fail("Didn't get find_steady_state_test_params")
-        end select
+        result_ = fail("Didn't get find_steady_state_test_params")
+
+    end select
+
     end function check_find_steady_state
 end module find_steady_state_test

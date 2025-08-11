@@ -83,9 +83,6 @@ contains
                 check_if_steady_state &
             )] &
         )
-
-        deallocate(test_current_board)
-        deallocate(test_new_board)
     end function check_for_steady_state_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -170,8 +167,6 @@ contains
             else
                 board_2(rand_row, rand_col) = 1
             end if
-
-
         end do
 
     end subroutine populate_random_boards

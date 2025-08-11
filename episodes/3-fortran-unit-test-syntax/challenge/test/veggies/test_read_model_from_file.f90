@@ -48,6 +48,7 @@ contains
         allocate(test_board(31, 31))
         test_board = 0
 
+        !> Test a valid board of all zeros
         valid_model_file_data(1) = example_t( &
             read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message) &
         )
@@ -121,6 +122,7 @@ contains
 
             result_ = assert_equals(input%expected_board, actual_board) .and. &
                       assert_not(allocated(actual_io_error_message))
+
         class default
             result_ = fail("Didn't get read_model_from_file_test_params")
 

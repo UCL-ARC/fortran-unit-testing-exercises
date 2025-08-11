@@ -168,5 +168,6 @@ contains
                 board_2(rand_row, rand_col) = 1
             end if
         end do
+
     end subroutine populate_random_boards
 end module veggies_check_for_steady_state_test

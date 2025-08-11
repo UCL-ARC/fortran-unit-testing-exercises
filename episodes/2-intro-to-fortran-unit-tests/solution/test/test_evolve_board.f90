@@ -105,9 +105,6 @@ contains
         expected_new_board(11,9:11) = [1,0,1]
         expected_new_board(12,9:11) = [0,1,0]
         non_steady_state_boards_data(2) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
-        !  Reset for next test
-        test_current_board = 0
-        expected_new_board = 0
 
         tests = describe( &
             "evolve_board", &
@@ -122,9 +119,6 @@ contains
                 check_evolve_board &
             )] &
         )
-
-        deallocate(test_current_board)
-        deallocate(expected_new_board)
     end function evolve_board_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -149,7 +143,6 @@ contains
 
             result_ = assert_equals(input%expected_new_board, actual_new_board)
 
-            deallocate(actual_new_board)
         class default
             result_ = fail("Didn't get evolve_board_test_params")
 
