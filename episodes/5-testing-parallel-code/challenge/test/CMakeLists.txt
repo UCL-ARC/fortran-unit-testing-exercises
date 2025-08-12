@@ -8,12 +8,8 @@ file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test")
 file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test/models"
         "${CMAKE_CURRENT_BINARY_DIR}/test/models" SYMBOLIC)
 
-# Filter out the main.f90 files. We can only have one main() function in our tests
-set(PROJ_SRC_FILES_EXEC_MAIN ${PROJ_SRC_FILES})
-list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*main.f90")
-
 # Create library for src code
-add_library (sut STATIC ${PROJ_SRC_FILES_EXEC_MAIN})
+add_library (sut STATIC ${PROJ_SRC_FILES})
 
 set(TO_LINK_TO_SRC MPI::MPI_Fortran)
 if(OpenMP_Fortran_FOUND)
