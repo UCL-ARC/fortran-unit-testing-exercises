@@ -21,7 +21,7 @@ contains
         !> The collection of all test items to be executed
         type(test_item_t) :: tests
         !> Array of individual test items to be included in the test suite
-        type(test_item_t) :: individual_tests(1)
+        type(test_item_t) :: individual_tests(4)
 
         individual_tests(1) = check_for_steady_state_test_suite()
         individual_tests(2) = evolve_board_test_suite()
