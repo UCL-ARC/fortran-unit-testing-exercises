@@ -70,7 +70,7 @@ contains
         call MPI_Cart_create(base_mpi_communicator, 2, domainDecomp%dims, periods, .true., domainDecomp%communicator, ierr)
         call MPI_Comm_rank(domainDecomp%communicator, rank, ierr)
 
-        call get_local_grid_info(domainDecomp, rank, domainDecomp%dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
+        call get_local_grid_info(domainDecomp, rank, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
             y_start, x_start, local_ny, local_nx)
 
         allocate(local_current(local_nx+2, local_ny+2))
