@@ -16,10 +16,12 @@ module evolve_board_test
     public :: evolve_board_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
-    type, extends(input_t) :: evolve_board_in_out_t
+    type, extends(input_t) :: evolve_board_test_params
+        !> The current board as it is inputted into evolve_board
         integer, dimension(:,:), allocatable :: current_board
+        !> The expected state of the new board after running evolve_board
         integer, dimension(:,:), allocatable :: expected_new_board
-    end type evolve_board_in_out_t
+    end type evolve_board_test_params
 
 contains
 
@@ -29,6 +31,7 @@ contains
 
     !> Test suite for the game_of_life::evolve_board subroutine
     function evolve_board_test_suite() result(tests)
+        !> The collection of tests which make up this test suite. Must be of type test_item_t to be picked up by veggies
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_current_board, expected_new_board
@@ -45,7 +48,7 @@ contains
 
         ! Steady state boards
         !  All zeros
-        steady_state_boards_data(1) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
+        steady_state_boards_data(1) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
 
         !  A slightly more complex steady state structure
         !       8  9 10 11 12
@@ -67,7 +70,7 @@ contains
         expected_new_board(10,9:11) = test_current_board(10,9:11)
         expected_new_board(11,9:11) = test_current_board(11,9:11)
         expected_new_board(12,9:11) = test_current_board(12,9:11)
-        steady_state_boards_data(2) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
+        steady_state_boards_data(2) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
         !  Reset for next test
         test_current_board = 0
         expected_new_board = 0
@@ -76,7 +79,7 @@ contains
         !  One non-zero element
         !   Input board
         test_current_board(10,9) = 1
-        non_steady_state_boards_data(1) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
+        non_steady_state_boards_data(1) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
         !  Reset for next test
         test_current_board(10,9) = 0
 
@@ -101,10 +104,7 @@ contains
         expected_new_board(10,9:11) = [1,0,1]
         expected_new_board(11,9:11) = [1,0,1]
         expected_new_board(12,9:11) = [0,1,0]
-        non_steady_state_boards_data(2) = example_t(evolve_board_in_out_t(test_current_board, expected_new_board))
-        !  Reset for next test
-        test_current_board = 0
-        expected_new_board = 0
+        non_steady_state_boards_data(2) = example_t(evolve_board_test_params(test_current_board, expected_new_board))
 
         tests = describe( &
             "evolve_board", &
@@ -119,9 +119,6 @@ contains
                 check_evolve_board &
             )] &
         )
-
-        deallocate(test_current_board)
-        deallocate(expected_new_board)
     end function evolve_board_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -130,13 +127,15 @@ contains
 
     !> Check for the expected output of the game_of_life::evolve_board subroutine
     function check_evolve_board(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable ::actual_new_board
 
         select type (input)
-        type is (evolve_board_in_out_t)
+        type is (evolve_board_test_params)
             allocate(actual_new_board(size(input%current_board, 1), size(input%current_board, 2)))
             actual_new_board = input%current_board
 
@@ -144,9 +143,8 @@ contains
 
             result_ = assert_equals(input%expected_new_board, actual_new_board)
 
-            deallocate(actual_new_board)
         class default
-            result_ = fail("Didn't get evolve_board_in_out_t")
+            result_ = fail("Didn't get evolve_board_test_params")
 
         end select
 

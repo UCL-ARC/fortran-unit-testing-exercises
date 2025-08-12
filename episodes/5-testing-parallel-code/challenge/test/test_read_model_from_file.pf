@@ -1,3 +1,4 @@
+!> Module for testing the subroutine game_of_life::read_model_from_file
 module test_read_model_from_file
     use game_of_life_mod, only : read_model_from_file
     ! allow(C121)
@@ -10,21 +11,26 @@ module test_read_model_from_file
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
     @testParameter
     type, extends(AbstractTestParameter) :: read_model_from_file_test_params
+        !> The input file name to be read
         character(len=:), allocatable :: input_fname
+        !> The maximum number of rows allowed in the board
         integer :: max_nrow
+        !> The maximum number of columns allowed in the board
         integer :: max_ncol
+        !> The expected board after reading the file
         integer, dimension(:,:), allocatable :: expected_board
+        !> The expected error message if the model is invalid
         character(len=:), allocatable :: expected_io_error_message
+        !> Whether the model is valid or not
         logical :: model_is_valid
     contains
         procedure :: toString => read_model_from_file_test_params_toString
     end type read_model_from_file_test_params
 
-    !> Type to define a single evolve_board test case
+    !> Type to define a single read_model_from_file test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(ParameterizedTestCase) :: read_model_from_file_test_case
         type(read_model_from_file_test_params) :: params
-        logical :: model_is_valid
     end type read_model_from_file_test_case
 
 contains
@@ -35,7 +41,8 @@ contains
 
     !> Test suite for the game_of_life::read_model_from_file subroutine
     function getParameters() result(params)
-        type (read_model_from_file_test_params), allocatable :: params(:)
+        !> The array of test parameters
+        type(read_model_from_file_test_params), allocatable :: params(:)
 
         integer, dimension(:,:), allocatable :: test_board
         character(len=:), allocatable :: test_io_error_message
@@ -46,6 +53,7 @@ contains
         test_board = 0
 
         allocate(character(len=80) :: test_io_error_message)
+
         params(1) = read_model_from_file_test_params( &
             "test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true. &
         )
@@ -80,8 +88,10 @@ contains
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     @Test
     subroutine TestCheckReadModelFromFile(this)
+        !> The current test case including inputs and expected outputs
         class (read_model_from_file_test_case), intent(inout) :: this
 
         integer, dimension(:,:), allocatable :: actual_board
@@ -97,10 +107,13 @@ contains
         end if
     end subroutine TestCheckReadModelFromFile
 
+    !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with a valid model
     subroutine VerifyCheckReadModelFromFileValidModel(params, actual_board, actual_io_error_message)
+        !> The test parameters for the current test case
         class (read_model_from_file_test_params), intent(inout) :: params
-
+        !> The actual board returned by read_model_from_file
         integer, dimension(:,:), allocatable, intent(in) :: actual_board
+        !> The actual error message returned by read_model_from_file
         character(len=:), allocatable, intent(in) :: actual_io_error_message
 
         @assertFalse(allocated(actual_io_error_message), "Expected actual_io_error_message to not be allocated")
@@ -108,11 +121,13 @@ contains
         @assertEqual(params%expected_board, actual_board, "Actual and expected boards do not match")
     end subroutine VerifyCheckReadModelFromFileValidModel
 
-    !> Check for the expected output of the game_of_life::read_model_from_file subroutine
+    !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with an invalid model
     subroutine VerifyCheckReadModelFromFileInvalidModel(params, actual_board, actual_io_error_message)
+        !> The test parameters for the current test case
         class (read_model_from_file_test_params), intent(inout) :: params
-
+        !> The actual board returned by read_model_from_file
         integer, dimension(:,:), allocatable, intent(in) :: actual_board
+        !> The actual error message returned by read_model_from_file
         character(len=:), allocatable, intent(in) :: actual_io_error_message
 
         @assertTrue(allocated(actual_io_error_message), "Expected actual_io_error_message to be allocated")
@@ -124,26 +139,21 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Constructor for read_model_from_file_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type (read_model_from_file_test_case) :: tst
+        !> The test parameters for the new test case
         type (read_model_from_file_test_params), intent(in) :: testParameter
 
-        integer :: nx, ny
-
-        nx = size(testParameter%expected_board, 1)
-        ny = size(testParameter%expected_board, 2)
-        allocate(tst%params%expected_board(nx, ny))
-
-        tst%params%input_fname = testParameter%input_fname
-        tst%params%max_nrow = testParameter%max_nrow
-        tst%params%max_ncol = testParameter%max_ncol
-        tst%params%expected_board = testParameter%expected_board
-        tst%params%expected_io_error_message = testParameter%expected_io_error_message
-        tst%params%model_is_valid = testParameter%model_is_valid
+        tst%params = testParameter
     end function newTest
 
+    !> Converts read_model_from_file_test_params to a string for logging
     function read_model_from_file_test_params_toString(this) result(string)
+        !> The test parameters to convert
         class (read_model_from_file_test_params), intent(in) :: this
+        !> The resulting string representation
         character(:), allocatable :: string
 
         character(len=80) :: buffer

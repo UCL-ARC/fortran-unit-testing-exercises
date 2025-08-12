@@ -17,10 +17,14 @@ module check_for_steady_state_test
     public :: check_for_steady_state_test_suite
 
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
-    type, extends(input_t) :: check_for_steady_state_in_out_t
-        integer, dimension(:,:), allocatable :: current_board, new_board
+    type, extends(input_t) :: check_for_steady_state_test_params
+        !> The current board to be inputted and compared to the new board
+        integer, dimension(:,:), allocatable :: current_board
+        !> The new board to be inputted and compared to the current board
+        integer, dimension(:,:), allocatable :: new_board
+        !> The expected steady state to be outputted
         logical :: expected_steady_state
-    end type check_for_steady_state_in_out_t
+    end type check_for_steady_state_test_params
 
 contains
 
@@ -30,6 +34,7 @@ contains
 
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     function check_for_steady_state_test_suite() result(tests)
+        !> The collection of tests which make up this test suite. Must be of type test_item_t to be picked up by veggies
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_current_board, test_new_board
@@ -46,24 +51,24 @@ contains
         ! Matching boards
         !  All zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .true.)
-        matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
+        matching_boards_data(1) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
         !  All ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .true.)
-        matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
+        matching_boards_data(2) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
         !  Up to 10 ones
         call populate_random_boards(test_current_board, test_new_board, 10, .true.)
-        matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .true.))
+        matching_boards_data(3) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
 
         ! Mismatched boards
         !  All ones vs all zeros
         call populate_random_boards(test_current_board, test_new_board, 0, .false.)
-        non_matching_boards_data(1) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+        non_matching_boards_data(1) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
         !  All zeros vs all ones
         call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .false.)
-        non_matching_boards_data(2) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+        non_matching_boards_data(2) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
         !  Up to 10 differences
         call populate_random_boards(test_current_board, test_new_board, 10, .false.)
-        non_matching_boards_data(3) = example_t(check_for_steady_state_in_out_t(test_current_board, test_new_board, .false.))
+        non_matching_boards_data(3) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
 
         tests = describe( &
             "check_for_steady_state", &
@@ -78,9 +83,6 @@ contains
                 check_if_steady_state &
             )] &
         )
-
-        deallocate(test_current_board)
-        deallocate(test_new_board)
     end function check_for_steady_state_test_suite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -89,13 +91,15 @@ contains
 
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     function check_if_steady_state(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         logical :: actual_steady_state
 
         select type (input)
-        type is (check_for_steady_state_in_out_t)
+        type is (check_for_steady_state_test_params)
             call check_for_steady_state(input%current_board, input%new_board, actual_steady_state)
 
             if (input%expected_steady_state) then
@@ -105,7 +109,7 @@ contains
             end if
 
         class default
-            result_ = fail("Didn't get check_for_steady_state_in_out_t")
+            result_ = fail("Didn't get check_for_steady_state_test_params")
 
         end select
 
@@ -115,23 +119,31 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    subroutine populate_random_boards(current_board, new_board, num_differences, matching)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+    !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
+    !> The two boards can either be created matching or with with different locations for their 1s and 0s.
+    subroutine populate_random_boards(board_1, board_2, num_differences, matching)
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_1
+        !> One of the baords to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_2
+        !> The number of elements of board_1 to switch to 1.
         integer, intent(in) :: num_differences
+        !> If true, board_1 and board_2 will match, otherwise board_2 will have it's ones and zeros inverted
+        !> and will have a different random selection of elements set to 0, compared with board_1's 1s.
         logical, intent(in) :: matching
 
         integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
         real :: rand_real
 
         ! Initialise
-        nrow = size(current_board, 1)
-        ncol = size(current_board, 2)
-        current_board = 0
+        nrow = size(board_1, 1)
+        ncol = size(board_1, 2)
+        board_1 = 0
 
         if (matching) then
-            new_board = 0
+            board_2 = 0
         else
-            new_board = 1
+            board_2 = 1
         end if
 
         ! For both boards, set to requested number of elements to the opposite value
@@ -142,7 +154,7 @@ contains
             call random_number(rand_real)
             rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-            current_board(rand_row, rand_col) = 1
+            board_1(rand_row, rand_col) = 1
 
             if (.not. matching) then
                 ! Get random coordinates for new
@@ -151,12 +163,10 @@ contains
                 call random_number(rand_real)
                 rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-                new_board(rand_row, rand_col) = 0
+                board_2(rand_row, rand_col) = 0
             else
-                new_board(rand_row, rand_col) = 1
+                board_2(rand_row, rand_col) = 1
             end if
-
-
         end do
 
     end subroutine populate_random_boards

@@ -57,9 +57,12 @@ contains
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
-    subroutine check_read_model_from_file_valid_model(error, inputs)
+    subroutine check_read_model_from_file_valid_model(error, params)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
-        class(read_model_from_file_test_params), intent(in) :: inputs
+        !> The current test parameters including inputs and expected outputs
+        type(read_model_from_file_test_params), intent(in) :: params
 
         integer, dimension(:,:), allocatable ::actual_board
         character(len=:), allocatable :: actual_io_error_message
@@ -72,14 +75,17 @@ contains
     end subroutine check_read_model_from_file_valid_model
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
-    subroutine check_read_model_from_file_invalid_model(error, inputs)
+    subroutine check_read_model_from_file_invalid_model(error, params)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
-        class(read_model_from_file_test_params), intent(in) :: inputs
+        !> The current test parameters including inputs and expected outputs
+        type(read_model_from_file_test_params), intent(in) :: params
 
         integer, dimension(:,:), allocatable ::actual_board
         character(len=:), allocatable :: actual_io_error_message
         integer :: row, col, nrow, ncol
-        character(len=80) :: failure_message
+        character(len=250) :: failure_message
 
         call read_model_from_file(inputs%input_fname, inputs%max_nrow, inputs%max_ncol, actual_board, actual_io_error_message)
 

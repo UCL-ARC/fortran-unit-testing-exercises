@@ -9,8 +9,11 @@ module test_evolve_board
     !> Type to bundle inputs and expected outputs of game_of_life::evolve_board
     @testParameter
     type, extends(AbstractTestParameter) :: evolve_board_test_params
+        !> A board representing the current board before the last evolution
         integer, dimension(:,:), allocatable :: current_board
+        !> The expected board after the last evolution
         integer, dimension(:,:), allocatable :: expected_new_board
+        !> A description of the test to be outputted for logging
         character(len=100) :: description
     contains
         procedure :: toString => evolve_board_test_params_toString
@@ -28,8 +31,9 @@ contains
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    ! Define test parameter sets
+    !> Defines the test parameter sets for evolve_board
     function evolve_board_test_suite() result(params)
+        !> The array of test parameters
         type (evolve_board_test_params) :: params(4)
 
         integer :: nrow, ncol
@@ -110,6 +114,7 @@ contains
 
     @Test
     subroutine TestEvolveBoard(this)
+        !> The current test case including inputs and expected outputs
         class (evolve_board_test_case), intent(inout) :: this
 
         integer, dimension(:,:), allocatable ::actual_new_board
@@ -128,23 +133,19 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Constructor for evolve_board_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type (evolve_board_test_case) :: tst
+        !> The test parameters for the new test case
         type (evolve_board_test_params), intent(in) :: testParameter
 
-        integer :: nrow, ncol
-
-        nrow = size(testParameter%current_board, 1)
-        ncol = size(testParameter%current_board, 2)
-
-        allocate(tst%params%current_board(nrow, ncol))
-        allocate(tst%params%expected_new_board(nrow, ncol))
-
-        tst%params%current_board = testParameter%current_board
-        tst%params%expected_new_board = testParameter%expected_new_board
+        tst%params = testParameter
     end function newTest
 
+    !> Converts evolve_board_test_params to a string for logging
     function evolve_board_test_params_toString(this) result(string)
+        !> The test parameters to convert
         class (evolve_board_test_params), intent(in) :: this
         character(:), allocatable :: string
 
@@ -158,6 +159,7 @@ contains
         write(buffer,'(i2, "x", i2, " board with ", a)') &
             nrow, ncol, trim(this%description)
         string = trim(buffer)
+
     end function evolve_board_test_params_toString
 
 end module test_evolve_board

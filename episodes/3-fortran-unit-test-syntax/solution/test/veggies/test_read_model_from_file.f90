@@ -18,10 +18,15 @@ module veggies_read_model_from_file_test
 
     !> Type to bundle inputs and expected outputs of game_of_life::read_model_from_file
     type, extends(input_t) :: read_model_from_file_test_params
+        !> The file to test reading
         character(len=:), allocatable :: input_fname
+        !> The maximum number of rows to set for this test
         integer :: max_nrow
+        !> The maximum number of column to set for this test
         integer :: max_ncol
+        !> The expected board to be read from the input file
         integer, dimension(:,:), allocatable :: expected_board
+        !> The expected error message to be populated if an error occurs
         character(len=:), allocatable :: expected_io_error_message
     end type read_model_from_file_test_params
 
@@ -33,6 +38,7 @@ contains
 
     !> Test suite for the game_of_life::read_model_from_file subroutine
     function read_model_from_file_test_suite() result(tests)
+        !> The collection of tests which make up this test suite. Must be of type test_item_t to be picked up by veggies
         type(test_item_t) :: tests
 
         integer, dimension(:,:), allocatable :: test_board
@@ -96,7 +102,9 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     function check_read_model_from_file(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable :: actual_board
@@ -117,7 +125,9 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     function check_read_model_from_file_with_invalid_model(input) result(result_)
+        !> The current test case including inputs and expected outputs, must be of type input_t to be picked up by veggies
         class(input_t), intent(in) :: input
+        !> the result of the current test case, must be of type result_t to be picked up by veggies
         type(result_t) :: result_
 
         integer, dimension(:,:), allocatable ::actual_board

@@ -18,7 +18,7 @@ module test_get_local_grid_info
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(MPITestCase) :: get_local_grid_info_test_case
         type(get_local_grid_info_test_params) :: params
-        integer :: global_ny, global_nx, dims(2)
+        integer :: global_ny, global_nx
         type(DomainDecomposition) :: domainDecomp
     contains
         procedure :: setUp
@@ -39,10 +39,10 @@ contains
         this%global_ny = 31
         this%global_nx = 31
 
-        this%dims = 0
-        call MPI_Dims_create(this%getNumProcesses(), 2, this%dims, ierr)
+        this%domainDecomp%dims = 0
+        call MPI_Dims_create(this%getNumProcesses(), 2, this%domainDecomp%dims, ierr)
         call MPI_Cart_create( &
-            this%getMpiCommunicator(), 2, this%dims, [.false.,.false.], .true., this%domainDecomp%communicator, ierr)
+            this%getMpiCommunicator(), 2, this%domainDecomp%dims, [.false.,.false.], .true., this%domainDecomp%communicator, ierr)
     end subroutine setUp
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -190,7 +190,7 @@ contains
         rank = this%getProcessRank()
         rank_index = rank + 1
 
-        call get_local_grid_info(this%domainDecomp, rank, this%dims, this%global_ny, this%global_nx, &
+        call get_local_grid_info(this%domainDecomp, rank, this%global_ny, this%global_nx, &
             ny_per_rank, nx_per_rank, coords, y_start, x_start, local_ny, local_nx)
 
         @assertEqual(this%params%ny_per_rank(rank_index), ny_per_rank, "Unexpected value for ny_per_rank")

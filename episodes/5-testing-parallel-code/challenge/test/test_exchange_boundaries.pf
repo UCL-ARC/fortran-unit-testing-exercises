@@ -124,14 +124,18 @@ contains
         integer, dimension(:,:), allocatable ::actual_board
 
         integer :: rank_index
+        type(DomainDecomposition) :: domainDecomp
 
         rank_index = this%getProcessRank() + 1
+        
+        domainDecomp%communicator = this%getMpiCommunicator()
+        domainDecomp%neighbours = this%params%neighbours(:,rank_index)
+
 
         allocate(actual_board(size(this%params%input_board, 1), size(this%params%input_board, 2)))
         actual_board = this%params%input_board(:,:,rank_index)
 
-        call exchange_boundaries(actual_board, this%params%ny, this%params%nx, DomainDecomposition(this%getMpiCommunicator(), &
-                                 this%params%neighbours(:,rank_index)))
+        call exchange_boundaries(actual_board, this%params%ny, this%params%nx, domainDecomp)
 
         @assertEqual(this%params%expected_output_board(2:this%params%nx+1,2:this%params%ny+1,rank_index), actual_board(2:this%params%nx+1,2:this%params%ny+1), "Unexpected centre of board")
 

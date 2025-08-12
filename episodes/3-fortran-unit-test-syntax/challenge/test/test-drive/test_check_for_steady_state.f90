@@ -33,14 +33,16 @@ contains
 
     !> 1. Test matching boards with all zeros are in steady state
     subroutine test_check_for_steady_state_all_zeros(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
-        type(check_for_steady_state_test_params) :: inputs
+        type(check_for_steady_state_test_params) :: params
 
-        call populate_random_boards(inputs%current_board, inputs%new_board, 0, .true.)
-        inputs%expected_steady_state = .true.
+        call populate_random_boards(params%current_board, params%new_board, 0, .true.)
+        params%expected_steady_state = .true.
 
-        call check_if_steady_state(error, inputs)
+        call check_if_steady_state(error, params)
     end subroutine test_check_for_steady_state_all_zeros
 
     !> 2. Test matching boards with all ones are in steady state
@@ -63,18 +65,21 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
-    subroutine check_if_steady_state(error, inputs)
+    subroutine check_if_steady_state(error, params)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
-        type(check_for_steady_state_test_params), intent(in) :: inputs
+        !> The current test parameters including inputs and expected outputs
+        type(check_for_steady_state_test_params), intent(in) :: params
 
         logical :: actual_steady_state
         character(len=80) :: failure_message
 
-        call check_for_steady_state(inputs%current_board, inputs%new_board, actual_steady_state)
+        call check_for_steady_state(params%current_board, params%new_board, actual_steady_state)
 
         write(failure_message,'(a,L,a,L)') "Expected steady state status to be ", &
-            inputs%expected_steady_state, " but found ", actual_steady_state
-        call check(error, inputs%expected_steady_state .eqv. actual_steady_state, failure_message)
+        params%expected_steady_state, " but found ", actual_steady_state
+        call check(error, params%expected_steady_state .eqv. actual_steady_state, failure_message)
         if (allocated(error)) return
     end subroutine check_if_steady_state
 
@@ -82,9 +87,17 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    subroutine populate_random_boards(current_board, new_board, num_differences, matching)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+    !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
+    !> The two boards can either be created matching or with with different locations for their 1s and 0s.
+    subroutine populate_random_boards(board_1, board_2, num_differences, matching)
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_1
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: board_2
+        !> The number of elements of board_1 to switch to 1.
         integer, intent(in) :: num_differences
+        !> If true, board_1 and board_2 will match, otherwise board_2 will have it's ones and zeros inverted
+        !> and will have a different random selection of elements set to 0, compared with board_1's 1s.
         logical, intent(in) :: matching
 
         integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
@@ -93,14 +106,14 @@ contains
         ncol = 31
 
         ! Allocate arrays
-        allocate(current_board(nrow, ncol))
-        allocate(new_board(nrow, ncol))
-        current_board = 0
+        allocate(board_1(nrow, ncol))
+        allocate(board_2(nrow, ncol))
+        board_1 = 0
 
         if (matching) then
-            new_board = 0
+            board_2 = 0
         else
-            new_board = 1
+            board_2 = 1
         end if
 
         ! For both boards, set to requested number of elements to the opposite value
@@ -111,7 +124,7 @@ contains
             call random_number(rand_real)
             rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-            current_board(rand_row, rand_col) = 1
+            board_1(rand_row, rand_col) = 1
 
             if (.not. matching) then
                 ! Get random coordinates for new
@@ -120,9 +133,9 @@ contains
                 call random_number(rand_real)
                 rand_col = 1 + FLOOR(ncol*rand_real) ! n=1 to n=ncol
 
-                new_board(rand_row, rand_col) = 0
+                board_2(rand_row, rand_col) = 0
             else
-                new_board(rand_row, rand_col) = 1
+                board_2(rand_row, rand_col) = 1
             end if
         end do
 

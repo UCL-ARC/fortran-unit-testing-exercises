@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::find_steady_state
 module test_find_steady_state
-    use game_of_life_mod, only : find_steady_state, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    use game_of_life_mod, only : find_steady_state
     ! allow(C121)
     use pfunit
     implicit none
@@ -10,12 +10,17 @@ module test_find_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
     @testParameter(constructor=new_find_steady_state_test_params)
     type, extends(MPITestParameter) :: find_steady_state_test_params
+        !> The global board to be distributed across ranks
         integer, dimension(:,:,:), allocatable :: global_board
-
         ! These will be the same for all ranks
+        !> The expected steady state result
         logical :: expected_steady_state
+        !> The expected number of generations to reach steady state
         integer :: expected_generation_number
-        integer :: global_ny, global_nx
+        !> The global number of rows in the board
+        integer :: global_ny
+        !> The global number of columns in the board
+        integer :: global_nx
     end type find_steady_state_test_params
 
     !> Type to define a single find_steady_state test case
@@ -32,6 +37,7 @@ contains
 
     !> Test suite for the game_of_life::find_steady_state subroutine
     function getParameters() result(params)
+        !> The array of test parameters
         type(find_steady_state_test_params), allocatable :: params(:)
 
         integer :: max_num_ranks, num_ranks, rank, i
@@ -43,7 +49,6 @@ contains
 
         max_num_ranks = 8
         allocate(params(max_num_ranks))
-
 
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
@@ -59,7 +64,7 @@ contains
         expected_generation_number = 17
         global_ny = 31
         global_nx = 31
-        allocate(global_board(global_nx,global_ny,max_num_ranks))
+        allocate(global_board(global_nx, global_ny, max_num_ranks))
         global_board = 0
         global_board(9,9:11,1)  = [0,1,0]
         global_board(10,9:11,1) = [1,1,1]
@@ -70,7 +75,6 @@ contains
             params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, &
                                                       global_ny, global_nx)
         end do
-
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -80,6 +84,7 @@ contains
     !> Check for the expected output of the game_of_life::find_steady_state subroutine
     @Test
     subroutine TestFindSteadyState(this)
+        !> The current test case including inputs and expected outputs
         class(find_steady_state_test_case), intent(inout) :: this
 
         integer :: rank_index
@@ -110,13 +115,21 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Constructor for find_steady_state_test_params
     function new_find_steady_state_test_params(global_board, expected_steady_state, expected_generation_number, global_ny, &
                                                global_nx) result(new_params)
+        !> The global board to be distributed across ranks
         integer, dimension(:,:,:), allocatable, intent(in) :: global_board
+        !> The expected steady state result
         logical, intent(in) :: expected_steady_state
+        !> The expected number of generations to reach steady state
         integer, intent(in) :: expected_generation_number
-        integer, intent(in) :: global_ny, global_nx
+        !> The global number of rows in the board
+        integer, intent(in) :: global_ny
+        !> The global number of columns in the board
+        integer, intent(in) :: global_nx
 
+        !> The new test parameters
         type(find_steady_state_test_params) :: new_params
 
         allocate(new_params%global_board(size(global_board, 1), size(global_board, 2), size(global_board, 3)))
@@ -126,11 +139,13 @@ contains
         new_params%expected_generation_number = expected_generation_number
         new_params%global_ny = global_ny
         new_params%global_nx = global_nx
-
     end function new_find_steady_state_test_params
 
+    !> Constructor for find_steady_state_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type(find_steady_state_test_case) :: tst
+        !> The test parameters for the new test case
         type(find_steady_state_test_params), intent(in) :: testParameter
 
         tst%params = testParameter

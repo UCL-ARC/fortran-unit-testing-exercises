@@ -58,12 +58,13 @@ program game_of_life
     read(input_file_io,'(a)') text_to_discard ! Skip first line
     read(input_file_io,*) nrow, ncol
 
-    ! Verify the date_time_values read from the file
+    ! Verify the number of rows read from the file
     if (nrow < 1 .or. nrow > max_nrow) then
         write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
         stop 1
     end if
 
+    ! Verify the number of columns read from the file
     if (ncol < 1 .or. ncol > max_ncol) then
         write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
         stop 1
@@ -114,7 +115,7 @@ program game_of_life
 
 contains
 
-    !> Evolve the board into the state od the next iteration
+    !> Evolve the board into the state of the next iteration
     subroutine evolve_board()
         integer :: row, col, sum
 

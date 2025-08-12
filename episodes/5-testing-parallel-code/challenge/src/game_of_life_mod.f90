@@ -8,22 +8,35 @@ module game_of_life_mod
     ! Make UP, DOWN, LEFT, RIGHT parameters to define neighbour directions
     integer, parameter :: DOWN=1, LEFT=2, UP=3, RIGHT=4
 
+    !> Type to represent the domain decomposition for parallel processing
     type :: DomainDecomposition
         !> The ID of the communicator for this domain
         integer :: communicator
+        !> The dimensions of the MPI communicators Cartesian grid
+        integer :: dims(2)
         !> The ranks of the neighbouring ranks - [down, left, up, right]
         integer :: neighbours(4)
     end type DomainDecomposition
 
 contains
 
+    !> Subroutine to find the steady state of the game of life
     subroutine find_steady_state(global_steady, generation_number, global_board, global_ny, global_nx, base_mpi_communicator, &
                                  nprocs)
+        !> Logical flag indicating whether the global board has reached a steady state
         logical, intent(out) :: global_steady
+        !> The number of generations required to reach the steady state
         integer, intent(out) :: generation_number
+        !> The global board representing the current state of the game
         integer, dimension(:,:), allocatable, intent(inout) :: global_board
-        integer, intent(in) :: global_ny, global_nx
-        integer, intent(in) :: base_mpi_communicator, nprocs
+        !> The number of rows in the global board
+        integer, intent(in) :: global_ny
+        !> The number of columns in the global board
+        integer, intent(in) :: global_nx
+        !> The base MPI communicator for parallel processing
+        integer, intent(in) :: base_mpi_communicator
+        !> The total number of processes in the MPI communicator
+        integer, intent(in) :: nprocs
 
         !! Board args
         integer, parameter :: max_generations = 100
@@ -34,7 +47,7 @@ contains
 
         !! MPI args
         integer :: ierr, rank, mpi_req
-        integer :: dims(2), coords(2)
+        integer :: coords(2)
         logical :: periods(2)
         type(DomainDecomposition) :: domainDecomp
 
@@ -50,16 +63,15 @@ contains
         local_steady = .false.
         global_steady = .false.
 
-
         ! Create 2D Cartesian topology
-        dims = 0
-        call MPI_Dims_create(nprocs, 2, dims, ierr)   ! Automatically split into num_ranks_x x num_ranks_y grid
+        domainDecomp%dims = 0
+        call MPI_Dims_create(nprocs, 2, domainDecomp%dims, ierr)   ! Automatically split into num_ranks_x x num_ranks_y grid
         periods = [ .false., .false. ]
-        call MPI_Cart_create(base_mpi_communicator, 2, dims, periods, .true., domainDecomp%communicator, ierr)
+        call MPI_Cart_create(base_mpi_communicator, 2, domainDecomp%dims, periods, .true., domainDecomp%communicator, ierr)
         call MPI_Comm_rank(domainDecomp%communicator, rank, ierr)
 
-        call get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, y_start, &
-                            x_start, local_ny, local_nx)
+        call get_local_grid_info(domainDecomp, rank, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
+            y_start, x_start, local_ny, local_nx)
 
         allocate(local_current(local_nx+2, local_ny+2))
         allocate(local_new(local_nx+2, local_ny+2))
@@ -69,7 +81,6 @@ contains
         ! Scatter global board
         if (rank == 0) then
             do i = 1, nprocs - 1
-
                 call MPI_RECV(y_start_i, 1, MPI_INTEGER, i, i*100, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
                 call MPI_RECV(x_start_i, 1, MPI_INTEGER, i, i*100 + 1, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
                 call MPI_RECV(local_ny_i, 1, MPI_INTEGER, i, i*100 + 2, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
@@ -114,27 +125,46 @@ contains
         end do
     end subroutine find_steady_state
 
-    subroutine get_local_grid_info(domainDecomp, rank, dims, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
+    !> Subroutine to get local grid information for a rank
+    subroutine get_local_grid_info(domainDecomp, rank, global_ny, global_nx, ny_per_rank, nx_per_rank, coords, &
                                 y_start, x_start, local_ny, local_nx)
+        !> The MPI communication domain decomposition object
         type(DomainDecomposition), intent(inout) :: domainDecomp
-        integer, intent(in) :: rank, dims(2), global_ny, global_nx
-        integer, intent(out) :: ny_per_rank, nx_per_rank, coords(2), y_start, x_start, local_ny, local_nx
+        !> The rank of the current process
+        integer, intent(in) :: rank
+        !> The number of rows in the global board
+        integer, intent(in) :: global_ny
+        !> The number of columns in the global board
+        integer, intent(in) :: global_nx
+        !> The number of rows per rank
+        integer, intent(out) :: ny_per_rank
+        !> The number of columns per rank
+        integer, intent(out) :: nx_per_rank
+        !> The coordinates of the current rank in the Cartesian grid
+        integer, intent(out) :: coords(2)
+        !> The starting row index for the local grid
+        integer, intent(out) :: y_start
+        !> The starting column index for the local grid
+        integer, intent(out) :: x_start
+        !> The number of rows in the local grid
+        integer, intent(out) :: local_ny
+        !> The number of columns in the local grid
+        integer, intent(out) :: local_nx
 
         integer :: mpierr, num_ranks_y, num_ranks_x
 
         call MPI_Cart_coords(domainDecomp%communicator, rank, 2, coords, mpierr)
-        ! This does not work if called by one rank to work out the neighbours of the other
         call MPI_Cart_shift(domainDecomp%communicator, 0, 1, domainDecomp%neighbours(DOWN), domainDecomp%neighbours(UP), mpierr)
         call MPI_Cart_shift(domainDecomp%communicator, 1, 1, domainDecomp%neighbours(LEFT), domainDecomp%neighbours(RIGHT), mpierr)
 
-        ny_per_rank = global_ny / dims(1)
-        nx_per_rank = global_nx / dims(2)
+        ny_per_rank = global_ny / domainDecomp%dims(1)
+        nx_per_rank = global_nx / domainDecomp%dims(2)
 
         y_start = coords(1)*ny_per_rank + 1
         x_start = coords(2)*nx_per_rank + 1
 
-        num_ranks_y = dims(1)
-        num_ranks_x = dims(2)
+        num_ranks_y = domainDecomp%dims(1)
+        num_ranks_x = domainDecomp%dims(2)
 
         ! Add remainders if on the top or right of the grid
         local_ny = ny_per_rank
@@ -143,17 +173,16 @@ contains
         if (domainDecomp%neighbours(RIGHT) == MPI_PROC_NULL) local_nx = local_nx + modulo(global_nx, nx_per_rank)
     end subroutine get_local_grid_info
 
-    ! Wrap comm and neighbours in decompostiotion type
+    !> Subroutine to exchange boundaries between neighboring ranks
     subroutine exchange_boundaries(board, local_ny, local_nx, domainDecomp)
-        implicit none
-        !> The number of xs in the local board
-        integer, intent(in) :: local_nx
-        !> The number of yumns in the local board
-        integer, intent(in) :: local_ny
-        !> The ID of the cartesian communicator containing the ranks
-        type(DomainDecomposition), intent(in) :: domainDecomp
         !> The board to be exchanged
         integer, dimension(:,:), intent(inout) :: board
+        !> The number of rows in the local board
+        integer, intent(in) :: local_ny
+        !> The number of columns in the local board
+        integer, intent(in) :: local_nx
+        !> The domain decomposition object
+        type(DomainDecomposition), intent(in) :: domainDecomp
 
         integer :: ierr, rank, mpi_req
 
@@ -213,7 +242,6 @@ contains
         !$omp parallel do default(none) private(x, y, sum) shared(nx, ny, current_board, new_board)
         do y = 2, ny-1
             do x = 2, nx-1
-
                 sum = 0
                 sum = current_board(x, y-1)   &
                     + current_board(x+1, y-1) &
@@ -297,14 +325,14 @@ contains
     subroutine read_model_from_file(input_fname, max_nx, max_ny, board, io_error_message)
         !> The name of the file to read in the board
         character(len=:), allocatable, intent(in) :: input_fname
-        !> The maximum allowed number of xs
+        !> The maximum allowed number of rows
         integer, intent(in) :: max_nx
-        !> The maximum allowed number of yumns
+        !> The maximum allowed number of columns
         integer, intent(in) :: max_ny
         !> The board to be populated
         integer, dimension(:,:), allocatable, intent(out) :: board
         !> A flag to indicate if reading the file was successful
-        character(len=:), allocatable,intent(out) :: io_error_message
+        character(len=:), allocatable, intent(out) :: io_error_message
 
         ! Board definition args
         integer :: nx, ny, x
@@ -318,23 +346,19 @@ contains
         input_file_io = floor(rnd_num * 1000.0)
 
         ! Open input file
-        open(unit=input_file_io,   &
-            file=input_fname, &
-            status='old',  &
-            IOSTAT=iostat)
+        open(unit=input_file_io, file=input_fname, status='old', IOSTAT=iostat)
 
-        if( iostat == 0) then
-            ! Read in board from file
+        if (iostat == 0) then
             read(input_file_io,'(a)') text_to_discard ! Skip first line
             read(input_file_io,*) nx, ny
 
-            ! Verify the date_time_values read from the file
+            ! Verify the number of rows read from the file
             if (nx < 1 .or. nx > max_nx) then
                 allocate(character(100) :: io_error_message)
-                write (io_error_message,'(a,i6,a,i6)') "nx must be a positive integer less than ", max_nx, " found ", nx
+                write(io_error_message,'(a,i6,a,i6)') "nx must be a positive integer less than ", max_nx, " found ", nx
             elseif (ny < 1 .or. ny > max_ny) then
                 allocate(character(100) :: io_error_message)
-                write (io_error_message,'(a,i6,a,i6)') "ny must be a positive integer less than ", max_ny, " found ", ny
+                write(io_error_message,'(a,i6,a,i6)') "ny must be a positive integer less than ", max_ny, " found ", ny
             end if
         else
             allocate(character(100) :: io_error_message)
