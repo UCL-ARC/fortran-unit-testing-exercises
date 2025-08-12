@@ -28,7 +28,7 @@ convenient, method is to use [GitHub codespaces](https://github.com/features/cod
 #### GitHub Codespaces
 
 To open a GitHub Codespace for this repository, select the `<> Code` drop-down within the home page of this repository. Then, from
-the Codesaces tab, select `Create codespace on main`. This should open a new tab with a VSCode interface, running inside the
+the Codespaces tab, select `Create codespace on main`. This should open a new tab with a VSCode interface, running inside the
 pre-built container. When you first create a codespace it may take a few moments to start up.
 
 > Note that any codespace you create from the repository will be paid for out of
