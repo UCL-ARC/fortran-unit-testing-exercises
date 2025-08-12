@@ -1,3 +1,4 @@
+!> Module for testing the subroutine game_of_life::read_model_from_file
 module test_read_model_from_file
     use game_of_life_mod, only : read_model_from_file
     ! allow(C121)
@@ -34,8 +35,10 @@ contains
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Check for the expected output of the game_of_life::read_model_from_file subroutine
     @Test
     subroutine TestCheckReadModelFromFile(this)
+        !> The current test case including inputs and expected outputs
         class (read_model_from_file_test_case), intent(inout) :: this
 
         integer, dimension(:,:), allocatable :: actual_board
@@ -57,9 +60,11 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with a valid model
     subroutine VerifyCheckReadModelFromFileValidModel(params, actual_board, actual_io_error_message)
+        !> The test parameters for the current test case
         class (read_model_from_file_test_params), intent(inout) :: params
-
+        !> The actual board returned by read_model_from_file
         integer, dimension(:,:), allocatable, intent(in) :: actual_board
+        !> The actual error message returned by read_model_from_file
         character(len=:), allocatable, intent(in) :: actual_io_error_message
 
         ! Your changes here...
@@ -67,9 +72,11 @@ contains
 
     !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with an invalid model
     subroutine VerifyCheckReadModelFromFileInvalidModel(params, actual_board, actual_io_error_message)
+        !> The test parameters for the current test case
         class (read_model_from_file_test_params), intent(inout) :: params
-
+        !> The actual board returned by read_model_from_file
         integer, dimension(:,:), allocatable, intent(in) :: actual_board
+        !> The actual error message returned by read_model_from_file
         character(len=:), allocatable, intent(in) :: actual_io_error_message
 
         ! Your changes here...

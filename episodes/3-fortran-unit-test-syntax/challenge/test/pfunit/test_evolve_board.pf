@@ -25,15 +25,15 @@ module test_evolve_board
         type(evolve_board_test_params) :: params
     end type evolve_board_test_case
 
-
 contains
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    ! Define test parameter sets
+    !> Defines the test parameter sets for evolve_board
     function evolve_board_test_suite() result(params)
+        !> The array of test parameters
         type (evolve_board_test_params) :: params(4)
 
         integer :: nrow, ncol
@@ -114,6 +114,7 @@ contains
 
     @Test
     subroutine TestEvolveBoard(this)
+        !> The current test case including inputs and expected outputs
         class (evolve_board_test_case), intent(inout) :: this
 
         integer, dimension(:,:), allocatable ::actual_new_board
@@ -132,8 +133,11 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Constructor for evolve_board_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type (evolve_board_test_case) :: tst
+        !> The test parameters for the new test case
         type (evolve_board_test_params), intent(in) :: testParameter
 
         integer :: nrow, ncol
@@ -148,7 +152,9 @@ contains
         tst%params%expected_new_board = testParameter%expected_new_board
     end function newTest
 
+    !> Converts evolve_board_test_params to a string for logging
     function evolve_board_test_params_toString(this) result(string)
+        !> The test parameters to convert
         class (evolve_board_test_params), intent(in) :: this
         character(:), allocatable :: string
 

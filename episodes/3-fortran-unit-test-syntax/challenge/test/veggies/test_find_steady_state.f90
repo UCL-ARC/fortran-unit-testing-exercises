@@ -106,7 +106,7 @@ contains
         class default
             result_ = fail("Didn't get find_steady_state_test_params")
 
-    end select
+        end select
 
     end function check_find_steady_state
 end module veggies_find_steady_state_test

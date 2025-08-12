@@ -92,8 +92,7 @@ contains
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     @Test
     subroutine TestCheckIfSteadyState(this)
-        !> The current test case containing inputs and expected outputs. Must be of type check_for_steady_state_test_case to be
-        !> picked up by pFUnit
+        !> The current test case containing inputs and expected outputs.
         class(check_for_steady_state_test_case), intent(inout) :: this
 
         logical :: actual_steady_state

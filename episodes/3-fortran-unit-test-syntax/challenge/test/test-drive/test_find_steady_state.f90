@@ -36,6 +36,8 @@ contains
 
     !> Test steady state is reached in the expected number of generations for a 31x31 exploder
     subroutine test_find_steady_state_exploder(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
         type(find_steady_state_test_params) :: params
@@ -94,4 +96,5 @@ contains
         call check(error, params%expected_steady_state, actual_steady_state, failure_message)
         if (allocated(error)) return
     end subroutine check_find_steady_state
+
 end module testdrive_find_steady_state_test

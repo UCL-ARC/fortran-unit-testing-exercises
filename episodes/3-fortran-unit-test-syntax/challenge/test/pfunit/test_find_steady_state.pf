@@ -8,7 +8,7 @@ module test_find_steady_state
     public
 
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
-    @testParameter!(constructor=new_find_steady_state_test_params)
+    @testParameter
     type, extends(AbstractTestParameter) :: find_steady_state_test_params
         !> The initial starting board to be passed into find_steady_state
         integer, dimension(:,:), allocatable :: board
@@ -36,12 +36,12 @@ contains
 
     !> Test suite for the game_of_life::find_steady_state subroutine
     function getParameters() result(params)
+        !> The array of test parameters
         type(find_steady_state_test_params), allocatable :: params(:)
 
         logical :: expected_steady_state
         integer :: expected_generation_number
         integer, dimension(:,:), allocatable :: board
-
 
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
@@ -74,6 +74,7 @@ contains
     !> Check for the expected output of the game_of_life::find_steady_state subroutine
     @Test
     subroutine TestFindSteadyState(this)
+        !> The current test case including inputs and expected outputs
         class(find_steady_state_test_case), intent(inout) :: this
 
         logical :: actual_steady_state
@@ -95,29 +96,19 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    ! function new_find_steady_state_test_params(board, expected_steady_state, expected_generation_number) result(new_params)
-    !     integer, dimension(:,:), allocatable, intent(in) :: board
-    !     logical, intent(in) :: expected_steady_state
-    !     integer, intent(in) :: expected_generation_number
-
-    !     type(find_steady_state_test_params) :: new_params
-
-    !     allocate(new_params%board(size(board, 1), size(board, 2)))
-
-    !     new_params%board = board
-    !     new_params%expected_steady_state = expected_steady_state
-    !     new_params%expected_generation_number = expected_generation_number
-
-    ! end function new_find_steady_state_test_params
-
+    !> Constructor for find_steady_state_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type(find_steady_state_test_case) :: tst
+        !> The test parameters for the new test case
         type(find_steady_state_test_params), intent(in) :: testParameter
 
         tst%params = testParameter
     end function newTest
 
+    !> Converts find_steady_state_test_params to a string for logging
     function evolve_board_test_params_toString(this) result(string)
+        !> The test parameters to convert
         class (find_steady_state_test_params), intent(in) :: this
         character(:), allocatable :: string
 

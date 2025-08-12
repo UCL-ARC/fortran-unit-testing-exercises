@@ -37,6 +37,8 @@ contains
 
     !> Test steady state is defined for a board of all zeros
     subroutine test_evolve_board_all_zeros(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
         type(evolve_board_test_params) :: params
@@ -64,6 +66,8 @@ contains
     !!  13 | 0  0  0  0  0
     !!
     subroutine test_evolve_board_complex_steady_state(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
         type(evolve_board_test_params) :: params
@@ -93,6 +97,8 @@ contains
 
     !> Test steady state is not defined for a board with all zeros apart from a one non-zero element
     subroutine test_evolve_board_one_non_zero_element(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
         type(evolve_board_test_params) :: params
@@ -123,6 +129,8 @@ contains
     !!  12 | 0  0  1  0  0   /  12 | 0  0  1  0  0
     !!  13 | 0  0  0  0  0      13 | 0  0  0  0  0
     subroutine test_evolve_board_complex_non_steady_state(error)
+        !> An error to track the status of assertions throughout the test i.e. if allocated this error indicates an assertion &
+        !> failed. Must be of type error_type to be picked up by testdrive
         type(error_type), allocatable, intent(out) :: error
 
         type(evolve_board_test_params) :: params
@@ -192,4 +200,5 @@ contains
         ! Catch test failure
         if (allocated(error)) return
     end subroutine check_evolve_board
+
 end module testdrive_evolve_board_test
