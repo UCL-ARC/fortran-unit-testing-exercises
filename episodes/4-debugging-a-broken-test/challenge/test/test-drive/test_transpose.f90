@@ -1,3 +1,4 @@
+!> Module for testing the subroutine matrix_transforms::transpose using testdrive
 module testdrive_test_transpose
     use testdrive, only : error_type, unittest_type, new_unittest, check
     use matrix_transforms, only : transpose
@@ -6,15 +7,19 @@ module testdrive_test_transpose
     private
     public :: test_transpose_testsuite
 
+    !> Type to bundle inputs and expected outputs of matrix_transforms::transpose
     type :: test_transpose_params
+        !> The input matrix to be passed into transpose
         real, dimension(:,:), allocatable :: input_matrix
+        !> The expected matrix after being passed into transpose
         real, dimension(:,:), allocatable :: expected_output_matrix
     end type test_transpose_params
 
 contains
 
+    !> Test suite for the matrix_transforms::transpose subroutine
     subroutine test_transpose_testsuite(testsuite)
-        !> An array of test cases which together define the test suite. Must of type unittest_type for testdrive to pick it up
+        !> An array of test cases which together define the test suite. Must be of type unittest_type for testdrive to pick it up
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite =[ &
@@ -23,7 +28,9 @@ contains
         ]
     end subroutine test_transpose_testsuite
 
+    !> Test case for transposing a 3x3 identity matrix
     subroutine test_transpose_3x3_identity(error)
+        !> The error object to capture any test failures
         type(error_type), allocatable, intent(out) :: error
 
         type(test_transpose_params) :: params
@@ -40,7 +47,9 @@ contains
         call check_transpose(error, params)
     end subroutine test_transpose_3x3_identity
 
+    !> Test case for transposing a 3x3 asymmetric matrix
     subroutine test_transpose_3x3_asymmetric(error)
+        !> The error object to capture any test failures
         type(error_type), allocatable, intent(out) :: error
 
         type(test_transpose_params) :: params
@@ -59,8 +68,11 @@ contains
         call check_transpose(error, params)
     end subroutine test_transpose_3x3_asymmetric
 
+    !> Helper subroutine to check the transpose operation
     subroutine check_transpose(error, params)
+        !> The error object to capture any test failures
         type(error_type), allocatable, intent(out) :: error
+        !> The test parameters including input and expected output matrices
         type(test_transpose_params), intent(in) :: params
 
         real, dimension(:,:), allocatable :: actual_output
@@ -76,6 +88,7 @@ contains
 
         call transpose(actual_output)
 
+        !> Loop through all elements of the output matrix to ensure each element is as expected
         do row = 1, nrow
             do col = 1, ncol
                 write(failure_message,'(a,i1,a,i1,a,F3.1,a,F3.1)') "Unexpected value for output(", row, ",", col, "), got ", &

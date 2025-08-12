@@ -144,10 +144,10 @@ symmetric matrix and is equal to its own transpose, thus the order of the indice
 We can fix the src with the following change
 
 ```diff
---- a/episodes/4-debugging-a-broken-test/challenge-1/src/matrix_transforms.f90
-+++ b/episodes/4-debugging-a-broken-test/challenge-1/src/matrix_transforms.f90
-@@ -20,7 +20,7 @@ contains
-
+--- a/episodes/4-debugging-a-broken-test/challenge/src/matrix_transforms.f90
++++ b/episodes/4-debugging-a-broken-test/challenge/src/matrix_transforms.f90
+@@ -22,7 +22,7 @@ contains
+ 
          do row = 1, nrow
              do col = 1, ncol
 -                matrix(row, col) = temp_matrix(row, col)

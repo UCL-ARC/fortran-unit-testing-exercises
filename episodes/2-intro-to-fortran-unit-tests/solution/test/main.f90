@@ -1,3 +1,4 @@
+!> Main program for running unit tests using the veggies framework
 program test_main
     use veggies, only : test_item_t, test_that, run_tests
 
@@ -8,24 +9,30 @@ program test_main
 
     implicit none
 
+    !> Run the test suite and stop with an error code if any test fails
     if (.not.run()) stop 1
 
 contains
     !> Run all tests within this project
     function run() result(passed)
-        !> true if all tests have passed successfully
+        !> Logical flag indicating whether all tests passed
         logical :: passed
 
+        !> The collection of all test items to be executed
         type(test_item_t) :: tests
-        type(test_item_t) :: individual_tests(4)
+        !> Array of individual test items to be included in the test suite
+        type(test_item_t) :: individual_tests(1)
 
         individual_tests(1) = check_for_steady_state_test_suite()
         individual_tests(2) = evolve_board_test_suite()
         individual_tests(3) = find_steady_state_test_suite()
         individual_tests(4) = read_model_from_file_test_suite()
 
+        ! Group the individual tests into a single test suite
         tests = test_that(individual_tests)
 
+        ! Run the test suite and return whether all tests passed
         passed = run_tests(tests)
     end function run
+
 end program test_main

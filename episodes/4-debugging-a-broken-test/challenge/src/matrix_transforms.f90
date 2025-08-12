@@ -5,7 +5,9 @@ module matrix_transforms
     public transpose
 contains
 
+    !> Transposes the inputted matrix
     subroutine transpose(matrix)
+        !> The input matrix to be transposed
         real, dimension(:,:), allocatable, intent(inout) :: matrix
 
         real, dimension(:,:), allocatable :: temp_matrix
