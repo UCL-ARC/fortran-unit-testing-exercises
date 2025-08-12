@@ -36,12 +36,12 @@ contains
 
     !> Test suite for the game_of_life::find_steady_state subroutine
     function getParameters() result(params)
+        !> The array of test parameters
         type(find_steady_state_test_params), allocatable :: params(:)
 
         logical :: expected_steady_state
         integer :: expected_generation_number
         integer, dimension(:,:), allocatable :: board
-
 
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
@@ -74,6 +74,7 @@ contains
     !> Check for the expected output of the game_of_life::find_steady_state subroutine
     @Test
     subroutine TestFindSteadyState(this)
+        !> The current test case including inputs and expected outputs
         class(find_steady_state_test_case), intent(inout) :: this
 
         logical :: actual_steady_state
@@ -95,15 +96,21 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    !> Constructor for find_steady_state_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type(find_steady_state_test_case) :: tst
+        !> The test parameters for the new test case
         type(find_steady_state_test_params), intent(in) :: testParameter
 
         tst%params = testParameter
     end function newTest
 
-    function evolve_board_test_params_toString(this) result(string)
+    !> Converts find_steady_state_test_params to a string for logging
+    function find_steady_state_test_params_toString(this) result(string)
+        !> The test parameters to convert
         class (find_steady_state_test_params), intent(in) :: this
+        !> The resulting string representation
         character(:), allocatable :: string
 
         character(len=80) :: buffer
@@ -116,7 +123,6 @@ contains
         write(buffer,'(i2, "x", i2, " board with ", a)') &
             nrow, ncol, trim(this%description)
         string = trim(buffer)
-
-    end function evolve_board_test_params_toString
+    end function find_steady_state_test_params_toString
 
 end module test_find_steady_state

@@ -22,7 +22,7 @@ module check_for_steady_state_test
         integer, dimension(:,:), allocatable :: current_board
         !> The new board to be inputted and compared to the current board
         integer, dimension(:,:), allocatable :: new_board
-        !> The expected stead state to be outputted
+        !> The expected steady state to be outputted
         logical :: expected_steady_state
     end type check_for_steady_state_test_params
 

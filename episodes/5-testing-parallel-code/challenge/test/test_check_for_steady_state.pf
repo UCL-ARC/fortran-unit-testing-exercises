@@ -10,8 +10,13 @@ module test_check_for_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
     @testParameter
     type, extends(AbstractTestParameter) :: check_for_steady_state_test_params
-        integer, dimension(:,:), allocatable :: current_board, new_board
+        !> The current board to be inputted and compared to the new board
+        integer, dimension(:,:), allocatable :: current_board
+        !> The new board to be inputted and compared to the current board
+        integer, dimension(:,:), allocatable :: new_board
+        !> The expected steady state to be outputted
         logical :: expected_steady_state
+        !> A description of the test case
         character(len=100) :: description
     contains
         procedure :: toString => check_for_steady_state_test_params_toString
@@ -31,6 +36,7 @@ contains
 
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     function getParameters() result(params)
+        !> The array of test parameters
         type(check_for_steady_state_test_params), allocatable :: params(:)
 
         integer :: nrow, ncol
@@ -75,6 +81,7 @@ contains
     !> Check for the expected output of the game_of_life::check_for_steady_state subroutine
     @Test
     subroutine TestCheckIfSteadyState(this)
+        !> The current test case including inputs and expected outputs
         class(check_for_steady_state_test_case), intent(inout) :: this
 
         logical :: actual_steady_state
@@ -84,12 +91,11 @@ contains
         @assertEqual(this%params%expected_steady_state, actual_steady_state)
     end subroutine TestCheckIfSteadyState
 
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Constructors
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    !> Constructor for check_for_steady_state_test_case
     function newTest(testParameter) result(tst)
+        !> The new test case
         type(check_for_steady_state_test_case) :: tst
+        !> The test parameters for the new test case
         type(check_for_steady_state_test_params), intent(in) :: testParameter
 
         integer :: nrow, ncol
@@ -105,8 +111,11 @@ contains
         tst%params%expected_steady_state = testParameter%expected_steady_state
     end function newTest
 
+    !> Converts check_for_steady_state_test_params to a string for logging
     function check_for_steady_state_test_params_toString(this) result(string)
+        !> The test parameters to convert
         class(check_for_steady_state_test_params), intent(in) :: this
+        !> The resulting string representation
         character(:), allocatable :: string
 
         character(len=80) :: buffer
@@ -126,9 +135,17 @@ contains
         string = trim(buffer)
     end function check_for_steady_state_test_params_toString
 
+    !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
+    !> The two boards can either be created matching or with with different locations for their 1s and 0s.
     subroutine populate_random_boards(current_board, new_board, num_differences, matching)
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board, new_board
+        !> One of the boards to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: current_board
+        !> One of the baords to be randomly populated
+        integer, dimension(:,:), allocatable, intent(inout) :: new_board
+        !> The number of elements of board_1 to switch to 1.
         integer, intent(in) :: num_differences
+        !> If true, board_1 and board_2 will match, otherwise board_2 will have it's ones and zeros inverted
+        !> and will have a different random selection of elements set to 0, compared with board_1's 1s.
         logical, intent(in) :: matching
 
         integer :: nrow, ncol, row, col, rand_row, rand_col, new_board_val
@@ -167,6 +184,6 @@ contains
                 new_board(rand_row, rand_col) = 1
             end if
         end do
-
     end subroutine populate_random_boards
+
 end module test_check_for_steady_state
