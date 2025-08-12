@@ -5,7 +5,7 @@ program test_main
 
     implicit none
 
-    !> Run the test suite and stop with an error code if any test fails
+    ! Run the test suite and stop with an error code if any test fails
     if (.not.run()) stop 1
 
 contains
@@ -14,9 +14,9 @@ contains
         !> Logical flag indicating whether all tests passed
         logical :: passed
 
-        !> The collection of all test items to be executed
+        ! The collection of all test items to be executed
         type(test_item_t) :: tests
-        !> Array of individual test items to be included in the test suite
+        ! Array of individual test items to be included in the test suite
         type(test_item_t) :: individual_tests(1)
 
         individual_tests(1) = test_transpose_testsuite()

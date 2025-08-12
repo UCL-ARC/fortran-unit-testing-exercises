@@ -88,7 +88,7 @@ contains
 
         call transpose(actual_output)
 
-        !> Loop through all elements of the output matrix to ensure each element is as expected
+        ! Loop through all elements of the output matrix to ensure each element is as expected
         do row = 1, nrow
             do col = 1, ncol
                 write(failure_message,'(a,i1,a,i1,a,F3.1,a,F3.1)') "Unexpected value for output(", row, ",", col, "), got ", &

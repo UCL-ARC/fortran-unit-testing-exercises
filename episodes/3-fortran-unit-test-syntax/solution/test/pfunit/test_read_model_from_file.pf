@@ -156,18 +156,7 @@ contains
         !> The test parameters for the new test case
         type (read_model_from_file_test_params), intent(in) :: testParameter
 
-        integer :: nrow, ncol
-
-        nrow = size(testParameter%expected_board, 1)
-        ncol = size(testParameter%expected_board, 2)
-        allocate(tst%params%expected_board(nrow, ncol))
-
-        tst%params%input_fname = testParameter%input_fname
-        tst%params%max_nrow = testParameter%max_nrow
-        tst%params%max_ncol = testParameter%max_ncol
-        tst%params%expected_board = testParameter%expected_board
-        tst%params%expected_io_error_message = testParameter%expected_io_error_message
-        tst%params%model_is_valid = testParameter%model_is_valid
+        tst%params = testParameter
     end function newTest
 
     ! TASK: Write a function which returns your new parameter type as a string. This is used to

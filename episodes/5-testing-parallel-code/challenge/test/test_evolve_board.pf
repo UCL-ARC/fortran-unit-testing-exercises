@@ -140,16 +140,7 @@ contains
         !> The test parameters for the new test case
         type (evolve_board_test_params), intent(in) :: testParameter
 
-        integer :: nrow, ncol
-
-        nrow = size(testParameter%current_board, 1)
-        ncol = size(testParameter%current_board, 2)
-
-        allocate(tst%params%current_board(nrow, ncol))
-        allocate(tst%params%expected_new_board(nrow, ncol))
-
-        tst%params%current_board = testParameter%current_board
-        tst%params%expected_new_board = testParameter%expected_new_board
+        tst%params = testParameter
     end function newTest
 
     !> Converts evolve_board_test_params to a string for logging

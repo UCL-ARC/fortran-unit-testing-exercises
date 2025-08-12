@@ -91,26 +91,6 @@ contains
         @assertEqual(this%params%expected_steady_state, actual_steady_state)
     end subroutine TestCheckIfSteadyState
 
-    !> Constructor for check_for_steady_state_test_case
-    function newTest(testParameter) result(tst)
-        !> The new test case
-        type(check_for_steady_state_test_case) :: tst
-        !> The test parameters for the new test case
-        type(check_for_steady_state_test_params), intent(in) :: testParameter
-
-        integer :: nrow, ncol
-
-        nrow = size(testParameter%current_board, 1)
-        ncol = size(testParameter%current_board, 2)
-
-        allocate(tst%params%current_board(nrow, ncol))
-        allocate(tst%params%new_board(nrow, ncol))
-
-        tst%params%current_board = testParameter%current_board
-        tst%params%new_board = testParameter%new_board
-        tst%params%expected_steady_state = testParameter%expected_steady_state
-    end function newTest
-
     !> Converts check_for_steady_state_test_params to a string for logging
     function check_for_steady_state_test_params_toString(this) result(string)
         !> The test parameters to convert
@@ -134,6 +114,20 @@ contains
         end if
         string = trim(buffer)
     end function check_for_steady_state_test_params_toString
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! Constructors
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    !> Constructor for check_for_steady_state_test_case
+    function newTest(testParameter) result(tst)
+        !> The new test case
+        type(check_for_steady_state_test_case) :: tst
+        !> The test parameters for the new test case
+        type(check_for_steady_state_test_params), intent(in) :: testParameter
+
+        tst%params = testParameter
+    end function newTest
 
     !> A convenience function to allow the populating of two boards with a random number of 1s and 0s
     !> The two boards can either be created matching or with with different locations for their 1s and 0s.
