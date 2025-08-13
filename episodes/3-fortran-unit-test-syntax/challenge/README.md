@@ -14,5 +14,19 @@ in [test/veggies](./test/veggies/)
 Now, take a look at the partially implemented tests within [test/pfunit](./test/pfunit/) and [test/test-drive](./test/test-drive/).
 The sections to be completed have been labelled by comments prefixed with `TASK`.
 
-1. Implement the unfinished sections in test/pfunit.
-2. Implement the unfinished sections in test/test-drive.
+### pFUnit
+
+1. Finish the partially implement tests in [test/pfunit](./test/pfunit/).
+    - [test_check_for_steady_state.pf](./test/pfunit/test_check_for_steady_state.pf)
+    - [test_read_model_from_file.pf](./test/pfunit/test_read_model_from_file.pf)
+2. Write a completely new pFUnit test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90).
+3. Add your new test to the CMake build system.
+
+### test-drive
+
+1. Finish the partially implement tests in [test/test-drive](./test/test-drive/).
+    - [test_check_for_steady_state.pf](./test/test-drive/test_check_for_steady_state.pf)
+    - [test_read_model_from_file.pf](./test/test-drive/test_read_model_from_file.pf)
+2. Write a completely new test-drive test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90)
+3. Add your new test to the FPM build system.
+4. Add your new test to the CMake build system.
