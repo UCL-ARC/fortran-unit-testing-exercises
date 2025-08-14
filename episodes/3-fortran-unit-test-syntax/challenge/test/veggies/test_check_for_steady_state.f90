@@ -16,21 +16,26 @@ module veggies_check_for_steady_state_test
     private
     public :: check_for_steady_state_test_suite
 
-    !> Type to bundle inputs and expected outputs of game_of_life::check_for_steady_state
-    type, extends(input_t) :: check_for_steady_state_test_params
-        !> The current board to be inputted and compared to the new board
-        integer, dimension(:,:), allocatable :: current_board
-        !> The new board to be inputted and compared to the current board
-        integer, dimension(:,:), allocatable :: new_board
-        !> The expected stead state to be outputted
-        logical :: expected_steady_state
-    end type check_for_steady_state_test_params
+    ! TASK: Define a parameter type `check_for_steady_state_test_params` to be used for testing game_of_life::check_for_steady_state
+    ! Your changes here...
 
 contains
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Test Suites
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    ! TASK: Finish the function `check_for_steady_state_test_suite` which populates tests for testing
+    !       game_of_life::check_for_steady_state including tests of the following scenarios.
+    !
+    !       1. Matching boards full of zeros are in steady state (already provided)
+    !       2. Matching boards full of ones are in steady state
+    !       3. Matching boards with up to 10 ones are in steady state
+    !       4. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       5. Mismatched boards with the first all zeros and the other all ones is not in steady state
+    !       6. Mismatched boards with up to 10 differences is not in steady state
+    !
+    ! Your changes here...
 
     !> Test suite for the game_of_life::check_for_steady_state subroutine
     function check_for_steady_state_test_suite() result(tests)
@@ -48,38 +53,30 @@ contains
         allocate(test_current_board(nrow, ncol))
         allocate(test_new_board(nrow, ncol))
 
-        ! Matching boards
-        !  All zeros
+        !> 1. Test matching boards with all zeros are in steady state
         call populate_random_boards(test_current_board, test_new_board, 0, .true.)
         matching_boards_data(1) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
-        !  All ones
-        call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .true.)
-        matching_boards_data(2) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
-        !  Up to 10 ones
-        call populate_random_boards(test_current_board, test_new_board, 10, .true.)
-        matching_boards_data(3) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .true.))
 
-        ! Mismatched boards
-        !  All ones vs all zeros
-        call populate_random_boards(test_current_board, test_new_board, 0, .false.)
-        non_matching_boards_data(1) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
-        !  All zeros vs all ones
-        call populate_random_boards(test_current_board, test_new_board, nrow*ncol, .false.)
-        non_matching_boards_data(2) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
-        !  Up to 10 differences
-        call populate_random_boards(test_current_board, test_new_board, 10, .false.)
-        non_matching_boards_data(3) = example_t(check_for_steady_state_test_params(test_current_board, test_new_board, .false.))
+        !> 2. Test matching boards with all ones are in steady state
+        ! Your changes here...
+
+        !> 3. Test matching boards with up to 10 ones are in steady state
+        ! Your changes here...
+
+        !> 4. Test mismatched boards with all zeros and all ones are not in steady state
+        ! Your changes here...
+
+        !> 5. Test mismatched boards with all ones and all zeros are not in steady state
+        ! Your changes here...
+
+        !> 6. Test mismatched boards with with up to ten differences are not in steady state
+        ! Your changes here...
 
         tests = describe( &
             "check_for_steady_state", &
             [ it( &
                 "matching boards are in steady state", &
                 matching_boards_data, &
-                check_if_steady_state &
-            ) &
-            , it( &
-                "non-matching boards are not in steady state", &
-                non_matching_boards_data, &
                 check_if_steady_state &
             )] &
         )

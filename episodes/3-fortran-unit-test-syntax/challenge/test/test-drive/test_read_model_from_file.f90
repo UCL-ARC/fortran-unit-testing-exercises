@@ -52,7 +52,7 @@ contains
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    ! TASK: Finish the subroutines below such that they calls game_of_life::read_model_from_file and asserts
+    ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert
     !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
 
