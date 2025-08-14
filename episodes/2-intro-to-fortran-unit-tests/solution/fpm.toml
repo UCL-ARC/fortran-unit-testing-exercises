@@ -1,9 +1,5 @@
 name = "intro-to-fortran-unit-tests-solution"
 
-[dev-dependencies]
-veggies.git = "https://gitlab.com/everythingfunctional/veggies"
-veggies.tag = "main"
-
 [build]
 auto-executables = false
 auto-tests = false
@@ -13,8 +9,3 @@ auto-examples = false
 name = "game-of-life"
 source-dir = "src"
 main = "game_of_life.f90"
-
-[[test]]
-name = "game_of_life_test"
-source-dir = "test"
-main = "main.f90"

@@ -1,15 +1,9 @@
 # Introduction to Unit Testing in Fortran - Solution: Identify bad practice for unit testing Fortran
 
-The solution provided here is an entirely self-contained project which can be built using FPM.
+The solution provided here is an entirely self-contained project which can be run, as before, using FPM.
 
 ```bash
-fpm build
-```
-
-Tests are also provided, which can be run using FPM.
-
-```bash
-fpm test
+fpm run -- ../models/model-1.dat # Or another data file
 ```
 
 ## Task 1
@@ -36,5 +30,5 @@ There are several issues with this Fortran code which make it hard to unit test.
 
 2. The reliance on global state has been removed by passing all required values into each procedure at the point it is called.
 
-3. Logic originally in main program code has been wrapped into procedures allowing it to be tested. For example, there ar two
+3. Logic originally in main program code has been wrapped into procedures allowing it to be tested. For example, there are two
    new procedures `find_steady_state` and `read_model_from_file`.
