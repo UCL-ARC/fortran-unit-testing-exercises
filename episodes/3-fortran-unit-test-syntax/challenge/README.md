@@ -23,8 +23,8 @@ The sections to be completed have been labelled by comments prefixed with `TASK`
 ### test-drive
 
 1. Finish the partially implement tests in [test/test-drive](./test/test-drive/).
-    - [test_check_for_steady_state.pf](./test/test-drive/test_check_for_steady_state.pf)
-    - [test_read_model_from_file.pf](./test/test-drive/test_read_model_from_file.pf)
+    - [test_check_for_steady_state.f90](./test/test-drive/test_check_for_steady_state.f90)
+    - [test_read_model_from_file.f90](./test/test-drive/test_read_model_from_file.f90)
 2. Write a completely new test-drive test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90)
 3. Add your new test to the FPM build system.
 4. Add your new test to the CMake build system.
@@ -32,8 +32,8 @@ The sections to be completed have been labelled by comments prefixed with `TASK`
 ### Veggies
 
 1. Finish the partially implement tests in [test/veggies](./test/veggies/).
-    - [test_check_for_steady_state.pf](./test/veggies/test_check_for_steady_state.pf)
-    - [test_read_model_from_file.pf](./test/veggies/test_read_model_from_file.pf)
+    - [test_check_for_steady_state.f90](./test/veggies/test_check_for_steady_state.f90)
+    - [test_read_model_from_file.f90](./test/veggies/test_read_model_from_file.f90)
 2. Write a completely new Veggies test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90)
 3. Add your new test to the FPM build system.
 4. Add your new test to the CMake build system.
