@@ -6,8 +6,6 @@ This exercise aims to teach how to write unit tests using [pFUnit](https://githu
 ## The code
 
 In [src](./src/) there is a copy of [the src from the episode-2 solution](../../2-intro-to-fortran-unit-tests/solution/src/).
-You will also find a copy of [the veggies tests from the episode-2 solution](../../2-intro-to-fortran-unit-tests/solution/test/)
-in [test/veggies](./test/veggies/)
 
 ## Tasks
 
