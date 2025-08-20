@@ -12,7 +12,6 @@ module test_find_steady_state
     type, extends(MPITestParameter) :: find_steady_state_test_params
         !> The global board to be distributed across ranks
         integer, dimension(:,:), allocatable :: global_board
-        ! These will be the same for all ranks
         !> The expected steady state result
         logical :: expected_steady_state
         !> The expected number of generations to reach steady state
