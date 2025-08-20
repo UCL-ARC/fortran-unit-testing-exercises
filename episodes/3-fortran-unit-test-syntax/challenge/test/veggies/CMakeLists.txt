@@ -29,8 +29,6 @@ list(FILTER PROJ_SRC_FILES_EXEC_MAIN EXCLUDE REGEX ".*game_of_life.f90")
 set(
   tests
   "evolve_board"
-  "check_for_steady_state"
-  "read_model_from_file"
 )
 set(
   test-srcs

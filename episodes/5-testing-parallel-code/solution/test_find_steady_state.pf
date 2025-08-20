@@ -11,7 +11,7 @@ module test_find_steady_state
     @testParameter(constructor=new_find_steady_state_test_params)
     type, extends(MPITestParameter) :: find_steady_state_test_params
         !> The global board to be distributed across ranks
-        integer, dimension(:,:,:), allocatable :: global_board
+        integer, dimension(:,:), allocatable :: global_board
         ! These will be the same for all ranks
         !> The expected steady state result
         logical :: expected_steady_state
@@ -44,7 +44,7 @@ contains
 
         logical :: expected_steady_state
         integer :: expected_generation_number
-        integer, dimension(:,:,:), allocatable :: global_board
+        integer, dimension(:,:), allocatable :: global_board
         integer :: global_ny, global_nx
 
         max_num_ranks = 8
@@ -64,12 +64,12 @@ contains
         expected_generation_number = 17
         global_ny = 31
         global_nx = 31
-        allocate(global_board(global_nx, global_ny, max_num_ranks))
+        allocate(global_board(global_nx, global_ny))
         global_board = 0
-        global_board(9,9:11,1)  = [0,1,0]
-        global_board(10,9:11,1) = [1,1,1]
-        global_board(11,9:11,1) = [1,0,1]
-        global_board(12,9:11,1) = [0,1,0]
+        global_board(9,9:11)  = [0,1,0]
+        global_board(10,9:11) = [1,1,1]
+        global_board(11,9:11) = [1,0,1]
+        global_board(12,9:11) = [0,1,0]
 
         do i = 1, max_num_ranks
             params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, &
@@ -87,20 +87,10 @@ contains
         !> The current test case including inputs and expected outputs
         class(find_steady_state_test_case), intent(inout) :: this
 
-        integer :: rank_index
-
         logical :: actual_steady_state
         integer :: actual_generation_number
 
-        ! Make a copy of the board in order to match the expected input parameter type
-        integer, dimension(:,:), allocatable ::global_board
-
-        rank_index = this%getProcessRank() + 1
-
-        allocate(global_board(size(this%params%global_board, 1), size(this%params%global_board, 2)))
-        global_board = this%params%global_board(:,:,rank_index)
-
-        call find_steady_state(actual_steady_state, actual_generation_number, global_board, this%params%global_ny, &
+        call find_steady_state(actual_steady_state, actual_generation_number, this%params%global_board, this%params%global_ny, &
             this%params%global_nx, this%getMpiCommunicator(), this%getNumProcessesRequested())
 
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
@@ -119,7 +109,7 @@ contains
     function new_find_steady_state_test_params(global_board, expected_steady_state, expected_generation_number, global_ny, &
                                                global_nx) result(new_params)
         !> The global board to be distributed across ranks
-        integer, dimension(:,:,:), allocatable, intent(in) :: global_board
+        integer, dimension(:,:), allocatable, intent(in) :: global_board
         !> The expected steady state result
         logical, intent(in) :: expected_steady_state
         !> The expected number of generations to reach steady state
@@ -132,7 +122,7 @@ contains
         !> The new test parameters
         type(find_steady_state_test_params) :: new_params
 
-        allocate(new_params%global_board(size(global_board, 1), size(global_board, 2), size(global_board, 3)))
+        allocate(new_params%global_board(size(global_board, 1), size(global_board, 2)))
 
         new_params%global_board = global_board
         new_params%expected_steady_state = expected_steady_state

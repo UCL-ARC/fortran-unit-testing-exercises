@@ -25,19 +25,10 @@ add_pfunit_ctest (pfunit_evolve_board_tests
   )
 
 # check_for_steady_state tests
-set(test_check_for_steady_state_src ${test_srcs})
-list(FILTER test_check_for_steady_state_src INCLUDE REGEX ".*test_check_for_steady_state.pf")
-
-add_pfunit_ctest (pfunit_check_for_steady_state_tests
-  TEST_SOURCES ${test_check_for_steady_state_src}
-  LINK_LIBRARIES sut # your application library
-  )
+# Your changes here...
 
 # read_model_from_file tests
-set(test_read_model_from_file_src ${test_srcs})
-list(FILTER test_read_model_from_file_src INCLUDE REGEX ".*test_read_model_from_file.pf")
+# Your changes here...
 
-add_pfunit_ctest (pfunit_read_model_from_file_tests
-  TEST_SOURCES ${test_read_model_from_file_src}
-  LINK_LIBRARIES sut # your application library
-  )
+# find_steady_state tests
+# Your changes here...
