@@ -1,5 +1,5 @@
 <!-- markdownlint-disable MD029 -->
-# Fortran Unit Test Syntax - Solution: Rewrite veggies tests using test-drive and pFUnit
+# Fortran Unit Test Syntax - Solution: Write tests using pFUnit, test-drive and Veggies
 
 ## Building
 

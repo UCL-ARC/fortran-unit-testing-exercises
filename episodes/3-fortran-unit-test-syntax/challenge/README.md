@@ -1,4 +1,4 @@
-# Fortran Unit Test Syntax - Challenge: Rewrite veggies tests using test-drive and pFUnit
+# Fortran Unit Test Syntax - Challenge: Write tests using pFUnit, test-drive and Veggies
 
 This exercise aims to teach how to write unit tests using [pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit),
 [test-drive](https://github.com/fortran-lang/test-drive) and [veggies](https://gitlab.com/everythingfunctional/veggies)
