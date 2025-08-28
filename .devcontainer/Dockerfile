@@ -2,11 +2,11 @@ ARG DEBIAN_VERSION=bookworm
 
 FROM mcr.microsoft.com/vscode/devcontainers/base:$DEBIAN_VERSION
 
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y --no-install-recommends \
-gfortran git wget cmake python3 m4 openmpi-bin openmpi-doc libopenmpi-dev 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt update
+RUN apt upgrade -y
+RUN apt install -y --no-install-recommends \
+gfortran git wget cmake python3-pip m4 openmpi-bin openmpi-doc libopenmpi-dev 
+RUN apt clean && rm -rf /var/lib/apt/lists/*
 
 # Install fpm
 RUN wget -O /usr/bin/fpm https://github.com/fortran-lang/fpm/releases/download/v0.10.1/fpm-0.10.1-linux-x86_64 && chmod 555 /usr/bin/fpm
@@ -18,6 +18,9 @@ ENV OMPI_MCA_rmaps_base_oversubscribe=true
 USER vscode
 
 WORKDIR /home/vscode/
+
+# Install fortls to enable Fortran VSCode extension
+RUN python3 -m pip install fortls --break-system-packages
 
 # Build pfunit
 COPY scripts/build-pfunit.sh /home/vscode/build-pfunit.sh
