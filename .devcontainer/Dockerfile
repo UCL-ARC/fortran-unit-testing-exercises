@@ -24,4 +24,6 @@ COPY scripts/build-pfunit.sh /home/vscode/build-pfunit.sh
 RUN /home/vscode/build-pfunit.sh -b -p /home/vscode/pfunit
 
 # Test pFUnit build
-RUN /home/vscode/build-pfunit.sh -t -p /home/vscode/pfunit 
+RUN /home/vscode/build-pfunit.sh -t -p /home/vscode/pfunit
+
+ENV PFUNIT_INSTALLED_PATH=/home/vscode/pfunit/build/installed
