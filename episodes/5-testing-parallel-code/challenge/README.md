@@ -5,7 +5,7 @@ processes.
 
 ## The code
 
-In [src](./src) there is a hybrid MPI-OpenMP parallel implementation of the Conway's game of life code we have seen in previous
+In [src](./src) there is an MPI parallel implementation of the Conway's game of life code we have seen in previous
 exercises.
 
 ## Task
