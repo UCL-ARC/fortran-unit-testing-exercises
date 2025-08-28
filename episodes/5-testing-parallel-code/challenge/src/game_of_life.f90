@@ -13,7 +13,7 @@ program game_of_life
     !! Board args
     integer, parameter :: max_nx = 50000, max_ny = 50000
     integer :: generation_number, global_nx, global_ny
-    integer, dimension(:,:), allocatable :: global_board
+    integer, dimension(:,:), allocatable :: global_input_board
     logical :: local_steady = .false.
 
     !! CLI args
@@ -49,7 +49,7 @@ program game_of_life
         end if
 
         if (.not. error_found) then
-            call read_model_from_file(input_fname, max_nx, max_ny, global_board, io_error_message)
+            call read_model_from_file(input_fname, max_nx, max_ny, global_input_board, io_error_message)
 
             if (allocated(io_error_message)) then
                 write (*,*) io_error_message
@@ -57,8 +57,8 @@ program game_of_life
             end if
 
             if (.not. error_found) then
-                global_ny = size(global_board, 1)
-                global_nx = size(global_board, 2)
+                global_ny = size(global_input_board, 1)
+                global_nx = size(global_input_board, 2)
             end if
         end if
     end if
@@ -74,7 +74,7 @@ program game_of_life
     call MPI_Bcast(global_nx, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
     call MPI_Bcast(global_ny, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
 
-    call find_steady_state(local_steady, generation_number, global_board, global_ny, global_nx, MPI_COMM_WORLD, nprocs)
+    call find_steady_state(local_steady, generation_number, global_input_board, global_ny, global_nx, MPI_COMM_WORLD, nprocs)
 
     if (rank == 0) then
         if (local_steady) then

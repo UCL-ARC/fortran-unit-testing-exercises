@@ -21,14 +21,14 @@ module game_of_life_mod
 contains
 
     !> Subroutine to find the steady state of the game of life
-    subroutine find_steady_state(global_steady, generation_number, global_board, global_ny, global_nx, base_mpi_communicator, &
-                                 nprocs)
+    subroutine find_steady_state(global_steady, generation_number, global_input_board, global_ny, global_nx, &
+                                 base_mpi_communicator, nprocs)
         !> Logical flag indicating whether the global board has reached a steady state
         logical, intent(out) :: global_steady
         !> The number of generations required to reach the steady state
         integer, intent(out) :: generation_number
         !> The global board representing the current state of the game
-        integer, dimension(:,:), allocatable, intent(inout) :: global_board
+        integer, dimension(:,:), allocatable, intent(in) :: global_input_board
         !> The number of rows in the global board
         integer, intent(in) :: global_ny
         !> The number of columns in the global board
@@ -41,7 +41,7 @@ contains
         !! Board args
         integer, parameter :: max_generations = 100
         integer :: local_nx, local_ny, nx_per_rank, ny_per_rank
-        integer, dimension(:,:), allocatable :: local_current, local_new
+        integer, dimension(:,:), allocatable :: global_board, local_current, local_new
         logical :: local_steady
         integer :: x_start, y_start, x_end, y_end
 
@@ -80,6 +80,8 @@ contains
 
         ! Scatter global board
         if (rank == 0) then
+            allocate(global_board(size(global_input_board, 1), size(global_input_board, 2)))
+            global_board = global_input_board
             do i = 1, nprocs - 1
                 call MPI_RECV(y_start_i, 1, MPI_INTEGER, i, i*100, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
                 call MPI_RECV(x_start_i, 1, MPI_INTEGER, i, i*100 + 1, domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
@@ -239,7 +241,6 @@ contains
         nx = size(current_board, 1)
         ny = size(current_board, 2)
 
-        !$omp parallel do default(none) private(x, y, sum) shared(nx, ny, current_board, new_board)
         do y = 2, ny-1
             do x = 2, nx-1
                 sum = 0
@@ -262,7 +263,6 @@ contains
                 endif
             enddo
         enddo
-        !$omp end parallel do
     end subroutine evolve_board
 
     !> Check if we have reached steady state, i.e. current and new board match
@@ -280,7 +280,6 @@ contains
         ny = size(current_board, 2)
 
         steady_state = .true.
-        !$omp parallel do reduction(.and.: steady_state)
         do y = 2, ny-1
             do x = 2, nx-1
                 if (current_board(x, y) /= new_board(x, y)) then
@@ -288,7 +287,6 @@ contains
                 end if
             end do
         end do
-        !$omp end parallel do
     end subroutine check_for_steady_state
 
     !> Output the current board to the terminal

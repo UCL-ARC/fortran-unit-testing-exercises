@@ -6,17 +6,17 @@ module game_of_life_mod
 contains
 
     !> Find the steady state of the Game of Life board
-    subroutine find_steady_state(animate, steady_state, generation_number, current_board)
+    subroutine find_steady_state(animate, input_board, steady_state, generation_number)
         !> Whether to animate the board
         logical, intent(in) :: animate
+        !> The starting state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: input_board
         !> Whether the board has reached a steady state
         logical, intent(out) :: steady_state
         !> The number of generations that have been processed
         integer, intent(out) :: generation_number
-        !> The current state of the board
-        integer, dimension(:,:), allocatable, intent(inout) :: current_board
 
-        integer, dimension(:,:), allocatable :: new_board
+        integer, dimension(:,:), allocatable :: current_board, new_board
 
         !! Board args
         integer, parameter :: max_generations = 100
@@ -26,7 +26,9 @@ contains
         integer :: mod_ms_step
         integer, parameter :: ms_per_step = 250
 
-        allocate(new_board(size(current_board,1), size(current_board, 2)))
+        allocate(current_board(size(input_board,1), size(input_board, 2)))
+        allocate(new_board(size(input_board,1), size(input_board, 2)))
+        current_board = input_board
         new_board = 0
 
         ! Clear the terminal screen
