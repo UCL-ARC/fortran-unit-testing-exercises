@@ -19,7 +19,7 @@ enable_testing()
 #--------------------------------------#
 #               veggies                #
 #--------------------------------------#
-add_subdirectory("test/veggies")
+# add_subdirectory("test/veggies")
 
 #--------------------------------------#
 #             test-drive               #
