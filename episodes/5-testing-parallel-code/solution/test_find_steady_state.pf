@@ -16,6 +16,10 @@ module test_find_steady_state
         logical :: expected_steady_state
         !> The expected number of generations to reach steady state
         integer :: expected_generation_number
+        !> A description of the test to be outputted for logging
+        character(len=100) :: description
+    contains
+        procedure :: toString => find_steady_state_test_params_toString
     end type find_steady_state_test_params
 
     !> Type to define a single find_steady_state test case
@@ -64,7 +68,8 @@ contains
         global_board(12,9:11) = [0,1,0]
 
         do i = 1, max_num_ranks
-            params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number)
+            params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, &
+                                                      "an exploder initial state")
         end do
     end function getTestSuite
 
@@ -104,4 +109,24 @@ contains
 
         tst%params = testParameter
     end function paramsToCase
+
+    !> Converts find_steady_state_test_params to a string for logging
+    function find_steady_state_test_params_toString(this) result(string)
+        !> The test parameters to convert
+        class (find_steady_state_test_params), intent(in) :: this
+        !> The resulting string representation
+        character(:), allocatable :: string
+
+        character(len=80) :: buffer
+
+        integer :: nrow, ncol
+
+        nrow = size(this%input_global_board, 1)
+        ncol = size(this%input_global_board, 2)
+
+        write(buffer,'(i2, "x", i2, " board with ", a)') &
+            nrow, ncol, trim(this%description)
+        string = trim(buffer)
+    end function find_steady_state_test_params_toString
+
 end module test_find_steady_state
