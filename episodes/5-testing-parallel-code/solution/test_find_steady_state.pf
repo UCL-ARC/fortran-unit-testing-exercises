@@ -93,11 +93,9 @@ contains
             this%params%input_global_nx, this%getMpiCommunicator(), this%getNumProcessesRequested())
 
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
-        if (this%params%expected_steady_state) then
-            @assertTrue(actual_steady_state, "Unexpected steady_state value")
-        else
-            @assertFalse(actual_steady_state, "Unexpected steady_state value")
-        end if
+
+        @assertTrue(this%params%expected_steady_state .eqv. actual_steady_state, "Unexpected steady_state value")
+
     end subroutine TestFindSteadyState
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -57,7 +57,8 @@ contains
         board(11,9:11) = [1,0,1]
         board(12,9:11) = [0,1,0]
         params = [ &
-            find_steady_state_test_params(board, .true., 17, "an exploder initial state")]
+            find_steady_state_test_params(board, .true., 17, "an exploder initial state") &
+        ]
     end function getTestSuite
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -73,17 +74,13 @@ contains
         logical :: actual_steady_state
         integer :: actual_generation_number
 
-        call find_steady_state(.false., actual_steady_state, actual_generation_number, this%params%input_board)
+        call find_steady_state(.false., this%params%input_board, actual_steady_state, actual_generation_number)
 
         ! Assert the generation_number is as expected
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
 
         ! Assert the steady_state is as expected
-        if (this%params%expected_steady_state) then
-            @assertTrue(actual_steady_state, "Unexpected steady_state value")
-        else
-            @assertFalse(actual_steady_state, "Unexpected steady_state value")
-        end if
+        @assertTrue(this%params%expected_steady_state .eqv. actual_steady_state, "Unexpected steady_state value")
     end subroutine TestFindSteadyState
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
