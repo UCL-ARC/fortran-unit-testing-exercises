@@ -21,10 +21,10 @@ module game_of_life_mod
 contains
 
     !> Subroutine to find the steady state of the game of life
-    subroutine find_steady_state(global_steady, generation_number, global_input_board, global_ny, global_nx, &
+    subroutine find_steady_state(steady_state, generation_number, global_input_board, global_ny, global_nx, &
                                  base_mpi_communicator, nprocs)
         !> Logical flag indicating whether the global board has reached a steady state
-        logical, intent(out) :: global_steady
+        logical, intent(out) :: steady_state
         !> The number of generations required to reach the steady state
         integer, intent(out) :: generation_number
         !> The global board representing the current state of the game
@@ -61,7 +61,7 @@ contains
         integer :: i, j
 
         local_steady = .false.
-        global_steady = .false.
+        steady_state = .false.
 
         ! Create 2D Cartesian topology
         domainDecomp%dims = 0
@@ -118,8 +118,8 @@ contains
             call evolve_board(local_current, local_new)
             call check_for_steady_state(local_current, local_new, local_steady)
 
-            call MPI_Allreduce(local_steady, global_steady, 1, MPI_LOGICAL, MPI_LAND, domainDecomp%communicator, ierr)
-            local_steady = global_steady
+            call MPI_Allreduce(local_steady, steady_state, 1, MPI_LOGICAL, MPI_LAND, domainDecomp%communicator, ierr)
+            local_steady = steady_state
 
             local_current = local_new
 
