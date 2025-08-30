@@ -1,12 +1,22 @@
 # Testing parallel code - Challenge: Rewrite serial test as a parallel test
 
-This exercises aims to teach how to write pFUnit tests which test MPI enabled code and test across multiple numbers of MPI
+This exercise aims to teach how to write pFUnit tests which test MPI enabled code and test across multiple numbers of MPI
 processes.
 
 ## The code
 
-In [src](./src) there is an MPI parallel implementation of the Conway's game of life code we have seen in previous
-exercises.
+Take a look at the [src](./src) code provided. This is an MPI parallelized implementation of
+[Conway's game of life](http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). The program reads in a data file which represents
+the starting state of the system. The system is then evolved and printed to the terminal screen for each time step. To build and
+run the src code use the following commands from within this dir.
+
+```bash
+cmake -B build-cmake -DCMAKE_PREFIX_PATH=/path/to/pfunit/install
+cmake --build build-cmake
+./build-cmake/game-of-life ../models/model-1.dat # Or another data file
+```
+
+> If you are using the devcontainer, there is an installation of pFUnit at /home/vscode/pfunit/build/installed
 
 ## Task
 
