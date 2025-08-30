@@ -10,8 +10,8 @@ module test_find_steady_state
     !> Type to bundle inputs and expected outputs of game_of_life::find_steady_state
     @testParameter
     type, extends(MPITestParameter) :: find_steady_state_test_params
-        !> The global board to be distributed across ranks
-        integer, dimension(:,:), allocatable :: input_global_board
+        !> The initial starting board to be passed into find_steady_state
+        integer, dimension(:,:), allocatable :: input_board
         !> The expected steady state result
         logical :: expected_steady_state
         !> The expected number of generations to reach steady state
@@ -39,14 +39,8 @@ contains
         !> The array of test parameters
         type(find_steady_state_test_params), allocatable :: params(:)
 
-        integer :: max_num_ranks, num_ranks, rank, i
-
-        logical :: expected_steady_state
-        integer :: expected_generation_number
-        integer, dimension(:,:), allocatable :: global_board
-
-        max_num_ranks = 8
-        allocate(params(max_num_ranks))
+        integer :: i, max_num_ranks
+        integer, dimension(:,:), allocatable :: board
 
         !  Steady state should be reached after 17 iterations
         !       8  9 10 11 12
@@ -58,18 +52,17 @@ contains
         !  12 | 0  0  1  0  0
         !  13 | 0  0  0  0  0
         ! global_board only needs to be set for rank 0 as this should be distributed to other ranks in the src code
-        expected_steady_state = .true.
-        expected_generation_number = 17
-        allocate(global_board(31, 31))
-        global_board = 0
-        global_board(9,9:11)  = [0,1,0]
-        global_board(10,9:11) = [1,1,1]
-        global_board(11,9:11) = [1,0,1]
-        global_board(12,9:11) = [0,1,0]
+        allocate(board(31, 31))
+        board = 0
+        board(9,9:11)  = [0,1,0]
+        board(10,9:11) = [1,1,1]
+        board(11,9:11) = [1,0,1]
+        board(12,9:11) = [0,1,0]
 
+        max_num_ranks = 8
+        allocate(params(max_num_ranks))
         do i = 1, max_num_ranks
-            params(i) = find_steady_state_test_params(i, global_board, expected_steady_state, expected_generation_number, &
-                                                      "an exploder initial state")
+            params(i) = find_steady_state_test_params(i, board, .true., 17, "an exploder initial state")
         end do
     end function getTestSuite
 
@@ -86,8 +79,8 @@ contains
         logical :: actual_steady_state
         integer :: actual_generation_number
 
-        call find_steady_state(actual_steady_state, actual_generation_number, this%params%input_global_board, &
-            size(this%params%input_global_board, 1), size(this%params%input_global_board, 2), this%getMpiCommunicator(), &
+        call find_steady_state(actual_steady_state, actual_generation_number, this%params%input_board, &
+            size(this%params%input_board, 1), size(this%params%input_board, 2), this%getMpiCommunicator(), &
             this%getNumProcessesRequested())
 
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
@@ -121,8 +114,8 @@ contains
 
         integer :: nrow, ncol
 
-        nrow = size(this%input_global_board, 1)
-        ncol = size(this%input_global_board, 2)
+        nrow = size(this%input_board, 1)
+        ncol = size(this%input_board, 2)
 
         write(buffer,'(i2, "x", i2, " board with ", a)') &
             nrow, ncol, trim(this%description)
