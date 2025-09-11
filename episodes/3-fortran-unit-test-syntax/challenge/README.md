@@ -22,7 +22,7 @@ cmake --build build-cmake
 
 ### pFUnit
 
-1. Finish the partially implement tests in [test/pfunit](./test/pfunit/).
+1. Finish the partially implemented tests in [test/pfunit](./test/pfunit/).
     - [test_check_for_steady_state.pf](./test/pfunit/test_check_for_steady_state.pf)
     - [test_read_model_from_file.pf](./test/pfunit/test_read_model_from_file.pf)
 2. Write a completely new pFUnit test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90).
@@ -30,7 +30,7 @@ cmake --build build-cmake
 
 ### test-drive
 
-1. Finish the partially implement tests in [test/test-drive](./test/test-drive/).
+1. Finish the partially implemented tests in [test/test-drive](./test/test-drive/).
     - [test_check_for_steady_state.f90](./test/test-drive/test_check_for_steady_state.f90)
     - [test_read_model_from_file.f90](./test/test-drive/test_read_model_from_file.f90)
 2. Write a completely new test-drive test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90)
@@ -39,7 +39,7 @@ cmake --build build-cmake
 
 ### Veggies
 
-1. Finish the partially implement tests in [test/veggies](./test/veggies/).
+1. Finish the partially implemented tests in [test/veggies](./test/veggies/).
     - [test_check_for_steady_state.f90](./test/veggies/test_check_for_steady_state.f90)
     - [test_read_model_from_file.f90](./test/veggies/test_read_model_from_file.f90)
 2. Write a completely new Veggies test for the subroutine `find_steady_state` in [game_of_life_mod.f90](./src/game_of_life_mod.f90)
