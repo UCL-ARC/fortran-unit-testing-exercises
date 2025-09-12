@@ -80,10 +80,4 @@ add_pfunit_ctest (pfunit_exchange_boundaries_tests
   )
 
 # find_steady_state tests
-# set(test_find_steady_state_src ${test_srcs})
-# list(FILTER test_find_steady_state_src INCLUDE REGEX ".*test_find_steady_state.pf")
-
-# add_pfunit_ctest (pfunit_find_steady_state_tests
-#   TEST_SOURCES ${test_find_steady_state_src}
-#   LINK_LIBRARIES sut # your application library
-#   )
+# Your changes here...
