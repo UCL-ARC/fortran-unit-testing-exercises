@@ -78,13 +78,9 @@ contains
 
         logical :: actual_steady_state
         integer :: actual_generation_number
-        integer, dimension(:,:), allocatable :: actual_board
         character(len=80) :: failure_message
 
-        allocate(actual_board(size(params%board, 1), size(params%board, 2)))
-        actual_board = params%board
-
-        call find_steady_state(.false., actual_steady_state, actual_generation_number, actual_board)
+        call find_steady_state(.false., params%board, actual_steady_state, actual_generation_number)
 
         write(failure_message,'(a,i3,a,i3)') "Unexpected generation_number. Expected ", params%expected_generation_number, &
             " but found ", actual_generation_number

@@ -88,14 +88,10 @@ contains
 
         logical :: actual_steady_state
         integer :: actual_generation_number
-        integer, dimension(:,:), allocatable :: actual_board
 
         select type (input)
         type is (find_steady_state_test_params)
-            allocate(actual_board(size(input%board, 1), size(input%board, 2)))
-            actual_board = input%board
-
-            call find_steady_state(.false., actual_steady_state, actual_generation_number, actual_board)
+            call find_steady_state(.false., input%board, actual_steady_state, actual_generation_number)
 
             result_ = assert_equals(input%expected_generation_number, actual_generation_number, "Unexpected generation_number")
             if (input%expected_steady_state) then
