@@ -1,6 +1,0 @@
-name = "intro-to-fortran-unit-tests"
-
-[[executable]]
-name = "game-of-life"
-source-dir = "src"
-main = "game_of_life.f90"

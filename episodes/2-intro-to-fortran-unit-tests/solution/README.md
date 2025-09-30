@@ -1,9 +1,12 @@
 # Introduction to Unit Testing in Fortran - Solution: Identify bad practice for unit testing Fortran
 
-The solution provided here is an entirely self-contained project which can be run, as before, using FPM.
+The solution provided here is an entirely self-contained project which can be run, as before, using
+the following commands from within this dir.
 
 ```bash
-fpm run -- ../models/model-1.dat # Or another data file
+cmake -B build
+cmake --build build
+./build/game-of-life ../models/model-1.dat # Or another data file
 ```
 
 ## Task 1

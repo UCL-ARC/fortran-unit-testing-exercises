@@ -8,10 +8,12 @@ Fortran
 Take a look at the [src](./src) code provided. This is an implementation of
 [Conway's game of life](http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). The program reads in a data file which represents
 the starting state of the system. The system is then evolved and printed to the terminal screen for each time step. To build and
-run the src code use the following command from within this dir.
+run the src code use the following commands from within this dir.
 
 ```bash
-fpm run -- ../models/model-1.dat # Or another data file
+cmake -B build
+cmake --build build
+./build/game-of-life ../models/model-1.dat # Or another data file
 ```
 
 ## Tasks
