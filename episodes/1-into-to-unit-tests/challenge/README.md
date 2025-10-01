@@ -10,14 +10,16 @@ Take a look at the [src](./src/maths.f90) and [test](./test/maths_test.f90) code
 2. What changes would improve this unit test?
 3. Try to implement your suggested changes.
 
-These tests are written without using any test framework just pure fortran. The only file you should need to update is
-[test/test_maths.f90](./test/test_maths.f90).
+These tests are written without using any test framework just pure Fortran. The only file you
+should need to update is [test/test_maths.f90](./test/test_maths.f90).
 
 ## Running the tests
 
-An [fpm.toml](./fpm.toml) is provided to make running these test easier. From
+A [CMakeLists.txt](./CMakeLists.txt) file is provided to make running these test easier. From
 within the challenge directory, run the command
 
 ```sh
-fpm test
+cmake -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```

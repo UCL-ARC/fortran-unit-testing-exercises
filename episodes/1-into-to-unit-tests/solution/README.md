@@ -29,5 +29,7 @@ contents of [challenge/test/test_maths.f90](../challenge/test/test_maths.f90) wi
 with...
 
 ```sh
-fpm test
+cmake -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```
