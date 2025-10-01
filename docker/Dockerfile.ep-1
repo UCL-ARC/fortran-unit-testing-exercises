@@ -4,16 +4,18 @@ COPY --chown=vscode episodes/1-into-to-unit-tests /home/vscode/1-into-to-unit-te
 
 WORKDIR /home/vscode/1-into-to-unit-tests/challenge
 
-# test challenge with CMake
-RUN cmake -B build
-RUN cmake --build build
+# Build challenge's tests with cmake
+RUN cmake -B build && \
+    cmake --build build
+# Run test with ctest
 RUN ctest --test-dir build --output-on-failure
 
 # clean build 
 RUN rm -rf build
 
-# Test solution with CMake
-RUN mv ../solution/test_maths_solution.f90 test/test_maths.f90
-RUN cmake -B build
-RUN cmake --build build
+# Build solution's tests with cmake
+RUN mv ../solution/test_maths_solution.f90 test/test_maths.f90 && \
+    cmake -B build && \
+    cmake --build build
+# Run test with ctest
 RUN ctest --test-dir build --output-on-failure
