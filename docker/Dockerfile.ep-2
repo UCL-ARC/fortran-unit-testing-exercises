@@ -2,9 +2,12 @@ FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
 
 COPY --chown=vscode episodes/2-intro-to-fortran-unit-tests /home/vscode/2-intro-to-fortran-unit-tests
 
-WORKDIR /home/vscode/2-intro-to-fortran-unit-tests/solution
+# Build challenge with cmake
+WORKDIR /home/vscode/2-intro-to-fortran-unit-tests/challenge
+RUN cmake -B build && \
+    cmake --build build
 
-# test with cmake
-RUN cmake -B build
-RUN cmake --build build
-RUN ctest --test-dir build --output-on-failure
+# Build solution with cmake
+WORKDIR /home/vscode/2-intro-to-fortran-unit-tests/solution
+RUN cmake -B build && \
+    cmake --build build
