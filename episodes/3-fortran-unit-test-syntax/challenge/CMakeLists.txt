@@ -14,4 +14,5 @@ file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
 # Build src executables
 add_executable("${PROJECT_NAME}" "${PROJ_SRC_FILES}")
 
+enable_testing()
 add_subdirectory("test")

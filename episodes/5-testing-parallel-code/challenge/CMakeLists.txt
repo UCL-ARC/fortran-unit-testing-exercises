@@ -28,8 +28,4 @@ endif()
 target_link_libraries("${PROJECT_NAME}" "${TO_LINK_TO_SRC}")
 
 enable_testing()
-
-#--------------------------------------#
-#               pFUnit                 #
-#--------------------------------------#
 add_subdirectory("test")

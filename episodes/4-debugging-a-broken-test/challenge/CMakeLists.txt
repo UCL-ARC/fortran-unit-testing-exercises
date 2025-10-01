@@ -11,4 +11,5 @@ project(
 # Define src files
 file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
 
+enable_testing()
 add_subdirectory("test")
