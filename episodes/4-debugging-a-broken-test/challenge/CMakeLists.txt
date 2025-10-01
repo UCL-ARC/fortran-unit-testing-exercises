@@ -11,19 +11,4 @@ project(
 # Define src files
 file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
 
-enable_testing()
-
-#--------------------------------------#
-#               veggies                #
-#--------------------------------------#
-# add_subdirectory("test/veggies")
-
-#--------------------------------------#
-#             test-drive               #
-#--------------------------------------#
-add_subdirectory("test/test-drive")
-
-#--------------------------------------#
-#               pFUnit                 #
-#--------------------------------------#
 add_subdirectory("test/pfunit")

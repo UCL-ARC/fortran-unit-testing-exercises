@@ -5,27 +5,14 @@ This exercise aims to teach how to identify a failing unit test and translate th
 ## The code
 
 In [src](./src/) there is a module containing a subroutine to transpose a matrix. In [test](./test/) there are tests for this
-subroutine written with [Veggies](./test/veggies/), [test-drive](./test/test-drive/) and [pFUnit](./test/pfunit/).
+subroutine written with [pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit).
 
-Try running the tests with either FPM or CMake. You should find that some are failing.
-
-## Building
-
-> Remember, pFUnit can only be built via CMake and you can only build one of test-drive or Veggies at a time, via CMake.
-
-### CMake
+Try running the tests with CMake. You should find that some are failing.
 
 ```sh
-cmake -B build-cmake -DCMAKE_PREFIX_PATH=<path/to/pFUnit/build/installed>
-cmake --build build-cmake
-cd build-cmake
-ctest --output-on-failure
-```
-
-### FPM
-
-```sh
-fpm test
+cmake -B build -DCMAKE_PREFIX_PATH=<path/to/pFUnit/build/installed>
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```
 
 ## Tasks
