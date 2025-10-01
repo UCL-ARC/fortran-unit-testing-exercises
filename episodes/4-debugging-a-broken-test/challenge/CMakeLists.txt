@@ -11,4 +11,4 @@ project(
 # Define src files
 file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
 
-add_subdirectory("test/pfunit")
+add_subdirectory("test")
