@@ -1,6 +1,0 @@
-name = "intro-to-unit-tests"
-
-[[test]]
-name = "test_maths"
-source-dir = "test"
-main = "test_maths.f90"
