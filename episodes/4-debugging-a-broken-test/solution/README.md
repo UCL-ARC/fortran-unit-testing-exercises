@@ -4,70 +4,7 @@
 
 > Which tests are failing?
 
-The error messages from each of the frameworks shown below are all pointing to the same issue. The test that checks that a 3x3
-asymmetric matrix is transposed is failing.
-
-### Veggies
-
-The output indicates that the failing test relates to `transpose` and, more specifically, is testing that
-`a matrix is transposed as expected`.
-
-```txt
-Running Tests
-
-Test that
-    transpose
-        a matrix is transposed as expected
-
-A total of 1 test cases
-
-Failed
-Took 4.47e-4 seconds
-
-Test that
-    transpose
-        a matrix is transposed as expected
-            Expected
-                    |[[1.0, 4.0, 0.0],
-                      [6.0, 1.0, 0.0],
-                      [0.0, 3.0, 1.0]]|
-                to be within |±1.0e-5| of
-                    |[[1.0, 6.0, 0.0],
-                      [4.0, 1.0, 3.0],
-                      [0.0, 0.0, 1.0]]|
-
-1 of 1 cases failed
-1 of 2 assertions failed
-```
-
-### test-drive
-
-Similarly to the Veggies test, the test-drive output shown below indicates that the failing test relates to `transpose` and, more
-specifically, is testing  a `3x3 asymmetric matrix`.
-
-```txt
-# Running testdrive tests suite
-# Testing: transpose
-  Starting 3x3 identity matrix ... (1/2)
-       ... 3x3 identity matrix [PASSED]
-  Starting 3x3 asymmetric matrix ... (2/2)
-       ... 3x3 asymmetric matrix [FAILED]
-  Message: Unexpected value for output(1,2), got 4.0 expected 6.0                          
-1 test(s) failed!
-ERROR STOP 1
-
-Error termination. Backtrace:
-#0  0x10079ad2f
-#1  0x10079b8d7
-#2  0x10079cb1f
-#3  0x100153503
-#4  0x100153973
-#5  0x1001539b7
-```
-
-### pFUnit
-
-Again, the pFUnit output shown below indicates that the failing test is from the `test_transpose_suite` testsuite and, more
+The pFUnit output shown below indicates that the failing test is from the `test_transpose_suite` testsuite and, more
 specifically, is testing a `3x3 Asymmetric` matrix.
 
 ```txt
