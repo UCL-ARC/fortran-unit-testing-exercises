@@ -17,16 +17,6 @@ add_executable("${PROJECT_NAME}" "${PROJ_SRC_FILES}")
 enable_testing()
 
 #--------------------------------------#
-#               veggies                #
-#--------------------------------------#
-# add_subdirectory("test/veggies")
-
-#--------------------------------------#
-#             test-drive               #
-#--------------------------------------#
-# add_subdirectory("test/test-drive")
-
-#--------------------------------------#
 #               pFUnit                 #
 #--------------------------------------#
 add_subdirectory("test/pfunit")

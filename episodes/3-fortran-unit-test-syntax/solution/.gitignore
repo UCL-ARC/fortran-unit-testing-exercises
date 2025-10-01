@@ -1,2 +1,2 @@
-test/pfunit/*.F90
-build*
+test/*.F90
+build
