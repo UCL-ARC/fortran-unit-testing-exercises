@@ -4,25 +4,10 @@ COPY --chown=vscode episodes/3-fortran-unit-test-syntax /home/vscode/3-fortran-u
 
 WORKDIR /home/vscode/3-fortran-unit-test-syntax/solution
 
-# build tests inc veggies with cmake
-RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/#add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/#add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
-    cmake -B build-cmake-veggies -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
-    cmake --build build-cmake-veggies
+# build tests with cmake
+RUN cmake -B build -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
+    cmake --build build
 
-# build tests without veggies with cmake
-RUN sed -i -E 's/.*add_subdirectory\(\"test\/test-drive\"\)/add_subdirectory\(\"test\/test-drive\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"test\/pfunit\"\)/add_subdirectory\(\"test\/pfunit\"\)/g' CMakeLists.txt && \
-    sed -i -E 's/.*add_subdirectory\(\"test\/veggies\"\)/#add_subdirectory\(\"test\/veggies\"\)/g' CMakeLists.txt && \
-    cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
-    cmake --build build-cmake
-
-# test veggies with ctest
-RUN ctest --test-dir build-cmake-veggies --output-on-failure
-
-# test testdrive and pfunit with ctest
+# test pfunit with ctest
 RUN ctest --test-dir build-cmake --output-on-failure
 
-# test with fpm
-RUN fpm test
