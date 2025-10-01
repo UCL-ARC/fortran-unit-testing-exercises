@@ -12,7 +12,7 @@ add_library (sut STATIC ${PROJ_SRC_FILES})
 # List all  test files
 file(GLOB
   test_srcs
-  "${PROJECT_SOURCE_DIR}/test/pfunit/*.pf"
+  "${PROJECT_SOURCE_DIR}/test/*.pf"
 )
 
 # evolve_board tests
