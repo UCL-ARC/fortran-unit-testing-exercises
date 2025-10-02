@@ -6,7 +6,7 @@ Fortran without the use of a testing framework, in order to teach the principles
 
 ## The src code
 
-in [src](./src) you will find a library [temp_conversions.f90](./src/temp_conversions.f90)
+In [src](./src) you will find a library [temp_conversions.f90](./src/temp_conversions.f90)
 which provides functions for converting between various units of temperature. The functions
 provided are...
 

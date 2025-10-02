@@ -35,6 +35,6 @@ contains
 
         ! Populate the failure message
         write(failure_message, '(A,A)') "It is useful to include input, expected output and actual output values here. To do ", &
-                                        "that, replace (A,A) with the correct format for your values, for example (A,I3,A,I3,A,I3)."
+                                        "that, replace (A,A) with the correct format for your values, for example (A,F7.2,A,F7.2,A,F7.2)."
     end subroutine test
 end program test_temp_conversions
