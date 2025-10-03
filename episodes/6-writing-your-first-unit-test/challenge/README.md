@@ -13,7 +13,9 @@ provided are...
 - **fahrenheit_to_celsius**: Which takes in a temperature in Fahrenheit and returns a temperature in Celsius.
 - **celsius_to_kelvin**: Which takes in a temperature in Celsius and returns a temperature in Kelvin.
 
-## The task
+## The tasks
+
+### Part 1 - Test with Standard Fortran
 
 Imagine you wish to use the temp_conversions library to convert Fahrenheit to Kelvin. We
 know that there is no function which does this direct conversion. With this is mind, write
@@ -28,3 +30,28 @@ the test was successful. The character array `failure_message`, should be popula
 message that will be printed to the terminal in the event that `passed` is `.false.`. Once
 the test subroutine is written it should be called within the main body of the test program
 as indicated in `test_temp_conversions.f90`.
+
+### Part 2 - Convert tests to use pFUnit
+
+Convert your tests from [Part 1](#part-1---test-with-standard-fortran), to use
+[pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit).
+
+A file [test_temp_conversions.pf](./test/pfunit/test_temp_conversions.pf) containing a template
+for your pFUnit test(s) has been provided. Comments within this file indicate the aspects of
+the pFUnit test you must write.
+
+> Note: This template has been written to facilitate conversion of
+> [test_temp_conversions.f90](./test/test_temp_conversions.f90) as provided with this repo
+> to pFUnit. If your version of test_temp_conversions.f90, produced in Part 1, is significantly
+> different, You may prefer to use a different structure to the one provided in the template.
+
+To build and run your pFUnit test(s) you must add the pFUnit lib to the `CMAKE_PREFIX_PATH`
+when building via the following command.
+
+```bash
+cmake -B build -DCMAKE_PREFIX_PATH=/path/to/pfunit/install
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+> If you are using the devcontainer, there is an installation of pFUnit at /home/vscode/pfunit/build/installed

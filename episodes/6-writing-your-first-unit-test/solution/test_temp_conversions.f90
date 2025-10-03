@@ -11,11 +11,13 @@ program test_temp_conversions
     logical :: passed(7)
     character(len=200) :: failure_message(7)
 
-    call test_fahrenheit_to_celsius(0.0, -17.77778, passed(1), failure_message(1))
+    ! Define set of tests for fahrenheit_to_celsius by calling test with various inputs and expected outputs
+    call test_fahrenheit_to_celsius(0.0, -17.777779, passed(1), failure_message(1))
     call test_fahrenheit_to_celsius(32.0, 0.0, passed(2), failure_message(2))
-    call test_fahrenheit_to_celsius(-100.0, -73.33, passed(3), failure_message(3))
-    call test_fahrenheit_to_celsius(1.23,-17.09, passed(4), failure_message(4))
+    call test_fahrenheit_to_celsius(-100.0, -73.333336, passed(3), failure_message(3))
+    call test_fahrenheit_to_celsius(1.23,-17.094444, passed(4), failure_message(4))
 
+    ! Define set of tests for celsius_to_kelvin by calling test with various inputs and expected outputs
     call test_celsius_to_kelvin(0.0, 273.15, passed(5), failure_message(5))
     call test_celsius_to_kelvin(-273.15, 0.0, passed(6), failure_message(6))
     call test_celsius_to_kelvin(-173.15, 100.0, passed(7), failure_message(7))
@@ -52,8 +54,8 @@ contains
         passed = abs(actual_output - expected_output) < tolerance
 
         ! Populate the failure message
-        write(failure_message, '(A,F7.2,A,F7.2,A,F7.2)') "Failed With ", input, ": Expected ", expected_output, " but got ", &
-                                                 actual_output
+        write(failure_message, '(A,F7.2,A,F7.2,A,F7.2,A)') "Failed With ", input, "°F: Expected ", expected_output, &
+                                                         "°C but got ", actual_output, "°C"
     end subroutine test_fahrenheit_to_celsius
 
     !> Unit test subroutine for celsius_to_kelvin
@@ -76,7 +78,7 @@ contains
         passed = abs(actual_output - expected_output) < tolerance
 
         ! Populate the failure message
-        write(failure_message, '(A,F7.2,A,F7.2,A,F7.2)') "Failed With ", input, ": Expected ", expected_output, " but got ", &
-                                                 actual_output
+        write(failure_message, '(A,F7.2,A,F7.2,A,F7.2,A)') "Failed With ", input, "°C: Expected ", expected_output, &
+                                                           "°K but got ", actual_output, "°K"
     end subroutine test_celsius_to_kelvin
 end program test_temp_conversions
