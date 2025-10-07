@@ -18,21 +18,15 @@ program game_of_life
     logical, parameter :: animate = .true.
 
     !! CLI args
-    integer                       :: argl
-    character(len=:), allocatable :: cli_arg_temp_store, input_filename
+    character(len=:), allocatable :: executable_name, input_filename
 
     ! Get current_board file path from command line
     if (command_argument_count() == 1) then
-        call get_command_argument(1, length=argl)
-        allocate(character(argl) :: input_filename)
-        call get_command_argument(1, input_filename)
+        call read_cli_arg(1, input_filename)
     else
         write(*,'(A)') "Error: Invalid input"
-        call get_command_argument(0, length=argl)
-        allocate(character(argl) :: cli_arg_temp_store)
-        call get_command_argument(0, cli_arg_temp_store)
-        write(*,'(A,A,A)') "Usage: ", cli_arg_temp_store, " <input_file_name>"
-        deallocate(cli_arg_temp_store)
+        call read_cli_arg(0, executable_name)
+        write(*,'(A,A,A)') "Usage: ", executable_name, " <input_file_name>"
         stop
     end if
 
@@ -46,10 +40,23 @@ program game_of_life
         write(*,'(a,i6,a)') "Did NOT Reach steady after ", generation_number, " generations"
     end if
 
-    deallocate(current_board)
-    deallocate(new_board)
-
 contains
+
+    !> Read a cli arg at a given index and return it as a string (character array)
+    recursive subroutine read_cli_arg(arg_index, arg)
+        !> The index of the cli arg to try and read
+        integer, intent(in) :: arg_index
+        !> The string into which to store the cli arg
+        character(len=:), allocatable, intent(out) :: arg
+
+        integer                       :: argl
+        character(len=:), allocatable :: cli_arg_temp_store
+
+        call get_command_argument(arg_index, length=argl)
+        allocate(character(argl) :: cli_arg_temp_store)
+        call get_command_argument(arg_index, cli_arg_temp_store)
+        arg = trim(cli_arg_temp_store)
+    end subroutine read_cli_arg
 
     !> Populate the board from a provided file
     subroutine read_model_from_file()
