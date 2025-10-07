@@ -10,23 +10,16 @@ program game_of_life
 
     !! Board args
     integer, parameter :: max_generations = 100, max_nrows = 100, max_ncols = 100
-    integer :: nrow, ncol
-    integer :: row, generation_number
+    integer :: nrow, ncol, generation_number
     integer, dimension(:,:), allocatable :: current_board, new_board
-
-    !! Animation args
-    integer, dimension(8) :: date_time_values
-    integer :: mod_ms_step, ms_per_step = 250
     logical :: steady_state = .false.
+
+    !> Whether to animate the board
+    logical, parameter :: animate = .true.
 
     !! CLI args
     integer                       :: argl
     character(len=:), allocatable :: cli_arg_temp_store, input_filename
-
-    !! File IO args
-    character(len=80) :: text_to_discard
-    integer :: input_file_io
-    integer :: iostat
 
     ! Get current_board file path from command line
     if (command_argument_count() == 1) then
@@ -43,66 +36,9 @@ program game_of_life
         stop
     end if
 
-    ! Open input file
-    open(unit=input_file_io,   &
-         file=input_filename, &
-         status='old',  &
-         IOSTAT=iostat)
+    call read_model_from_file()
 
-    if( iostat /= 0) then
-        write(*,'(a)') ' *** Error when opening '//input_filename
-        stop 1
-    end if
-
-    ! Read in current_board from file
-    read(input_file_io,'(a)') text_to_discard ! Skip first line
-    read(input_file_io,*) nrow, ncol
-
-    ! Verify the number of rows read from the file
-    if (nrow < 1 .or. nrow > max_nrows) then
-        write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrows," found ", nrow
-        stop 1
-    end if
-
-    ! Verify the number of columns read from the file
-    if (ncol < 1 .or. ncol > max_ncols) then
-        write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncols," found ", ncol
-        stop 1
-    end if
-
-    allocate(current_board(nrow, ncol))
-    allocate(new_board(nrow, ncol))
-
-    read(input_file_io,'(a)') text_to_discard ! Skip next line
-    ! Populate the boards starting state
-    do row = 1, nrow
-        read(input_file_io,*) current_board(row, :)
-    end do
-
-    close(input_file_io)
-
-    new_board = 0
-    generation_number = 0
-
-    ! Clear the terminal screen
-    call system ("clear")
-
-    ! Iterate until we reach a steady state
-    do while(.not. steady_state .and. generation_number < max_generations)
-        ! Advance the simulation in the steps of the requested number of milliseconds
-        call date_and_time(VALUES=date_time_values)
-        mod_ms_step = mod(date_time_values(8), ms_per_step)
-
-        if (mod_ms_step == 0) then
-            call evolve_board()
-            call check_for_steady_state()
-            current_board = new_board
-            call draw_board()
-
-            generation_number = generation_number + 1
-        end if
-
-    end do
+    call find_steady_state()
 
     if (steady_state) then
         write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"
@@ -114,6 +50,102 @@ program game_of_life
     deallocate(new_board)
 
 contains
+
+    !> Populate the board from a provided file
+    subroutine read_model_from_file()
+        !> A flag to indicate if reading the file was successful
+        character(len=:), allocatable :: io_error_message
+
+        ! Board definition args
+        integer :: row
+
+        ! File IO args
+        integer :: input_file_io, iostat
+        character(len=80) :: text_to_discard
+
+        input_file_io = 1111
+
+        ! Open input file
+        open(unit=input_file_io,   &
+            file=input_filename, &
+            status='old',  &
+            IOSTAT=iostat)
+
+        if( iostat == 0) then
+            ! Read in board from file
+            read(input_file_io,'(a)') text_to_discard ! Skip first line
+            read(input_file_io,*) nrow, ncol
+
+            ! Verify the number of rows and columns read from the file
+            if (nrow < 1 .or. nrow > max_nrows) then
+                allocate(character(100) :: io_error_message)
+                write (io_error_message,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrows, " found ", nrow
+            elseif (ncol < 1 .or. ncol > max_ncols) then
+                allocate(character(100) :: io_error_message)
+                write (io_error_message,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncols, " found ", ncol
+            end if
+        else
+            allocate(character(100) :: io_error_message)
+            write(io_error_message,'(a)') ' *** Error when opening '//input_filename
+        endif
+
+        if (.not. allocated(io_error_message)) then
+
+            allocate(current_board(nrow, ncol))
+
+            read(input_file_io,'(a)') text_to_discard ! Skip next line
+            ! Populate the boards starting state
+            do row = 1, nrow
+                read(input_file_io,*) current_board(row, :)
+            end do
+
+        end if
+
+        close(input_file_io)
+
+        if (allocated(io_error_message)) then
+            write (*,*) io_error_message
+            deallocate(io_error_message)
+            stop
+        end if
+    end subroutine read_model_from_file
+
+    !> Find the steady state of the Game of Life board
+    subroutine find_steady_state()
+
+        !! Animation args
+        integer, dimension(8) :: date_time_values
+        integer :: mod_ms_step
+        integer, parameter :: ms_per_step = 250
+
+        allocate(new_board(size(current_board,1), size(current_board, 2)))
+        new_board = 0
+
+        ! Clear the terminal screen
+        if (animate) call system ("clear")
+
+        ! Iterate until we reach a steady state
+        steady_state = .false.
+        generation_number = 0
+        mod_ms_step = 0
+        do while(.not. steady_state .and. generation_number < max_generations)
+            if (animate) then
+                ! Advance the simulation in the steps of the requested number of milliseconds
+                call date_and_time(VALUES=date_time_values)
+                mod_ms_step = mod(date_time_values(8), ms_per_step)
+            end if
+
+            if (mod_ms_step == 0) then
+                call evolve_board()
+                call check_for_steady_state()
+                current_board = new_board
+                if (animate) call draw_board()
+
+                generation_number = generation_number + 1
+            end if
+
+        end do
+    end subroutine find_steady_state
 
     !> Evolve the board into the state of the next iteration
     subroutine evolve_board()
