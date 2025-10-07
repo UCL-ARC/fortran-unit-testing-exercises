@@ -1,0 +1,47 @@
+module test_temp_conversions
+    use temp_conversions, only : fahrenheit_to_celsius, celsius_to_kelvin
+    ! allow(C121)
+    use funit
+    implicit none
+
+    public
+
+    !> Test parameter type to package the test parameters
+    ! Your changes here...
+
+    !> Test case type to specify the style of test (paramaterized)
+    ! Your changes here...
+
+contains
+
+    !*************************************************************************!
+    !                      Test fahrenheit_to_celsius                         !
+    !*************************************************************************!
+
+    !> Test suite for tests of fahrenheit_to_celsius
+    ! Your changes here...
+
+    !> Unit test subroutine for fahrenheit_to_celsius
+    ! Your changes here...
+
+    !*************************************************************************!
+    !                         Test celsius_to_kelvin                          !
+    !*************************************************************************!
+
+    !> Test suite for tests of celsius_to_kelvin
+    ! Your changes here...
+
+    !> Unit test subroutine for celsius_to_kelvin
+    ! Your changes here...
+
+    !*************************************************************************!
+    !                              Constructors                               !
+    !*************************************************************************!
+
+    !> Constructor for converting test parameters into a test case
+    ! Your changes here...
+
+    !> Constructor for converting test parameters into a string
+    ! Your changes here...
+
+end module test_temp_conversions
