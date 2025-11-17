@@ -1,24 +1,15 @@
 FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
 
-COPY --chown=vscode episodes/5-testing-parallel-code /home/vscode/5-testing-parallel-code
+COPY --chown=vscode episodes/5-debugging-a-broken-test /home/vscode/5-debugging-a-broken-test
 
-WORKDIR /home/vscode/5-testing-parallel-code/challenge
+WORKDIR /home/vscode/5-debugging-a-broken-test/challenge
 
 # Fix intentional bug in code
-RUN mv ../solution/test_find_steady_state.pf ./test/ && \
-    echo "set(test_find_steady_state_src \${test_srcs})\n\
-list(FILTER test_find_steady_state_src INCLUDE REGEX \".*test_find_steady_state.pf\")\n\
-\n\
-add_pfunit_ctest (pfunit_find_steady_state_tests\n\
-    TEST_SOURCES \${test_find_steady_state_src}\n\
-    LINK_LIBRARIES sut\n\
-    MAX_PES 8\n\
-    )\n\
-" >> test/CMakeLists.txt
+RUN sed -i -E 's/.*matrix\(row, col\) = temp_matrix\(row, col\)/matrix\(col, row\) = temp_matrix\(row, col\)/g' src/matrix_transforms.f90
 
 # build tests with cmake
-RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
-    cmake --build build-cmake
+RUN cmake -B build -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
+    cmake --build build
 
-# test with ctest, allowing MPI to oversubscribe
-RUN ctest --test-dir build-cmake --output-on-failure
+# test pfunit with ctest
+RUN ctest --test-dir build --output-on-failure

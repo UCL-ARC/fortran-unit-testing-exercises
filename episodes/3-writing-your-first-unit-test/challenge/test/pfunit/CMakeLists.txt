@@ -7,7 +7,7 @@ add_library (sut STATIC ${PROJ_SRC_FILES})
 
 # List all test files
 file(GLOB
-    PROJ_TEST_FILES
+    test_srcs
     "${TEST_DIR}/*.pf"
 )
 
