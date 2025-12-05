@@ -8,10 +8,8 @@ program game_of_life
 
     implicit none
 
-    !! Board args
-    integer, parameter :: max_generations = 100, max_nrows = 100, max_ncols = 100
-    integer :: nrow, ncol, generation_number
-    integer, dimension(:,:), allocatable :: current_board, new_board
+    integer, dimension(:,:), allocatable :: starting_board
+    integer :: generation_number
     logical :: steady_state = .false.
 
     !! CLI args
@@ -27,9 +25,9 @@ program game_of_life
         stop
     end if
 
-    call read_model_from_file()
+    call read_model_from_file(input_filename, starting_board)
 
-    call find_steady_state()
+    call find_steady_state(steady_state, generation_number, starting_board)
 
     if (steady_state) then
         write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"
@@ -40,7 +38,7 @@ program game_of_life
 contains
 
     !> Read a cli arg at a given index and return it as a string (character array)
-    recursive subroutine read_cli_arg(arg_index, arg)
+    subroutine read_cli_arg(arg_index, arg)
         !> The index of the cli arg to try and read
         integer, intent(in) :: arg_index
         !> The string into which to store the cli arg
@@ -56,12 +54,16 @@ contains
     end subroutine read_cli_arg
 
     !> Populate the board from a provided file
-    subroutine read_model_from_file()
+    subroutine read_model_from_file(input_filename, board)
+        character(len=:), allocatable, intent(in) :: input_filename
+        integer, dimension(:,:), allocatable, intent(out) :: board
+
         !> A flag to indicate if reading the file was successful
         character(len=:), allocatable :: io_error_message
 
         ! Board definition args
-        integer :: row
+        integer :: row, nrow, ncol
+        integer, parameter :: max_nrows = 100, max_ncols = 100
 
         ! File IO args
         integer :: input_file_io, iostat
@@ -76,7 +78,7 @@ contains
             IOSTAT=iostat)
 
         if( iostat == 0) then
-            ! Read in current_board from file
+            ! Read in board from file
             read(input_file_io,'(a)') text_to_discard ! Skip first line
             read(input_file_io,*) nrow, ncol
 
@@ -95,12 +97,12 @@ contains
 
         if (.not. allocated(io_error_message)) then
 
-            allocate(current_board(nrow, ncol))
+            allocate(board(nrow, ncol))
 
             read(input_file_io,'(a)') text_to_discard ! Skip next line
             ! Populate the boards starting state
             do row = 1, nrow
-                read(input_file_io,*) current_board(row, :)
+                read(input_file_io,*) board(row, :)
             end do
 
         end if
@@ -115,14 +117,25 @@ contains
     end subroutine read_model_from_file
 
     !> Find the steady state of the Game of Life board
-    subroutine find_steady_state()
+    subroutine find_steady_state(steady_state, generation_number, input_board)
+        !> Whether the board has reached a steady state
+        logical, intent(out) :: steady_state
+        !> The number of generations that have been processed
+        integer, intent(out) :: generation_number
+        !> The starting state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: input_board
+
+        integer, dimension(:,:), allocatable :: current_board, new_board
+        integer, parameter :: max_generations = 100
 
         !! Animation args
         integer, dimension(8) :: date_time_values
         integer :: mod_ms_step
         integer, parameter :: ms_per_step = 250
 
-        allocate(new_board(size(current_board,1), size(current_board, 2)))
+        allocate(current_board(size(input_board,1), size(input_board, 2)))
+        allocate(new_board(size(input_board,1), size(input_board, 2)))
+        current_board = input_board
         new_board = 0
 
         ! Clear the terminal screen
@@ -138,10 +151,10 @@ contains
             mod_ms_step = mod(date_time_values(8), ms_per_step)
 
             if (mod_ms_step == 0) then
-                call evolve_board()
-                call check_for_steady_state()
+                call evolve_board(current_board, new_board)
+                call check_for_steady_state(steady_state, current_board, new_board)
                 current_board = new_board
-                call draw_board()
+                call draw_board(current_board)
 
                 generation_number = generation_number + 1
             end if
@@ -150,8 +163,16 @@ contains
     end subroutine find_steady_state
 
     !> Evolve the board into the state of the next iteration
-    subroutine evolve_board()
-        integer :: row, column, sum
+    subroutine evolve_board(current_board, new_board)
+        !> The current state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: current_board
+        !> The new state of the board
+        integer, dimension(:,:), allocatable, intent(inout) :: new_board
+
+        integer :: row, column, sum, nrow, ncol
+
+        nrow = size(current_board, 1)
+        ncol = size(current_board, 2)
 
         do row=2, nrow-1
             do column=2, ncol-1
@@ -180,8 +201,18 @@ contains
     end subroutine evolve_board
 
     !> Check if we have reached steady state, i.e. current and new board match
-    subroutine check_for_steady_state()
-        integer :: row, column
+    subroutine check_for_steady_state(steady_state, current_board, new_board)
+        !> Whether the board has reached a steady state
+        logical, intent(out) :: steady_state
+        !> The current state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: current_board
+        !> The new state of the board
+        integer, dimension(:,:), allocatable, intent(inout) :: new_board
+
+        integer :: row, column, nrow, ncol
+
+        nrow = size(current_board, 1)
+        ncol = size(current_board, 2)
 
         do row=1, nrow
             do column=1, ncol
@@ -195,9 +226,17 @@ contains
     end subroutine check_for_steady_state
 
     !> Output the current board to the terminal
-    subroutine draw_board()
-        integer :: row, column
-        character(nrow) :: output
+    subroutine draw_board(board)
+        !> The current state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: board
+
+        integer :: row, column, nrow, ncol
+        character(:), allocatable :: output
+
+        nrow = size(board, 1)
+        ncol = size(board, 2)
+
+        allocate(character(nrow) :: output)
 
         ! Clear the terminal screen
         call system("clear")
@@ -205,7 +244,7 @@ contains
         do row=1, nrow
             output = ""
             do column=1, ncol
-                if (current_board(row, column) == 1) then
+                if (board(row, column) == 1) then
                     output = trim(output)//"#"
                 else
                     output = trim(output)//"."
