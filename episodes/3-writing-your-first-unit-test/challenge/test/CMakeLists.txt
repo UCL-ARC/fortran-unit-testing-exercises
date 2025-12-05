@@ -1,7 +1,7 @@
 find_package(PFUNIT QUIET)
 
+add_subdirectory("standard_fortran")
+
 if (PFUNIT_FOUND)
     add_subdirectory("pfunit")
-else()
-    add_subdirectory("standard_fortran")
 endif()

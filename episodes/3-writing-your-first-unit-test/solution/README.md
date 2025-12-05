@@ -23,7 +23,7 @@ investigation would be required.
 
 #### Parameterised tests
 
-Each test subroutine in [test_temp_conversions.f90](./test_temp_conversions.f90) take in an `input` and an `expected_output`.
+Each test subroutine in [test_temp_conversions.f90](./test_temp_conversions.f90) takes in an `input` and an `expected_output`.
 This allows the same test subroutine to be called with multiple different inputs to test several scenarios with the same test
 code. Therefore, we are able to test edge cases and other key scenarios more easily.
 

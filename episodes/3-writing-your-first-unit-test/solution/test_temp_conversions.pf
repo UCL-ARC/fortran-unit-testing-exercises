@@ -108,6 +108,7 @@ contains
         type(temp_conversions_test_params_t), intent(in) :: testParameter
         !> The test case to return after conversion from parameters
         type(temp_conversions_test_case_t) :: tst
+
         tst%params = testParameter
     end function new_test_case
 
@@ -116,6 +117,7 @@ contains
         !> The parameters to be converted to a string
         class(temp_conversions_test_params_t), intent(in) :: this
         character(:), allocatable :: string
+
         string = trim(this%description)
     end function temp_conversions_test_params_t_toString
 

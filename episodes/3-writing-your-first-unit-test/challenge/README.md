@@ -22,7 +22,7 @@ know that there is no function which does this direct conversion. With this is m
 a test, or tests, to give you confidence that temp_conversions can correctly convert
 Fahrenheit to Kelvin.
 
-To get you started, the file [test_temp_conversions.f90](./test/test_temp_conversions.f90)
+To get you started, the file [test_temp_conversions.f90](./test/standard_fortran/test_temp_conversions.f90)
 has been provided. `test_temp_conversions.f90` contains some boilerplate to make writing a
 test easier. There is an empty test subroutine `test` provided which takes in a logical
 `passed` and a character array `failure_message`. The logical `passed` should indicate if
@@ -30,6 +30,9 @@ the test was successful. The character array `failure_message`, should be popula
 message that will be printed to the terminal in the event that `passed` is `.false.`. Once
 the test subroutine is written it should be called within the main body of the test program
 as indicated in `test_temp_conversions.f90`.
+
+> Not: If you add a new test file or change the name of `test_temp_conversions.f90`, you will
+> need to update list of tests (`test_src`) in [test/pfunit/CMakeLists.txt](./test/pfunit/CMakeLists.txt)
 
 ### Part 2 - Convert tests to use pFUnit
 
@@ -41,7 +44,7 @@ for your pFUnit test(s) has been provided. Comments within this file indicate th
 the pFUnit test you must write.
 
 > Note: This template has been written to facilitate conversion of
-> [test_temp_conversions.f90](./test/test_temp_conversions.f90) as provided with this repo
+> [test_temp_conversions.f90](./test/standard_fortran/test_temp_conversions.f90) as provided with this repo
 > to pFUnit. If your version of test_temp_conversions.f90, produced in Part 1, is significantly
 > different, You may prefer to use a different structure to the one provided in the template.
 
@@ -53,5 +56,8 @@ cmake -B build -DCMAKE_PREFIX_PATH=/path/to/pfunit/install
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+If your test does not get built, ensure you have added it to the list of tests (`test_src`)
+in [test/pfunit/CMakeLists.txt](./test/pfunit/CMakeLists.txt)
 
 > If you are using the devcontainer, there is an installation of pFUnit at /home/vscode/pfunit/build/installed
