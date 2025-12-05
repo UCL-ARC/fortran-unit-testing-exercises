@@ -1,4 +1,4 @@
-# Introduction to Unit Testing in Fortran - Challenge: Identify bad practice for unit testing Fortran
+# Refactoring Fortran
 
 This exercise aims to teach principles of writing better Fortran; that is Fortran which is clear, maintainable and testable.
 
@@ -20,7 +20,7 @@ cmake --build build
 
 ## Tasks
 
-Implement the principles described in [the refactoring lesson](#tasks). 
+Implement the principles described in [the refactoring lesson](https://github-pages.arc.ucl.ac.uk/fortran-unit-testing-lesson/2-refactor-fortran.html).
 
 To ensure you are not changing the actual behaviour of the src code, every time you make a change,
 compare the output before and after. To do this store the output before making a change in a file
@@ -30,7 +30,7 @@ called `before.dat`
 ./build/game-of-life path/to/model/file > before.dat
 ```
 
-Then, after you make a change regenerate the output and store within a file `after.dat` 
+Then, after you make a change regenerate the output and store within a file `after.dat`
 
 ```sh
 ./build/game-of-life path/to/model/file > after.dat

@@ -1,4 +1,4 @@
-# Introduction to Unit Testing in Fortran - Solution: Identify bad practice for unit testing Fortran
+# Refactoring Fortran - Solution
 
 The solution provided here is an entirely self-contained project which can be run, as before, using
 the following commands from within this dir.
@@ -11,7 +11,7 @@ cmake --build build
 
 ## Tasks
 
-> Implement the principles described in [the refactoring lesson](#tasks)
+> Implement the principles described in [the refactoring lesson](https://github-pages.arc.ucl.ac.uk/fortran-unit-testing-lesson/2-refactor-fortran.html)
 
 1. Replace magic numbers with constants
 2. Change of variable name
