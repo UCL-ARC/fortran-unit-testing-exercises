@@ -11,7 +11,7 @@ program game_of_life
     !! Board args
     integer, parameter :: max_generations = 100, max_nrows = 100, max_ncols = 100
     integer :: nrow, ncol
-    integer :: i, generation_number
+    integer :: row, generation_number
     integer, dimension(:,:), allocatable :: current_board, new_board
 
     !! Animation args
@@ -22,7 +22,7 @@ program game_of_life
 
     !! CLI args
     integer                       :: argl
-    character(len=:), allocatable :: cli_arg_temp_store, input_fname
+    character(len=:), allocatable :: cli_arg_temp_store, input_filename
 
     !! File IO args
     character(len=80) :: text_to_discard
@@ -32,8 +32,8 @@ program game_of_life
     ! Get current_board file path from command line
     if (command_argument_count() == 1) then
         call get_command_argument(1, length=argl)
-        allocate(character(argl) :: input_fname)
-        call get_command_argument(1, input_fname)
+        allocate(character(argl) :: input_filename)
+        call get_command_argument(1, input_filename)
     else
         write(*,'(A)') "Error: Invalid input"
         call get_command_argument(0, length=argl)
@@ -46,12 +46,12 @@ program game_of_life
 
     ! Open input file
     open(unit=input_file_io,   &
-         file=input_fname, &
+         file=input_filename, &
          status='old',  &
          IOSTAT=iostat)
 
     if( iostat /= 0) then
-        write(*,'(a)') ' *** Error when opening '//input_fname
+        write(*,'(a)') ' *** Error when opening '//input_filename
         stop 1
     end if
 
@@ -76,8 +76,8 @@ program game_of_life
 
     read(input_file_io,'(a)') text_to_discard ! Skip next line
     ! Populate the boards starting state
-    do i = 1, nrow
-        read(input_file_io,*) current_board(i, :)
+    do row = 1, nrow
+        read(input_file_io,*) current_board(row, :)
     end do
 
     close(input_file_io)
@@ -115,17 +115,17 @@ contains
 
     !> Evolve the board into the state of the next iteration
     subroutine run_next_iteration()
-        integer :: i, j, sum
+        integer :: row, column, sum
         character(nrow) :: output
 
         ! Clear the terminal screen
         call system("clear")
 
         ! Draw the current board
-        do i=1, nrow
+        do row=1, nrow
             output = ""
-            do j=1, ncol
-                if (current_board(i,j) == 1) then
+            do column=1, ncol
+                if (current_board(row, column) == 1) then
                     output = trim(output)//"#"
                 else
                     output = trim(output)//"."
@@ -135,34 +135,34 @@ contains
         enddo
 
         ! Calculate the new board
-        do i=2, nrow-1
-            do j=2, ncol-1
+        do row=2, nrow-1
+            do column=2, ncol-1
                 sum = 0
-                sum = current_board(i, j-1)   &
-                    + current_board(i+1, j-1) &
-                    + current_board(i+1, j)   &
-                    + current_board(i+1, j+1) &
-                    + current_board(i, j+1)   &
-                    + current_board(i-1, j+1) &
-                    + current_board(i-1, j)   &
-                    + current_board(i-1, j-1)
-                if(current_board(i,j)==1 .and. sum<=1) then
-                    new_board(i,j) = 0
-                elseif(current_board(i,j)==1 .and. sum<=3) then
-                    new_board(i,j) = 1
-                elseif(current_board(i,j)==1 .and. sum>=4)then
-                    new_board(i,j) = 0
-                elseif(current_board(i,j)==0 .and. sum==3)then
-                    new_board(i,j) = 1
+                sum = current_board(row, column-1)   &
+                    + current_board(row+1, column-1) &
+                    + current_board(row+1, column)   &
+                    + current_board(row+1, column+1) &
+                    + current_board(row, column+1)   &
+                    + current_board(row-1, column+1) &
+                    + current_board(row-1, column)   &
+                    + current_board(row-1, column-1)
+                if(current_board(row, column)==1 .and. sum<=1) then
+                    new_board(row, column) = 0
+                elseif(current_board(row, column)==1 .and. sum<=3) then
+                    new_board(row, column) = 1
+                elseif(current_board(row, column)==1 .and. sum>=4)then
+                    new_board(row, column) = 0
+                elseif(current_board(row, column)==0 .and. sum==3)then
+                    new_board(row, column) = 1
                 endif
             enddo
         enddo
 
         ! Check for steady state
         steady_state = .true.
-        do i=1, nrow
-            do j=1, ncol
-                if (.not. current_board(i, j) == new_board(i, j)) then
+        do row=1, nrow
+            do column=1, ncol
+                if (.not. current_board(row, column) == new_board(row, column)) then
                     steady_state = .false.
                     exit
                 end if
