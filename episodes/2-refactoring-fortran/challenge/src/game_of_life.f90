@@ -9,14 +9,13 @@ program game_of_life
     implicit none
 
     !! Board args
-    integer, parameter :: max_nrow = 100, max_ncol = 100, max_generations = 100
     integer :: nrow, ncol
-    integer :: row, generation_number
+    integer :: i, generation_number
     integer, dimension(:,:), allocatable :: current_board, new_board
 
     !! Animation args
     integer, dimension(8) :: date_time_values
-    integer :: mod_ms_step, ms_per_step = 250
+    integer :: mod_ms_step
     logical :: steady_state = .false.
 
     !! CLI args
@@ -59,14 +58,14 @@ program game_of_life
     read(input_file_io,*) nrow, ncol
 
     ! Verify the number of rows read from the file
-    if (nrow < 1 .or. nrow > max_nrow) then
-        write (*,'(a,i6,a,i6)') "nrow must be a positive integer less than ", max_nrow, " found ", nrow
+    if (nrow < 1 .or. nrow > 100) then
+        write (*,'(a,i6)') "nrow must be a positive integer less than 100 found ", nrow
         stop 1
     end if
 
     ! Verify the number of columns read from the file
-    if (ncol < 1 .or. ncol > max_ncol) then
-        write (*,'(a,i6,a,i6)') "ncol must be a positive integer less than ", max_ncol, " found ", ncol
+    if (ncol < 1 .or. ncol > 100) then
+        write (*,'(a,i6)') "ncol must be a positive integer less than 100 found ", ncol
         stop 1
     end if
 
@@ -75,8 +74,8 @@ program game_of_life
 
     read(input_file_io,'(a)') text_to_discard ! Skip next line
     ! Populate the boards starting state
-    do row = 1, nrow
-        read(input_file_io,*) current_board(row, :)
+    do i = 1, nrow
+        read(input_file_io,*) current_board(i, :)
     end do
 
     close(input_file_io)
@@ -88,16 +87,13 @@ program game_of_life
     call system ("clear")
 
     ! Iterate until we reach a steady state
-    do while(.not. steady_state .and. generation_number < max_generations)
+    do while(.not. steady_state .and. generation_number < 100)
         ! Advance the simulation in the steps of the requested number of milliseconds
         call date_and_time(VALUES=date_time_values)
-        mod_ms_step = mod(date_time_values(8), ms_per_step)
+        mod_ms_step = mod(date_time_values(8), 250)
 
         if (mod_ms_step == 0) then
-            call evolve_board()
-            call check_for_steady_state()
-            current_board = new_board
-            call draw_board()
+            call run_next_iteration()
 
             generation_number = generation_number + 1
         end if
@@ -116,62 +112,18 @@ program game_of_life
 contains
 
     !> Evolve the board into the state of the next iteration
-    subroutine evolve_board()
-        integer :: row, col, sum
-
-        do row=2, nrow-1
-            do col=2, ncol-1
-                sum = 0
-                sum = current_board(row, col-1)   &
-                    + current_board(row+1, col-1) &
-                    + current_board(row+1, col)   &
-                    + current_board(row+1, col+1) &
-                    + current_board(row, col+1)   &
-                    + current_board(row-1, col+1) &
-                    + current_board(row-1, col)   &
-                    + current_board(row-1, col-1)
-                if(current_board(row,col)==1 .and. sum<=1) then
-                    new_board(row,col) = 0
-                elseif(current_board(row,col)==1 .and. sum<=3) then
-                    new_board(row,col) = 1
-                elseif(current_board(row,col)==1 .and. sum>=4)then
-                    new_board(row,col) = 0
-                elseif(current_board(row,col)==0 .and. sum==3)then
-                    new_board(row,col) = 1
-                endif
-            enddo
-        enddo
-
-        return
-    end subroutine evolve_board
-
-    !> Check if we have reached steady state, i.e. current and new board match
-    subroutine check_for_steady_state()
-        integer :: row, col
-
-        do row=1, nrow
-            do col=1, ncol
-                if (.not. current_board(row, col) == new_board(row, col)) then
-                    steady_state = .false.
-                    return
-                end if
-            end do
-        end do
-        steady_state = .true.
-    end subroutine check_for_steady_state
-
-    !> Output the current board to the terminal
-    subroutine draw_board()
-        integer :: row, col
+    subroutine run_next_iteration()
+        integer :: i, j, sum
         character(nrow) :: output
 
         ! Clear the terminal screen
         call system("clear")
 
-        do row=1, nrow
+        ! Draw the current board
+        do i=1, nrow
             output = ""
-            do col=1, ncol
-                if (current_board(row,col) == 1) then
+            do j=1, ncol
+                if (current_board(i,j) == 1) then
                     output = trim(output)//"#"
                 else
                     output = trim(output)//"."
@@ -179,6 +131,46 @@ contains
             enddo
             print *, output
         enddo
-    end subroutine draw_board
+
+        ! Calculate the new board
+        do i=2, nrow-1
+            do j=2, ncol-1
+                sum = 0
+                sum = current_board(i, j-1)   &
+                    + current_board(i+1, j-1) &
+                    + current_board(i+1, j)   &
+                    + current_board(i+1, j+1) &
+                    + current_board(i, j+1)   &
+                    + current_board(i-1, j+1) &
+                    + current_board(i-1, j)   &
+                    + current_board(i-1, j-1)
+                if(current_board(i,j)==1 .and. sum<=1) then
+                    new_board(i,j) = 0
+                elseif(current_board(i,j)==1 .and. sum<=3) then
+                    new_board(i,j) = 1
+                elseif(current_board(i,j)==1 .and. sum>=4)then
+                    new_board(i,j) = 0
+                elseif(current_board(i,j)==0 .and. sum==3)then
+                    new_board(i,j) = 1
+                endif
+            enddo
+        enddo
+
+        ! Check for steady state
+        steady_state = .true.
+        do i=1, nrow
+            do j=1, ncol
+                if (.not. current_board(i, j) == new_board(i, j)) then
+                    steady_state = .false.
+                    exit
+                end if
+            end do
+            if (.not. steady_state) exit
+        end do
+
+        current_board = new_board
+
+        return
+    end subroutine run_next_iteration
 
 end program game_of_life

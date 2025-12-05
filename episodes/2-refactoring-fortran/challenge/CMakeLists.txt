@@ -9,7 +9,7 @@ project(
 )
 
 # Define src files
-file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
+set(PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/game_of_life.f90")
 
 # Build src executables
 add_executable("${PROJECT_NAME}" "${PROJ_SRC_FILES}")
