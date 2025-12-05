@@ -95,7 +95,10 @@ program game_of_life
         mod_ms_step = mod(date_time_values(8), ms_per_step)
 
         if (mod_ms_step == 0) then
-            call run_next_iteration()
+            call evolve_board()
+            call check_for_steady_state()
+            current_board = new_board
+            call draw_board()
 
             generation_number = generation_number + 1
         end if
@@ -114,27 +117,9 @@ program game_of_life
 contains
 
     !> Evolve the board into the state of the next iteration
-    subroutine run_next_iteration()
+    subroutine evolve_board()
         integer :: row, column, sum
-        character(nrow) :: output
 
-        ! Clear the terminal screen
-        call system("clear")
-
-        ! Draw the current board
-        do row=1, nrow
-            output = ""
-            do column=1, ncol
-                if (current_board(row, column) == 1) then
-                    output = trim(output)//"#"
-                else
-                    output = trim(output)//"."
-                endif
-            enddo
-            print *, output
-        enddo
-
-        ! Calculate the new board
         do row=2, nrow-1
             do column=2, ncol-1
                 sum = 0
@@ -158,21 +143,43 @@ contains
             enddo
         enddo
 
-        ! Check for steady state
-        steady_state = .true.
+        return
+    end subroutine evolve_board
+
+    !> Check if we have reached steady state, i.e. current and new board match
+    subroutine check_for_steady_state()
+        integer :: row, column
+
         do row=1, nrow
             do column=1, ncol
                 if (.not. current_board(row, column) == new_board(row, column)) then
                     steady_state = .false.
-                    exit
+                    return
                 end if
             end do
-            if (.not. steady_state) exit
         end do
+        steady_state = .true.
+    end subroutine check_for_steady_state
 
-        current_board = new_board
+    !> Output the current board to the terminal
+    subroutine draw_board()
+        integer :: row, column
+        character(nrow) :: output
 
-        return
-    end subroutine run_next_iteration
+        ! Clear the terminal screen
+        call system("clear")
+
+        do row=1, nrow
+            output = ""
+            do column=1, ncol
+                if (current_board(row, column) == 1) then
+                    output = trim(output)//"#"
+                else
+                    output = trim(output)//"."
+                endif
+            enddo
+            print *, output
+        enddo
+    end subroutine draw_board
 
 end program game_of_life
