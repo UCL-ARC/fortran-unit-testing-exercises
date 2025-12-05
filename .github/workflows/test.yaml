@@ -47,3 +47,6 @@ jobs:
 
       - name: Test episode 5
         run: docker build . -f docker/Dockerfile.ep-5
+
+      - name: Test episode 6
+        run: docker build . -f docker/Dockerfile.ep-6

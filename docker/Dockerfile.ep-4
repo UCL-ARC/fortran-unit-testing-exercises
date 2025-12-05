@@ -1,11 +1,8 @@
 FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
 
-COPY --chown=vscode episodes/4-debugging-a-broken-test /home/vscode/4-debugging-a-broken-test
+COPY --chown=vscode episodes/4-fortran-unit-test-syntax /home/vscode/4-fortran-unit-test-syntax
 
-WORKDIR /home/vscode/4-debugging-a-broken-test/challenge
-
-# Fix intentional bug in code
-RUN sed -i -E 's/.*matrix\(row, col\) = temp_matrix\(row, col\)/matrix\(col, row\) = temp_matrix\(row, col\)/g' src/matrix_transforms.f90
+WORKDIR /home/vscode/4-fortran-unit-test-syntax/solution
 
 # build tests with cmake
 RUN cmake -B build -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
@@ -13,3 +10,4 @@ RUN cmake -B build -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
 
 # test pfunit with ctest
 RUN ctest --test-dir build --output-on-failure
+

@@ -1,0 +1,24 @@
+FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
+
+COPY --chown=vscode episodes/6-testing-parallel-code /home/vscode/6-testing-parallel-code
+
+WORKDIR /home/vscode/6-testing-parallel-code/challenge
+
+# Fix intentional bug in code
+RUN mv ../solution/test_find_steady_state.pf ./test/ && \
+    echo "set(test_find_steady_state_src \${test_srcs})\n\
+list(FILTER test_find_steady_state_src INCLUDE REGEX \".*test_find_steady_state.pf\")\n\
+\n\
+add_pfunit_ctest (pfunit_find_steady_state_tests\n\
+    TEST_SOURCES \${test_find_steady_state_src}\n\
+    LINK_LIBRARIES sut\n\
+    MAX_PES 8\n\
+    )\n\
+" >> test/CMakeLists.txt
+
+# build tests with cmake
+RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
+    cmake --build build-cmake
+
+# test with ctest, allowing MPI to oversubscribe
+RUN ctest --test-dir build-cmake --output-on-failure

@@ -1,0 +1,124 @@
+module test_temp_conversions
+    use temp_conversions, only : fahrenheit_to_celsius, celsius_to_kelvin
+    ! allow(C121)
+    use funit
+    implicit none
+
+    public
+
+    !> Type to package the test parameters
+    @TestParameter
+    type, extends(AbstractTestParameter) :: temp_conversions_test_params_t
+        !> The temperature to input into the function being tested
+        real :: input
+        !> Theb temperature expected to be returned from the function being tested
+        real :: expected_output
+        !> A description of the test to be outputted for logging
+        character(len=100) :: description
+    contains
+        procedure :: toString => temp_conversions_test_params_t_toString
+    end type temp_conversions_test_params_t
+
+    !> Type to specify the style of test (paramaterized)
+    @TestCase(constructor=new_test_case)
+    type, extends(ParameterizedTestCase) :: temp_conversions_test_case_t
+        type(temp_conversions_test_params_t) :: params
+    end type temp_conversions_test_case_t
+
+contains
+
+    !*************************************************************************!
+    !                      Test fahrenheit_to_celsius                         !
+    !*************************************************************************!
+
+    !> Test suite for tests of fahrenheit_to_celsius
+    function fahrenheit_to_celsius_testsuite() result(params)
+        !> An array of test parameters, each specifying an individual test
+        class(temp_conversions_test_params_t), allocatable :: params(:)
+
+        params = [ &
+            temp_conversions_test_params_t(0.0, -17.777779, "0.0 °F"), &
+            temp_conversions_test_params_t(32.0, 0.0, "0.0 °C"), &
+            temp_conversions_test_params_t(-100.0, -73.333336, "100 °F"), &
+            temp_conversions_test_params_t(1.23,-17.094444, "Decimal °F") &
+        ]
+    end function fahrenheit_to_celsius_testsuite
+
+    !> Unit test subroutine for fahrenheit_to_celsius
+    @Test(testParameters={fahrenheit_to_celsius_testsuite()})
+    subroutine test_fahrenheit_to_celsius(this)
+        !> The test case which indicates the type of test we are running
+        class(temp_conversions_test_case_t), intent(inout) :: this
+
+        character(len=200) :: failure_message
+        real :: actual_output
+
+        ! Get the actual celsius value returned from fahrenheit_to_celsius
+        actual_output = fahrenheit_to_celsius(this%params%input)
+
+        ! Populate the failure message
+        write(failure_message, '(A,F7.2,A,F7.2,A,F7.2,A)') "Failed With ", this%params%input, " °F: Expected ", &
+                this%params%expected_output, "°C but got ", actual_output, "°C"
+        @assertEqual(this%params%expected_output, actual_output, tolerance=1e-6, message=trim(failure_message))
+
+    end subroutine test_fahrenheit_to_celsius
+
+    !*************************************************************************!
+    !                         Test celsius_to_kelvin                          !
+    !*************************************************************************!
+
+    !> Test suite for tests of celsius_to_kelvin
+    function celsius_to_kelvin_testsuite() result(params)
+        !> An array of test parameters, each specifying an individual test
+        class(temp_conversions_test_params_t), allocatable :: params(:)
+
+        params = [ &
+            temp_conversions_test_params_t(0.0, 273.15, "0.0 °C"), &
+            temp_conversions_test_params_t(-273.15, 0.0, "0.0 °K"), &
+            temp_conversions_test_params_t(-173.15, 100.0, "100.0 °K") &
+        ]
+    end function celsius_to_kelvin_testsuite
+
+    !> Unit test subroutine for celsius_to_kelvin
+    @Test(testParameters={celsius_to_kelvin_testsuite()})
+    subroutine test_celsius_to_kelvin(this)
+        !> The test case which indicates the type of test we are running
+        class(temp_conversions_test_case_t), intent(inout) :: this
+
+        character(len=200) :: failure_message
+        real :: actual_output
+
+        ! Get the actual kelvin value returned from celsius_to_kelvin
+        actual_output = celsius_to_kelvin(this%params%input)
+
+        ! Populate the failure message
+        write(failure_message, '(A,F7.2,A,F7.2,A,F7.2,A)') "Failed With ", this%params%input, "°C: Expected ", &
+                this%params%expected_output, "°K but got ", actual_output, "°K"
+        @assertEqual(this%params%expected_output, actual_output, tolerance=1e-6, message=trim(failure_message))
+
+    end subroutine test_celsius_to_kelvin
+
+    !*************************************************************************!
+    !                              Constructors                               !
+    !*************************************************************************!
+
+    !> Constructor for converting test parameters into a test case
+    function new_test_case(testParameter) result(tst)
+        !> The parameters to be converted to a test case
+        type(temp_conversions_test_params_t), intent(in) :: testParameter
+        !> The test case to return after conversion from parameters
+        type(temp_conversions_test_case_t) :: tst
+
+        tst%params = testParameter
+    end function new_test_case
+
+    !> Constructor for converting test parameters into a string
+    function temp_conversions_test_params_t_toString(this) result(string)
+        !> The parameters to be converted to a string
+        class(temp_conversions_test_params_t), intent(in) :: this
+        character(:), allocatable :: string
+
+        string = trim(this%description)
+    end function temp_conversions_test_params_t_toString
+
+end module test_temp_conversions

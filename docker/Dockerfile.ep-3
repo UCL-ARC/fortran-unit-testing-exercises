@@ -1,13 +1,40 @@
 FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
 
-COPY --chown=vscode episodes/3-fortran-unit-test-syntax /home/vscode/3-fortran-unit-test-syntax
+COPY --chown=vscode episodes/3-writing-your-first-unit-test /home/vscode/3-writing-your-first-unit-test
 
-WORKDIR /home/vscode/3-fortran-unit-test-syntax/solution
+# Test the Challenge code
 
-# build tests with cmake
-RUN cmake -B build -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
-    cmake --build build
+WORKDIR /home/vscode/3-writing-your-first-unit-test/challenge
 
-# test pfunit with ctest
-RUN ctest --test-dir build --output-on-failure
+# Rebuild without pFUnit
+RUN cmake -B build-std && \
+    cmake --build build-std
+    
+# Test without pFUnit
+RUN ctest --test-dir build-std --output-on-failure
 
+
+# Test the Solution code
+
+# Cleanup directories
+RUN rm -rf build-std build-pf
+
+# Copy solution code
+RUN cp ../solution/test_temp_conversions.f90 test/standard_fortran/ && \
+    cp ../solution/test_temp_conversions.pf test/pfunit/
+
+RUN ls test/pfunit/
+
+# Rebuild without pFUnit
+RUN cmake -B build-std && \
+    cmake --build build-std
+
+# Rebuild with pFUnit
+RUN cmake -B build-pf -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
+    cmake --build build-pf
+
+# Test without pFUnit
+RUN ctest --test-dir build-std --output-on-failure
+
+# Test with pFUnit
+RUN ctest --test-dir build-pf --output-on-failure
