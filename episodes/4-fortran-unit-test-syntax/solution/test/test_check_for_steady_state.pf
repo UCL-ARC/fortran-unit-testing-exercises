@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::check_for_steady_state
 module test_check_for_steady_state
-    use game_of_life_mod, only : check_for_steady_state
+    use game_of_life, only : check_for_steady_state
     ! allow(C121)
     use funit
     implicit none
@@ -97,7 +97,7 @@ contains
 
         logical :: actual_steady_state
 
-        call check_for_steady_state(this%params%current_board, this%params%new_board, actual_steady_state)
+        call check_for_steady_state(actual_steady_state, this%params%current_board, this%params%new_board)
 
         @assertEqual(this%params%expected_steady_state, actual_steady_state)
     end subroutine TestCheckIfSteadyState

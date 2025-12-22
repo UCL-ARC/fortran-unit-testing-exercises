@@ -1,60 +1,117 @@
-! =======================================================
-! Conway's game of life
-!
-! =======================================================
-! Adapted from https://github.com/tuckerrc/game_of_life
-! =======================================================
-program game_of_life
-    use game_of_life_mod, only : read_model_from_file, find_steady_state
-
+module game_of_life
+    use animation, only : draw_board
     implicit none
+    public
 
-    !! Board args
-    integer, parameter :: max_nrow = 100, max_ncol = 100
-    integer :: generation_number
-    integer, dimension(:,:), allocatable :: input_board
+contains
 
-    !! Animation args
-    logical :: steady_state = .false.
+    !> Find the steady state of the Game of Life board
+    subroutine find_steady_state(steady_state, generation_number, input_board)
+        !> Whether the board has reached a steady state
+        logical, intent(out) :: steady_state
+        !> The number of generations that have been processed
+        integer, intent(out) :: generation_number
+        !> The starting state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: input_board
 
-    !! CLI args
-    integer                       :: argl
-    character(len=:), allocatable :: cli_arg_temp_store, input_fname
+        integer, dimension(:,:), allocatable :: current_board, new_board
+        integer, parameter :: max_generations = 100
 
-    !! IO args
-    character(len=:), allocatable :: io_error_message
+        !! Animation args
+        integer, dimension(8) :: date_time_values
+        integer :: mod_ms_step
+        integer, parameter :: ms_per_step = 250
 
-    ! Get input_board file path from command line
-    if (command_argument_count() == 1) then
-        call get_command_argument(1, length=argl)
-        allocate(character(argl) :: input_fname)
-        call get_command_argument(1, input_fname)
-    else
-        write(*,'(A)') "Error: Invalid input"
-        call get_command_argument(0, length=argl)
-        allocate(character(argl) :: cli_arg_temp_store)
-        call get_command_argument(0, cli_arg_temp_store)
-        write(*,'(A,A,A)') "Usage: ", cli_arg_temp_store, " <input_file_name>"
-        deallocate(cli_arg_temp_store)
-        stop
-    end if
+        allocate(current_board(size(input_board,1), size(input_board, 2)))
+        allocate(new_board(size(input_board,1), size(input_board, 2)))
+        current_board = input_board
+        new_board = 0
 
-    call read_model_from_file(input_fname, max_nrow, max_ncol, input_board, io_error_message)
+        ! Clear the terminal screen
+        call system ("clear")
 
-    if (allocated(io_error_message)) then
-        write (*,*) io_error_message
-        deallocate(io_error_message)
-        stop
-    end if
+        ! Iterate until we reach a steady state
+        steady_state = .false.
+        generation_number = 0
+        mod_ms_step = 0
+        do while(.not. steady_state .and. generation_number < max_generations)
+            ! Advance the simulation in the steps of the requested number of milliseconds
+            call date_and_time(VALUES=date_time_values)
+            mod_ms_step = mod(date_time_values(8), ms_per_step)
 
-    call find_steady_state(.true., input_board, steady_state, generation_number)
+            if (mod_ms_step == 0) then
+                call evolve_board(current_board, new_board)
+                call check_for_steady_state(steady_state, current_board, new_board)
+                current_board = new_board
+                call draw_board(current_board)
 
-    if (steady_state) then
-        write(*,'(a,i6,a)') "Reached steady after ", generation_number, " generations"
-    else
-        write(*,'(a,i6,a)') "Did NOT Reach steady after ", generation_number, " generations"
-    end if
+                generation_number = generation_number + 1
+            end if
 
-    deallocate(input_board)
+        end do
+    end subroutine find_steady_state
 
-end program game_of_life
+    !> Evolve the board into the state of the next iteration
+    subroutine evolve_board(current_board, new_board)
+        !> The current state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: current_board
+        !> The new state of the board
+        integer, dimension(:,:), allocatable, intent(inout) :: new_board
+
+        integer :: row, column, sum, nrow, ncol
+
+        nrow = size(current_board, 1)
+        ncol = size(current_board, 2)
+
+        do row=2, nrow-1
+            do column=2, ncol-1
+                sum = 0
+                sum = current_board(row, column-1)   &
+                    + current_board(row+1, column-1) &
+                    + current_board(row+1, column)   &
+                    + current_board(row+1, column+1) &
+                    + current_board(row, column+1)   &
+                    + current_board(row-1, column+1) &
+                    + current_board(row-1, column)   &
+                    + current_board(row-1, column-1)
+                if(current_board(row, column)==1 .and. sum<=1) then
+                    new_board(row, column) = 0
+                elseif(current_board(row, column)==1 .and. sum<=3) then
+                    new_board(row, column) = 1
+                elseif(current_board(row, column)==1 .and. sum>=4)then
+                    new_board(row, column) = 0
+                elseif(current_board(row, column)==0 .and. sum==3)then
+                    new_board(row, column) = 1
+                endif
+            enddo
+        enddo
+
+        return
+    end subroutine evolve_board
+
+    !> Check if we have reached steady state, i.e. current and new board match
+    subroutine check_for_steady_state(steady_state, current_board, new_board)
+        !> Whether the board has reached a steady state
+        logical, intent(out) :: steady_state
+        !> The current state of the board
+        integer, dimension(:,:), allocatable, intent(in) :: current_board
+        !> The new state of the board
+        integer, dimension(:,:), allocatable, intent(inout) :: new_board
+
+        integer :: row, column, nrow, ncol
+
+        nrow = size(current_board, 1)
+        ncol = size(current_board, 2)
+
+        do row=1, nrow
+            do column=1, ncol
+                if (.not. current_board(row, column) == new_board(row, column)) then
+                    steady_state = .false.
+                    return
+                end if
+            end do
+        end do
+        steady_state = .true.
+    end subroutine check_for_steady_state
+
+end module game_of_life
