@@ -102,8 +102,7 @@ contains
         integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
-        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, &
-                                  actual_io_error_message)
+        call read_model_from_file(this%params%input_fname, actual_board, actual_io_error_message)
 
         if (this%params%model_is_valid) then
             call VerifyCheckReadModelFromFileValidModel(this%params, actual_board, actual_io_error_message)

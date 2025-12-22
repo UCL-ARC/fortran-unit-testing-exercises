@@ -13,6 +13,7 @@ program main
     integer, dimension(:,:), allocatable :: starting_board
     integer :: generation_number
     logical :: steady_state = .false.
+    character(len=:), allocatable :: io_error_message
 
     !! CLI args
     character(len=:), allocatable :: executable_name, input_filename
@@ -27,7 +28,13 @@ program main
         stop
     end if
 
-    call read_model_from_file(input_filename, starting_board)
+    call read_model_from_file(input_filename, starting_board, io_error_message)
+
+    if (allocated(io_error_message)) then
+        write (*,*) io_error_message
+        deallocate(io_error_message)
+        stop
+    end if
 
     call find_steady_state(steady_state, generation_number, starting_board)
 

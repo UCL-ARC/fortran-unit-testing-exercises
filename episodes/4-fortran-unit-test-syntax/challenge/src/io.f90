@@ -5,12 +5,11 @@ module io
 contains
 
     !> Populate the board from a provided file
-    subroutine read_model_from_file(input_filename, board)
+    subroutine read_model_from_file(input_filename, board, io_error_message)
         character(len=:), allocatable, intent(in) :: input_filename
         integer, dimension(:,:), allocatable, intent(out) :: board
-
         !> A flag to indicate if reading the file was successful
-        character(len=:), allocatable :: io_error_message
+        character(len=:), allocatable, intent(inout) :: io_error_message
 
         ! Board definition args
         integer :: row, nrow, ncol
@@ -59,12 +58,6 @@ contains
         end if
 
         close(input_file_io)
-
-        if (allocated(io_error_message)) then
-            write (*,*) io_error_message
-            deallocate(io_error_message)
-            stop
-        end if
     end subroutine read_model_from_file
 
 end module io
