@@ -6,7 +6,11 @@ module test_temp_conversions
 
     public
 
-    !> Type to package the test parameters
+    !*************************************************************************!
+    !                            Derived Types                                !
+    !-------------------------------------------------------------------------!
+
+    !> Test parameter type to package the test parameters
     @TestParameter
     type, extends(AbstractTestParameter) :: temp_conversions_test_params_t
         !> The temperature to input into the function being tested
@@ -19,19 +23,21 @@ module test_temp_conversions
         procedure :: toString => temp_conversions_test_params_t_toString
     end type temp_conversions_test_params_t
 
-    !> Type to specify the style of test (paramaterized)
+    !> Test case type to specify the style of test (paramaterized)
     @TestCase(constructor=new_test_case)
     type, extends(ParameterizedTestCase) :: temp_conversions_test_case_t
         type(temp_conversions_test_params_t) :: params
     end type temp_conversions_test_case_t
 
+    !*************************************************************************!
+
 contains
 
     !*************************************************************************!
     !                      Test fahrenheit_to_celsius                         !
-    !*************************************************************************!
+    !-------------------------------------------------------------------------!
 
-    !> Test suite for tests of fahrenheit_to_celsius
+    !> Test Suite for tests of fahrenheit_to_celsius
     function fahrenheit_to_celsius_testsuite() result(params)
         !> An array of test parameters, each specifying an individual test
         class(temp_conversions_test_params_t), allocatable :: params(:)
@@ -44,7 +50,7 @@ contains
         ]
     end function fahrenheit_to_celsius_testsuite
 
-    !> Unit test subroutine for fahrenheit_to_celsius
+    !> Test Logic, unit test subroutine for fahrenheit_to_celsius
     @Test(testParameters={fahrenheit_to_celsius_testsuite()})
     subroutine test_fahrenheit_to_celsius(this)
         !> The test case which indicates the type of test we are running
@@ -64,10 +70,13 @@ contains
     end subroutine test_fahrenheit_to_celsius
 
     !*************************************************************************!
-    !                         Test celsius_to_kelvin                          !
-    !*************************************************************************!
 
-    !> Test suite for tests of celsius_to_kelvin
+
+    !*************************************************************************!
+    !                         Test celsius_to_kelvin                          !
+    !-------------------------------------------------------------------------!
+
+    !> Test Suite for tests of celsius_to_kelvin
     function celsius_to_kelvin_testsuite() result(params)
         !> An array of test parameters, each specifying an individual test
         class(temp_conversions_test_params_t), allocatable :: params(:)
@@ -79,7 +88,7 @@ contains
         ]
     end function celsius_to_kelvin_testsuite
 
-    !> Unit test subroutine for celsius_to_kelvin
+    !> Test Logic, unit test subroutine for celsius_to_kelvin
     @Test(testParameters={celsius_to_kelvin_testsuite()})
     subroutine test_celsius_to_kelvin(this)
         !> The test case which indicates the type of test we are running
@@ -99,8 +108,11 @@ contains
     end subroutine test_celsius_to_kelvin
 
     !*************************************************************************!
-    !                              Constructors                               !
+
+
     !*************************************************************************!
+    !                          Type Constructors                              !
+    !-------------------------------------------------------------------------!
 
     !> Constructor for converting test parameters into a test case
     function new_test_case(testParameter) result(tst)
@@ -120,5 +132,7 @@ contains
 
         string = trim(this%description)
     end function temp_conversions_test_params_t_toString
+
+    !*************************************************************************!
 
 end module test_temp_conversions
