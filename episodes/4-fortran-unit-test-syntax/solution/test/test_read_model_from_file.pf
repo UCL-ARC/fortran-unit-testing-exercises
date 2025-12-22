@@ -14,10 +14,6 @@ module test_read_model_from_file
     type, extends(AbstractTestParameter) :: read_model_from_file_test_params
         !> The input file name to be read
         character(len=:), allocatable :: input_fname
-        !> The maximum number of rows allowed in the board
-        integer :: max_nrow
-        !> The maximum number of columns allowed in the board
-        integer :: max_ncol
         !> The expected board after reading the file
         integer, dimension(:,:), allocatable :: expected_board
         !> The expected error message if the model is invalid
@@ -66,27 +62,27 @@ contains
 
         allocate(character(len=80) :: test_io_error_message)
 
-        params(1) = read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, &
+        params(1) = read_model_from_file_test_params("test/models/zeros_31_31.dat", test_board, test_io_error_message, &
                                                      .true.)
 
-        test_io_error_message = "nrow must be a positive integer less than     10 found     31"
-        params(2) = read_model_from_file_test_params("test/models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, &
+        test_io_error_message = "nrow must be a positive integer less than     100 found     1000"
+        params(2) = read_model_from_file_test_params("test/models/empty_1000_31.dat", test_board, test_io_error_message, &
                                                      .false.)
 
-        test_io_error_message = "ncol must be a positive integer less than     10 found     31"
-        params(3) = read_model_from_file_test_params("test/models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, &
+        test_io_error_message = "ncol must be a positive integer less than     100 found     1000"
+        params(3) = read_model_from_file_test_params("test/models/zeros_31_1000.dat", test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
-        params(4) = read_model_from_file_test_params("test/models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, &
+        params(4) = read_model_from_file_test_params("test/models/empty_-10_10.dat", test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = "ncol must be a positive integer less than    100 found    -10"
-        params(5) = read_model_from_file_test_params("test/models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, &
+        params(5) = read_model_from_file_test_params("test/models/empty_10_-10.dat", test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"
-        params(6) = read_model_from_file_test_params("does/not/exist.dat", 100, 100, test_board, test_io_error_message, .false.)
+        params(6) = read_model_from_file_test_params("does/not/exist.dat", test_board, test_io_error_message, .false.)
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
