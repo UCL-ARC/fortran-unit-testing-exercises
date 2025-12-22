@@ -65,12 +65,12 @@ contains
         params(1) = read_model_from_file_test_params("test/models/zeros_31_31.dat", test_board, test_io_error_message, &
                                                      .true.)
 
-        test_io_error_message = "nrow must be a positive integer less than     100 found     1000"
+        test_io_error_message = "nrow must be a positive integer less than    100 found   1000"
         params(2) = read_model_from_file_test_params("test/models/empty_1000_31.dat", test_board, test_io_error_message, &
                                                      .false.)
 
-        test_io_error_message = "ncol must be a positive integer less than     100 found     1000"
-        params(3) = read_model_from_file_test_params("test/models/zeros_31_1000.dat", test_board, test_io_error_message, &
+        test_io_error_message = "ncol must be a positive integer less than    100 found   1000"
+        params(3) = read_model_from_file_test_params("test/models/empty_31_1000.dat", test_board, test_io_error_message, &
                                                      .false.)
 
         test_io_error_message = "nrow must be a positive integer less than    100 found    -10"
