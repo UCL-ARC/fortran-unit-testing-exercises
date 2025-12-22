@@ -1,6 +1,6 @@
-!> Module for testing the subroutine game_of_life::read_model_from_file
+!> Module for testing the subroutine io::read_model_from_file
 module test_read_model_from_file
-    use game_of_life_mod, only : read_model_from_file
+    use io, only : read_model_from_file
     ! allow(C121)
     use funit
 
@@ -8,10 +8,10 @@ module test_read_model_from_file
 
     public
 
-    ! TASK: Define a parameter type `read_model_from_file_test_params` to be used for testing game_of_life::read_model_from_file
+    ! TASK: Define a parameter type `read_model_from_file_test_params` to be used for testing io::read_model_from_file
     ! Your changes here...
 
-    ! TASK: Define a test case type `read_model_from_file_test_case` to be used for testing game_of_life::read_model_from_file
+    ! TASK: Define a test case type `read_model_from_file_test_case` to be used for testing io::read_model_from_file
     ! Your changes here...
 contains
 
@@ -20,7 +20,7 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     ! TASK: Write a function which returns and array of the parameter type you defined above for testing
-    !       game_of_life::read_model_from_file including tests of the following scenarios.
+    !       io::read_model_from_file including tests of the following scenarios.
     !
     !       1. Reading a valid model (i.e. test/models/zeros_31_31.dat) populates the board as expected
     !       2. Reading a model (test/models/zeros_31_31.dat) with nrow more than nrow_max populates the error message es expected
@@ -35,7 +35,7 @@ contains
     ! Assertion functions
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    !> Check for the expected output of the game_of_life::read_model_from_file subroutine
+    !> Check for the expected output of the io::read_model_from_file subroutine
     @Test
     subroutine TestCheckReadModelFromFile(this)
         !> The current test case including inputs and expected outputs
@@ -54,11 +54,11 @@ contains
         end if
     end subroutine TestCheckReadModelFromFile
 
-    ! TASK: Finish the subroutines below such that they call game_of_life::read_model_from_file and assert
+    ! TASK: Finish the subroutines below such that they call io::read_model_from_file and assert
     !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
 
-    !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with a valid model
+    !> Check for the expected output of the io::read_model_from_file subroutine called with a valid model
     subroutine VerifyCheckReadModelFromFileValidModel(params, actual_board, actual_io_error_message)
         !> The test parameters for the current test case
         class (read_model_from_file_test_params), intent(inout) :: params
@@ -70,7 +70,7 @@ contains
         ! Your changes here...
     end subroutine VerifyCheckReadModelFromFileValidModel
 
-    !> Check for the expected output of the game_of_life::read_model_from_file subroutine called with an invalid model
+    !> Check for the expected output of the io::read_model_from_file subroutine called with an invalid model
     subroutine VerifyCheckReadModelFromFileInvalidModel(params, actual_board, actual_io_error_message)
         !> The test parameters for the current test case
         class (read_model_from_file_test_params), intent(inout) :: params
