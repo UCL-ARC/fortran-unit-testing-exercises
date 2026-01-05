@@ -14,7 +14,7 @@ cmake --build build
 ## Tasks
 
 > 1. Update the [test/CMakeLists.txt](./test/CMakeLists.txt) to build the fully implemented test,
->.   **test_evolve_board.pf**.
+>    **test_evolve_board.pf**.
 
 The test has been added to [test/CMakeLists.txt](./test/CMakeLists.txt) as a new `add_pfunit_ctest`.
 
