@@ -1,2 +1,6 @@
 *.f90
 *.F90
+*.inc
+*.mod
+*.o
+tests
