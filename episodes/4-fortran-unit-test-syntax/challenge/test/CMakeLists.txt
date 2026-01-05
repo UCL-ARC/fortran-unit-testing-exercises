@@ -9,20 +9,8 @@ file(CREATE_LINK "${PROJECT_SOURCE_DIR}/test/models"
 # Create library for src code
 add_library (sut STATIC ${PROJ_SRC_FILES})
 
-# List all  test files
-file(GLOB
-  test_srcs
-  "${PROJECT_SOURCE_DIR}/test/*.pf"
-)
-
 # evolve_board tests
-set(test_evolve_board_src ${test_srcs})
-list(FILTER test_evolve_board_src INCLUDE REGEX ".*test_evolve_board.pf")
-
-add_pfunit_ctest (pfunit_evolve_board_tests
-  TEST_SOURCES ${test_evolve_board_src}
-  LINK_LIBRARIES sut # your application library
-  )
+# Your changes here...
 
 # check_for_steady_state tests
 # Your changes here...
