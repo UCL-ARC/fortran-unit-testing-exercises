@@ -2,7 +2,6 @@ module game_of_life
     ! allow(C121)
     use mpi
     use comms, only : DomainDecomposition, DOWN, UP, LEFT, RIGHT, exchange_boundaries, get_local_grid_info
-    use animation, only : draw_board
     implicit none
     public
 

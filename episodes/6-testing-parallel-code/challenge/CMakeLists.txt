@@ -16,7 +16,6 @@ find_package(MPI COMPONENTS Fortran REQUIRED)
 
 # Define src files
 set(PROJ_SRC_FILES
-  "${PROJECT_SOURCE_DIR}/src/animation.f90"
   "${PROJECT_SOURCE_DIR}/src/cli.f90"
   "${PROJECT_SOURCE_DIR}/src/comms.f90"
   "${PROJECT_SOURCE_DIR}/src/game_of_life.f90"
