@@ -53,7 +53,7 @@ contains
 
         ! Create 2D Cartesian topology
         domainDecomp%dims = 0
-        call MPI_Dims_create(nprocs, 2, domainDecomp%dims, ierr)   ! Automatically split into num_ranks_x row num_ranks_y grid
+        call MPI_Dims_create(nprocs, 2, domainDecomp%dims, ierr)   ! Automatically split into num_ranks_row row num_ranks_col grid
         periods = [ .false., .false. ]
         call MPI_Cart_create(base_mpi_communicator, 2, domainDecomp%dims, periods, .true., domainDecomp%communicator, ierr)
         call MPI_Comm_rank(domainDecomp%communicator, rank, ierr)

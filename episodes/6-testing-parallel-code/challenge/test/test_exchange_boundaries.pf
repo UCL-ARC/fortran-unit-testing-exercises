@@ -11,7 +11,7 @@ module test_exchange_boundaries
     @testParameter(constructor=new_exchange_boundaries_test_params)
     type, extends(MPITestParameter) :: exchange_boundaries_test_params
         integer, dimension(:,:,:), allocatable :: input_board, expected_output_board
-        integer :: ny, nx
+        integer :: ncols, nrows
         integer, dimension(:,:), allocatable :: neighbours
     end type exchange_boundaries_test_params
 
@@ -35,15 +35,15 @@ contains
 
         integer, dimension(:,:,:), allocatable :: input_board, expected_output_board
         integer, dimension(:,:), allocatable :: neighbours
-        integer :: ny, nx
+        integer :: ncols, nrows
 
         max_num_ranks = 4
         allocate(params(max_num_ranks))
 
-        ny = 31
-        nx = 31
-        allocate(input_board(nx+2, ny+2, max_num_ranks))
-        allocate(expected_output_board(nx+2, ny+2, max_num_ranks))
+        ncols = 31
+        nrows = 31
+        allocate(input_board(nrows+2, ncols+2, max_num_ranks))
+        allocate(expected_output_board(nrows+2, ncols+2, max_num_ranks))
         allocate(neighbours(4, max_num_ranks))
 
         do num_ranks = 1, max_num_ranks
@@ -61,7 +61,7 @@ contains
                 if (num_ranks == 2 ) then
                     if (rank == 0) then
                         neighbours(UP, i) = 1 ! Top halo should be received from rank 1
-                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
                     else if (rank == 1) then
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
                         expected_output_board(:, 1, i) = neighbours(DOWN, i)
@@ -71,11 +71,11 @@ contains
                 else if (num_ranks == 3) then
                     if (rank == 0) then
                         neighbours(UP, i) = 1 ! Top halo should be received from rank 1
-                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
                     else if (rank == 1) then
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
                         neighbours(UP, i) = 2 ! Top halo should be received from rank 2
-                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
                         expected_output_board(:, 1, i) = neighbours(DOWN, i)
                     else if (rank == 2) then
                         neighbours(DOWN, i) = 1 ! Bottom halo should be received from rank 1
@@ -87,18 +87,18 @@ contains
                     if (rank == 0) then
                         neighbours(UP, i) = 2 ! Top halo should be received from rank 2
                         neighbours(RIGHT, i) = 1 ! Right halo should be received from rank 1
-                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
-                        expected_output_board(nx+2, :, i) = neighbours(RIGHT, i)
+                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
+                        expected_output_board(nrows+2, :, i) = neighbours(RIGHT, i)
                     else if (rank == 1) then
                         neighbours(LEFT, i) = 0 ! Left halo should be received from rank 0
                         neighbours(UP, i) = 3 ! Top halo should be received from rank 3
-                        expected_output_board(:, ny+2, i) = neighbours(UP, i)
+                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
                         expected_output_board(1, :, i) = neighbours(LEFT, i)
                     else if (rank == 2) then
                         neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
                         neighbours(RIGHT, i) = 3 ! Right halo should be received from rank 3
                         expected_output_board(:, 1, i) = neighbours(DOWN, i)
-                        expected_output_board(nx+2, :, i) = neighbours(RIGHT, i)
+                        expected_output_board(nrows+2, :, i) = neighbours(RIGHT, i)
                     else if (rank == 3) then
                         neighbours(DOWN, i) = 1 ! Bottom halo should be received from rank 1
                         neighbours(LEFT, i) = 2 ! Left halo should be received from rank 2
@@ -108,7 +108,7 @@ contains
 
                 end if
             end do
-            params(num_ranks) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ny, nx, neighbours)
+            params(num_ranks) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ncols, nrows, neighbours)
         end do
     end function getParameters
 
@@ -135,15 +135,15 @@ contains
         allocate(actual_board(size(this%params%input_board, 1), size(this%params%input_board, 2)))
         actual_board = this%params%input_board(:,:,rank_index)
 
-        call exchange_boundaries(actual_board, this%params%ny, this%params%nx, domainDecomp)
+        call exchange_boundaries(actual_board, this%params%ncols, this%params%nrows, domainDecomp)
 
-        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,2:this%params%ny+1,rank_index), actual_board(2:this%params%nx+1,2:this%params%ny+1), "Unexpected centre of board")
+        @assertEqual(this%params%expected_output_board(2:this%params%nrows+1,2:this%params%ncols+1,rank_index), actual_board(2:this%params%nrows+1,2:this%params%ncols+1), "Unexpected centre of board")
 
         ! For simplicity, do not check corners as these cannot be 100% known at this point due to timings of MPI messages
-        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,1,rank_index), actual_board(2:this%params%nx+1,1), "Unexpected bottom halo")
-        @assertEqual(this%params%expected_output_board(2:this%params%nx+1,this%params%ny+2,rank_index), actual_board(2:this%params%nx+1,this%params%ny+2), "Unexpected top halo")
-        @assertEqual(this%params%expected_output_board(1,2:this%params%ny+1,rank_index), actual_board(1,2:this%params%ny+1), "Unexpected left halo")
-        @assertEqual(this%params%expected_output_board(this%params%nx+2,2:this%params%ny+1,rank_index), actual_board(this%params%nx+2,2:this%params%ny+1), "Unexpected right halo")
+        @assertEqual(this%params%expected_output_board(2:this%params%nrows+1,1,rank_index), actual_board(2:this%params%nrows+1,1), "Unexpected bottom halo")
+        @assertEqual(this%params%expected_output_board(2:this%params%nrows+1,this%params%ncols+2,rank_index), actual_board(2:this%params%nrows+1,this%params%ncols+2), "Unexpected top halo")
+        @assertEqual(this%params%expected_output_board(1,2:this%params%ncols+1,rank_index), actual_board(1,2:this%params%ncols+1), "Unexpected left halo")
+        @assertEqual(this%params%expected_output_board(this%params%nrows+2,2:this%params%ncols+1,rank_index), actual_board(this%params%nrows+2,2:this%params%ncols+1), "Unexpected right halo")
 
         deallocate(actual_board)
     end subroutine TestExchangeBoundaries
@@ -152,9 +152,9 @@ contains
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    function new_exchange_boundaries_test_params(input_board, expected_output_board, ny, nx, neighbours) result(new_params)
+    function new_exchange_boundaries_test_params(input_board, expected_output_board, ncols, nrows, neighbours) result(new_params)
         integer, dimension(:,:,:), allocatable, intent(in) :: input_board, expected_output_board
-        integer, intent(in) :: ny, nx
+        integer, intent(in) :: ncols, nrows
         integer, dimension(:,:), allocatable, intent(in) :: neighbours
 
         type(exchange_boundaries_test_params) :: new_params
@@ -166,8 +166,8 @@ contains
 
         new_params%input_board = input_board
         new_params%expected_output_board = expected_output_board
-        new_params%ny = ny
-        new_params%nx = nx
+        new_params%ncols = ncols
+        new_params%nrows = nrows
         new_params%neighbours = neighbours
 
     end function new_exchange_boundaries_test_params

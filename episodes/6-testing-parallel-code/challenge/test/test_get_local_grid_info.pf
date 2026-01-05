@@ -10,15 +10,15 @@ module test_get_local_grid_info
     !> Type to bundle inputs and expected outputs of game_of_life::get_local_grid_info
     @testParameter(constructor=new_get_local_grid_info_test_params)
     type, extends(MPITestParameter) :: get_local_grid_info_test_params
-        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), &
-                                local_ny(:), local_nx(:)
+        integer, allocatable :: ncols_per_rank(:), nrows_per_rank(:), coords(:,:), neighbours(:,:),col_start(:),row_start(:), &
+                                local_ncols(:), local_nrows(:)
     end type get_local_grid_info_test_params
 
     !> Type to define a single get_local_grid_info test case
     @TestCase(testParameters={getParameters()}, constructor=newTest)
     type, extends(MPITestCase) :: get_local_grid_info_test_case
         type(get_local_grid_info_test_params) :: params
-        integer :: global_ny, global_nx
+        integer :: global_ncols, global_nrows
         type(DomainDecomposition) :: domainDecomp
     contains
         procedure :: setUp
@@ -30,14 +30,14 @@ contains
     ! State setup (Given)
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    !> Setup the variables shared by each rank - global_ny/x, the cartesian communicator and rank dimensions.
+    !> Setup the variables shared by each rank - global_ncols, the cartesian communicator and rank dimensions.
     subroutine setUp(this)
         class(get_local_grid_info_test_case), intent(inout) :: this
 
         integer :: ierr
 
-        this%global_ny = 31
-        this%global_nx = 31
+        this%global_ncols = 31
+        this%global_nrows = 31
 
         this%domainDecomp%dims = 0
         call MPI_Dims_create(this%getNumProcesses(), 2, this%domainDecomp%dims, ierr)
@@ -54,20 +54,20 @@ contains
         type(get_local_grid_info_test_params), allocatable :: params(:)
 
         integer :: max_num_ranks, num_ranks, rank, i
-        integer, allocatable :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), &
-                                local_ny(:), local_nx(:)
+        integer, allocatable :: ncols_per_rank(:), nrows_per_rank(:), coords(:,:), neighbours(:,:),col_start(:),row_start(:), &
+                                local_ncols(:), local_nrows(:)
 
         max_num_ranks = 4
         allocate(params(max_num_ranks))
 
-        allocate(ny_per_rank(max_num_ranks))
-        allocate(nx_per_rank(max_num_ranks))
+        allocate(ncols_per_rank(max_num_ranks))
+        allocate(nrows_per_rank(max_num_ranks))
         allocate(coords(2,max_num_ranks))
         allocate(neighbours(4,max_num_ranks))
-        allocate(y_start(max_num_ranks))
-        allocate(x_start(max_num_ranks))
-        allocate(local_ny(max_num_ranks))
-        allocate(local_nx(max_num_ranks))
+        allocate(col_start(max_num_ranks))
+        allocate(row_start(max_num_ranks))
+        allocate(local_ncols(max_num_ranks))
+        allocate(local_nrows(max_num_ranks))
 
         do num_ranks = 1, max_num_ranks
             ! Initialise neighbours to catch any mistakes in parameter setup
@@ -78,98 +78,98 @@ contains
 
                 ! Define expected outputs for 1 rank
                 if (num_ranks == 1) then
-                    ny_per_rank(i) = 31
-                    nx_per_rank(i) = 31
+                    ncols_per_rank(i) = 31
+                    nrows_per_rank(i) = 31
                     coords(:,i) = [0,0]
-                    y_start(i) = 1
-                    x_start(i) = 1
-                    local_ny(i) = 31
-                    local_nx(i) = 31
+                   col_start(i) = 1
+                   row_start(i) = 1
+                    local_ncols(i) = 31
+                    local_nrows(i) = 31
 
                 ! Define expected outputs for 2 ranks
                 else if (num_ranks == 2) then
-                    ny_per_rank(i) = 15
-                    nx_per_rank(i) = 31
-                    x_start(i) = 1
-                    local_nx(i) = 31
+                    ncols_per_rank(i) = 15
+                    nrows_per_rank(i) = 31
+                   row_start(i) = 1
+                    local_nrows(i) = 31
                     if (rank == 0) then
                         coords(:,i) = [0,0]
                         neighbours(UP,i) = 1
-                        y_start(i) = 1
-                        local_ny(i) = 15
+                       col_start(i) = 1
+                        local_ncols(i) = 15
                     else if (rank == 1) then
                         coords(:,i) = [1,0]
                         neighbours(DOWN,i) = 0
-                        y_start(i) = 16
-                        local_ny(i) = 16
+                       col_start(i) = 16
+                        local_ncols(i) = 16
                     end if
 
                 ! Define expected outputs for 3 ranks
                 else if (num_ranks == 3) then
-                    ny_per_rank(:) = 10
-                    nx_per_rank(:) = 31
-                    x_start(:) = 1
-                    local_nx(:) = 31
+                    ncols_per_rank(:) = 10
+                    nrows_per_rank(:) = 31
+                   row_start(:) = 1
+                    local_nrows(:) = 31
                     if (rank == 0) then
                         coords(:,i) = [0,0]
                         neighbours(UP,i) = 1
-                        y_start(i) = 1
-                        local_ny(i) = 10
+                       col_start(i) = 1
+                        local_ncols(i) = 10
                     else if (rank == 1) then
                         coords(:,i) = [1,0]
                         neighbours(DOWN,i) = 0
                         neighbours(UP,i) = 2
-                        y_start(i) = 11
-                        local_ny(i) = 10
+                       col_start(i) = 11
+                        local_ncols(i) = 10
                     else if (rank == 2) then
                         coords(:,i) = [2,0]
                         neighbours(DOWN,i) = 1
-                        y_start(i) = 21
-                        local_ny(i) = 11
+                       col_start(i) = 21
+                        local_ncols(i) = 11
                     end if
 
                 ! Define expected outputs for 4 ranks
                 else if (num_ranks == 4) then
-                    ny_per_rank(i) = 15
-                    nx_per_rank(i) = 15
+                    ncols_per_rank(i) = 15
+                    nrows_per_rank(i) = 15
                     if (rank == 0) then
                         coords(:,i) = [0,0]
                         neighbours(UP,i) = 2
                         neighbours(RIGHT,i) = 1
-                        y_start(i) = 1
-                        x_start(i) = 1
-                        local_ny(i) = 15
-                        local_nx(i) = 15
+                       col_start(i) = 1
+                       row_start(i) = 1
+                        local_ncols(i) = 15
+                        local_nrows(i) = 15
                     else if (rank == 1) then
                         coords(:,i) = [0,1]
                         neighbours(LEFT,i) = 0
                         neighbours(UP,i) = 3
-                        y_start(i) = 1
-                        x_start(i) = 16
-                        local_ny(i) = 15
-                        local_nx(i) = 16
+                       col_start(i) = 1
+                       row_start(i) = 16
+                        local_ncols(i) = 15
+                        local_nrows(i) = 16
                     else if (rank == 2) then
                         coords(:,i) = [1,0]
                         neighbours(DOWN,i) = 0
                         neighbours(RIGHT,i) = 3
-                        y_start(i) = 16
-                        x_start(i) = 1
-                        local_ny(i) = 16
-                        local_nx(i) = 15
+                       col_start(i) = 16
+                       row_start(i) = 1
+                        local_ncols(i) = 16
+                        local_nrows(i) = 15
                     else if (rank == 3) then
                         coords(:,i) = [1,1]
                         neighbours(DOWN,i) = 1
                         neighbours(LEFT,i) = 2
-                        y_start(i) = 16
-                        x_start(i) = 16
-                        local_ny(i) = 16
-                        local_nx(i) = 16
+                       col_start(i) = 16
+                       row_start(i) = 16
+                        local_ncols(i) = 16
+                        local_nrows(i) = 16
                     end if
 
                 end if
             end do
             params(num_ranks) = get_local_grid_info_test_params( &
-                num_ranks, ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, local_nx &
+                num_ranks, ncols_per_rank, nrows_per_rank, coords, neighbours,col_start,row_start, local_ncols, local_nrows &
             )
         end do
     end function getParameters
@@ -183,54 +183,54 @@ contains
     subroutine TestGetLocalGridInfo(this)
         class(get_local_grid_info_test_case), intent(inout) :: this
 
-        integer :: ny_per_rank, nx_per_rank, coords(2), y_start, x_start, local_ny, local_nx, ierr
+        integer :: ncols_per_rank, nrows_per_rank, coords(2),col_start,row_start, local_ncols, local_nrows, ierr
 
         integer :: rank, rank_index
 
         rank = this%getProcessRank()
         rank_index = rank + 1
 
-        call get_local_grid_info(this%domainDecomp, rank, this%global_nx, this%global_ny, &
-            nx_per_rank, ny_per_rank, coords, x_start, y_start, local_nx, local_ny)
+        call get_local_grid_info(this%domainDecomp, rank, this%global_nrows, this%global_ncols, &
+            nrows_per_rank, ncols_per_rank, coords,row_start,col_start, local_nrows, local_ncols)
 
-        @assertEqual(this%params%ny_per_rank(rank_index), ny_per_rank, "Unexpected value for ny_per_rank")
-        @assertEqual(this%params%nx_per_rank(rank_index), nx_per_rank, "Unexpected value for nx_per_rank")
+        @assertEqual(this%params%ncols_per_rank(rank_index), ncols_per_rank, "Unexpected value for ncols_per_rank")
+        @assertEqual(this%params%nrows_per_rank(rank_index), nrows_per_rank, "Unexpected value for nrows_per_rank")
         @assertEqual(this%params%coords(:,rank_index), coords, "Unexpected value for coords")
         @assertEqual(this%params%neighbours(:,rank_index), this%domainDecomp%neighbours, "Unexpected value for neighbours")
-        @assertEqual(this%params%y_start(rank_index), y_start, "Unexpected value for y_start")
-        @assertEqual(this%params%x_start(rank_index), x_start, "Unexpected value for x_start")
-        @assertEqual(this%params%local_ny(rank_index), local_ny, "Unexpected value for local_ny")
-        @assertEqual(this%params%local_nx(rank_index), local_nx, "Unexpected value for local_nx")
+        @assertEqual(this%params%col_start(rank_index),col_start, "Unexpected value forcol_start")
+        @assertEqual(this%params%row_start(rank_index),row_start, "Unexpected value forrow_start")
+        @assertEqual(this%params%local_ncols(rank_index), local_ncols, "Unexpected value for local_ncols")
+        @assertEqual(this%params%local_nrows(rank_index), local_nrows, "Unexpected value for local_nrows")
     end subroutine TestGetLocalGridInfo
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    function new_get_local_grid_info_test_params(ny_per_rank, nx_per_rank, coords, neighbours, y_start, x_start, local_ny, &
-                                                 local_nx) result(new_params)
-        integer, allocatable, intent(in) :: ny_per_rank(:), nx_per_rank(:), coords(:,:), neighbours(:,:), y_start(:), x_start(:), &
-                                            local_ny(:), local_nx(:)
+    function new_get_local_grid_info_test_params(ncols_per_rank, nrows_per_rank, coords, neighbours,col_start,row_start, local_ncols, &
+                                                 local_nrows) result(new_params)
+        integer, allocatable, intent(in) :: ncols_per_rank(:), nrows_per_rank(:), coords(:,:), neighbours(:,:),col_start(:),row_start(:), &
+                                            local_ncols(:), local_nrows(:)
 
         type(get_local_grid_info_test_params) new_params
 
-        allocate(new_params%ny_per_rank(size(ny_per_rank, 1)))
-        allocate(new_params%nx_per_rank(size(nx_per_rank, 1)))
+        allocate(new_params%ncols_per_rank(size(ncols_per_rank, 1)))
+        allocate(new_params%nrows_per_rank(size(nrows_per_rank, 1)))
         allocate(new_params%coords(size(coords, 1), size(coords, 2)))
         allocate(new_params%neighbours(size(neighbours, 1), size(neighbours, 2)))
-        allocate(new_params%y_start(size(y_start, 1)))
-        allocate(new_params%x_start(size(x_start, 1)))
-        allocate(new_params%local_ny(size(local_ny, 1)))
-        allocate(new_params%local_nx(size(local_nx, 1)))
+        allocate(new_params%col_start(size(col_start, 1)))
+        allocate(new_params%row_start(size(row_start, 1)))
+        allocate(new_params%local_ncols(size(local_ncols, 1)))
+        allocate(new_params%local_nrows(size(local_nrows, 1)))
 
-        new_params%ny_per_rank = ny_per_rank
-        new_params%nx_per_rank = nx_per_rank
+        new_params%ncols_per_rank = ncols_per_rank
+        new_params%nrows_per_rank = nrows_per_rank
         new_params%coords = coords
         new_params%neighbours = neighbours
-        new_params%y_start = y_start
-        new_params%x_start = x_start
-        new_params%local_ny = local_ny
-        new_params%local_nx = local_nx
+        new_params%col_start =col_start
+        new_params%row_start =row_start
+        new_params%local_ncols = local_ncols
+        new_params%local_nrows = local_nrows
 
     end function new_get_local_grid_info_test_params
 
