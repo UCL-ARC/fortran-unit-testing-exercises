@@ -39,6 +39,7 @@ pfunit_tests: $(SRC_OBJS)
 	@echo "Building pFUnit test suite..."
 	@$(MAKE) -C $(PFUNIT_TEST_DIR) tests
 
+# Uncomment here...
 tests: standard_fortran_tests #| pfunit_tests
 
 #------------------------------------#
@@ -49,6 +50,7 @@ clean_pfunit:
 	$(MAKE) -C $(PFUNIT_TEST_DIR) clean
 
 # Define target for cleaning all built objects
+# Uncomment here...
 clean: #clean_pfunit
 	rm -rf build
 

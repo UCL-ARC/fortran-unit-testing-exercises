@@ -36,6 +36,8 @@ as indicated in `test_temp_conversions.f90`.
 
 ### Part 2 - Convert tests to use pFUnit
 
+#### Writing the test
+
 Convert your tests from [Part 1](#part-1---test-with-standard-fortran), to use
 [pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit).
 
@@ -48,16 +50,31 @@ the pFUnit test you must write.
 > to pFUnit. If your version of test_temp_conversions.f90, produced in Part 1, is significantly
 > different, You may prefer to use a different structure to the one provided in the template.
 
-To build and run your pFUnit test(s) you must add the pFUnit lib to the `CMAKE_PREFIX_PATH`
-when building via the following command.
+#### Building the test
 
-```bash
-cmake -B build -DCMAKE_PREFIX_PATH=/path/to/pfunit/install
-cmake --build build
-ctest --test-dir build --output-on-failure
-```
+- **i. Build your new test(s) with Make.** A top level [Makefile](./Makefile) has already been provided to build the
+  src objects and the standard Fortran tests, via [test/standard_fortran/Makefile](./test/standard_fortran/Makefile).
+  Add a new Makefile to the [test/pfunit/](./test/pfunit/) dir which will build your new pFUnit test(s). Note that
+  the top level [Makefile](./Makefile) is already setup to work with this new Makefile (look for lines which look
+  like **"# Uncomment here..."**). Once you have added this Makefile, you should be able to build and run your tests
+  via the following command.
 
-If your test does not get built, ensure you have added it to the list of tests (`test_src`)
-in [test/pfunit/CMakeLists.txt](./test/pfunit/CMakeLists.txt)
+  ```sh
+  make tests
+  ./test/pfunit/tests
+  ```
+
+- **ii. Build your new test(s) with CMake.** A top level [CMakeLists.txt](./CMakeLists.txt) has already been provided to
+  build the src objects and the standard Fortran tests, via
+  [test/standard_fortran/CMakeLists.txt](./test/standard_fortran/CMakeLists.txt). Add a new CMakeLists.txt to the
+  [test/pfunit/](./test/pfunit/) dir which will build your new pFUnit test(s). Note that the top level
+  [CMakeLists.txt](./CMakeLists.txt) is already setup to work with this new CMakeLists.txt, all you need to do is
+  add the pFUnit lib to the `CMAKE_PREFIX_PATH` when building i.e...
+
+  ```bash
+  cmake -B build -DCMAKE_PREFIX_PATH=/path/to/pfunit/install
+  cmake --build build
+  ctest --test-dir build --output-on-failure
+  ```
 
 > If you are using the devcontainer, there is an installation of pFUnit at /home/vscode/pfunit/build/installed
