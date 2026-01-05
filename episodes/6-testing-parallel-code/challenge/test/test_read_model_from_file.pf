@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::read_model_from_file
 module test_read_model_from_file
-    use game_of_life_mod, only : read_model_from_file
+    use io, only : read_model_from_file
     ! allow(C121)
     use funit
 
@@ -13,10 +13,6 @@ module test_read_model_from_file
     type, extends(AbstractTestParameter) :: read_model_from_file_test_params
         !> The input file name to be read
         character(len=:), allocatable :: input_fname
-        !> The maximum number of rows allowed in the board
-        integer :: max_nrow
-        !> The maximum number of columns allowed in the board
-        integer :: max_ncol
         !> The expected board after reading the file
         integer, dimension(:,:), allocatable :: expected_board
         !> The expected error message if the model is invalid
@@ -55,32 +51,32 @@ contains
         allocate(character(len=80) :: test_io_error_message)
 
         params(1) = read_model_from_file_test_params( &
-            "test/models/zeros_31_31.dat", 100, 100, test_board, test_io_error_message, .true. &
+            "test/models/zeros_31_31.dat", test_board, test_io_error_message, .true. &
         )
 
-        test_io_error_message = "nx must be a positive integer less than     10 found     31"
+        test_io_error_message = "nrows must be a positive integer less than    100 found   1000"
         params(2) = read_model_from_file_test_params( &
-            "test/models/zeros_31_31.dat", 10, 100, test_board, test_io_error_message, .false. &
+            "test/models/empty_1000_31.dat", test_board, test_io_error_message, .false. &
         )
 
-        test_io_error_message = "ny must be a positive integer less than     10 found     31"
+        test_io_error_message = "ncols must be a positive integer less than    100 found   1000"
         params(3) = read_model_from_file_test_params( &
-            "test/models/zeros_31_31.dat", 100, 10, test_board, test_io_error_message, .false. &
+            "test/models/empty_31_1000.dat", test_board, test_io_error_message, .false. &
         )
 
-        test_io_error_message = "nx must be a positive integer less than    100 found    -10"
+        test_io_error_message = "nrows must be a positive integer less than    100 found    -10"
         params(4) = read_model_from_file_test_params( &
-            "test/models/empty_-10_10.dat", 100, 100, test_board, test_io_error_message, .false. &
+            "test/models/empty_-10_31.dat", test_board, test_io_error_message, .false. &
         )
 
-        test_io_error_message = "ny must be a positive integer less than    100 found    -10"
+        test_io_error_message = "ncols must be a positive integer less than    100 found    -10"
         params(5) = read_model_from_file_test_params( &
-            "test/models/empty_10_-10.dat", 100, 100, test_board, test_io_error_message, .false. &
+            "test/models/empty_31_-10.dat", test_board, test_io_error_message, .false. &
         )
 
         test_io_error_message = " *** Error when opening does/not/exist.dat"
         params(6) = read_model_from_file_test_params( &
-            "does/not/exist.dat", 100, 100, test_board, test_io_error_message, .false. &
+            "does/not/exist.dat", test_board, test_io_error_message, .false. &
         )
     end function getParameters
 
@@ -97,8 +93,7 @@ contains
         integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
-        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, &
-                                  actual_io_error_message)
+        call read_model_from_file(this%params%input_fname, actual_board, actual_io_error_message)
 
         if (this%params%model_is_valid) then
             call VerifyCheckReadModelFromFileValidModel(this%params, actual_board, actual_io_error_message)
@@ -159,11 +154,11 @@ contains
         character(len=80) :: buffer
 
         if (this%model_is_valid) then
-            write(buffer,'("Valid model",a,i3,i3)') &
-                this%input_fname, this%max_nrow, this%max_ncol
+            write(buffer,'("Valid model",a)') &
+                this%input_fname
         else
-            write(buffer,'("Invalid model",a,i3,i3)') &
-                this%input_fname, this%max_nrow, this%max_ncol
+            write(buffer,'("Invalid model",a)') &
+                this%input_fname
         end if
         string = trim(buffer)
 

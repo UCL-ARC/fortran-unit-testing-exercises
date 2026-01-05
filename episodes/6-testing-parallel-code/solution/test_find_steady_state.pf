@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::find_steady_state
 module test_find_steady_state
-    use game_of_life_mod, only : find_steady_state
+    use game_of_life, only : find_steady_state
     ! allow(C121)
     use pfunit
     implicit none

@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::find_steady_state
 module test_find_steady_state
-    use game_of_life_mod, only : find_steady_state
+    use game_of_life, only : find_steady_state
     ! allow(C121)
     use funit
     implicit none
@@ -39,6 +39,7 @@ contains
         !> The array of test parameters
         type(find_steady_state_test_params), allocatable :: params(:)
 
+        integer :: i, max_num_ranks
         integer, dimension(:,:), allocatable :: board
 
         !  Steady state should be reached after 17 iterations
@@ -50,7 +51,7 @@ contains
         !  11 | 0  1  0  1  0
         !  12 | 0  0  1  0  0
         !  13 | 0  0  0  0  0
-        allocate(board(31,31))
+        allocate(board(31, 31))
         board = 0
         board(9, 9:11) = [0,1,0]
         board(10,9:11) = [1,1,1]
@@ -74,13 +75,12 @@ contains
         logical :: actual_steady_state
         integer :: actual_generation_number
 
-        call find_steady_state(.false., this%params%input_board, actual_steady_state, actual_generation_number)
+        call find_steady_state(actual_steady_state, actual_generation_number, this%params%input_board)
 
-        ! Assert the generation_number is as expected
         @assertEqual(this%params%expected_generation_number, actual_generation_number, "Unexpected generation_number")
 
-        ! Assert the steady_state is as expected
         @assertTrue(this%params%expected_steady_state .eqv. actual_steady_state, "Unexpected steady_state value")
+
     end subroutine TestFindSteadyState
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

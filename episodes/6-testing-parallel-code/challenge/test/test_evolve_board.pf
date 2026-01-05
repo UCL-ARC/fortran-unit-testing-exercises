@@ -1,5 +1,5 @@
 module test_evolve_board
-    use game_of_life_mod, only : evolve_board
+    use game_of_life, only : evolve_board
     ! allow(C121)
     use funit
     implicit none

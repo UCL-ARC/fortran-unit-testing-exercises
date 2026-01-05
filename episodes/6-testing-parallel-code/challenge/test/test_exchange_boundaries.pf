@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::exchange_boundaries
 module test_exchange_boundaries
-    use game_of_life_mod, only : exchange_boundaries, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    use comms, only : exchange_boundaries, DomainDecomposition, DOWN, LEFT, UP, RIGHT
     ! allow(C121)
     use pfunit
     implicit none

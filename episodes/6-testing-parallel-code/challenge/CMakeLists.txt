@@ -15,7 +15,14 @@ find_package(OpenMP)
 find_package(MPI COMPONENTS Fortran REQUIRED)
 
 # Define src files
-file(GLOB PROJ_SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.f90")
+set(PROJ_SRC_FILES
+  "${PROJECT_SOURCE_DIR}/src/animation.f90"
+  "${PROJECT_SOURCE_DIR}/src/cli.f90"
+  "${PROJECT_SOURCE_DIR}/src/comms.f90"
+  "${PROJECT_SOURCE_DIR}/src/game_of_life.f90"
+  "${PROJECT_SOURCE_DIR}/src/io.f90"
+  "${PROJECT_SOURCE_DIR}/src/main.f90"
+)
 
 # Build src executables
 add_executable("${PROJECT_NAME}" "${PROJ_SRC_FILES}")

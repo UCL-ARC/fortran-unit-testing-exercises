@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::get_local_grid_info
 module test_get_local_grid_info
-    use game_of_life_mod, only : get_local_grid_info, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    use comms, only : get_local_grid_info, DomainDecomposition, DOWN, LEFT, UP, RIGHT
     ! allow(C121)
     use pfunit
     implicit none
@@ -190,8 +190,8 @@ contains
         rank = this%getProcessRank()
         rank_index = rank + 1
 
-        call get_local_grid_info(this%domainDecomp, rank, this%global_ny, this%global_nx, &
-            ny_per_rank, nx_per_rank, coords, y_start, x_start, local_ny, local_nx)
+        call get_local_grid_info(this%domainDecomp, rank, this%global_nx, this%global_ny, &
+            nx_per_rank, ny_per_rank, coords, x_start, y_start, local_nx, local_ny)
 
         @assertEqual(this%params%ny_per_rank(rank_index), ny_per_rank, "Unexpected value for ny_per_rank")
         @assertEqual(this%params%nx_per_rank(rank_index), nx_per_rank, "Unexpected value for nx_per_rank")
