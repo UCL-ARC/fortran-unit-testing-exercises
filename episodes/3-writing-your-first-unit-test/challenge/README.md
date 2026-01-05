@@ -52,7 +52,7 @@ the pFUnit test you must write.
 
 #### Building the test
 
-- **i. Build your new test(s) with Make.** A top level [Makefile](./Makefile) has already been provided to build the
+- **i. Build your new test(s) with Make** - A top level [Makefile](./Makefile) has already been provided to build the
   src objects and the standard Fortran tests, via [test/standard_fortran/Makefile](./test/standard_fortran/Makefile).
   Add a new Makefile to the [test/pfunit/](./test/pfunit/) dir which will build your new pFUnit test(s). Note that
   the top level [Makefile](./Makefile) is already setup to work with this new Makefile (look for lines which look
@@ -64,7 +64,7 @@ the pFUnit test you must write.
   ./test/pfunit/tests
   ```
 
-- **ii. Build your new test(s) with CMake.** A top level [CMakeLists.txt](./CMakeLists.txt) has already been provided to
+- **ii. Build your new test(s) with CMake** - A top level [CMakeLists.txt](./CMakeLists.txt) has already been provided to
   build the src objects and the standard Fortran tests, via
   [test/standard_fortran/CMakeLists.txt](./test/standard_fortran/CMakeLists.txt). Add a new CMakeLists.txt to the
   [test/pfunit/](./test/pfunit/) dir which will build your new pFUnit test(s). Note that the top level

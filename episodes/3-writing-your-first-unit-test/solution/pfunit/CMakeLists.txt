@@ -1,7 +1,5 @@
 message(STATUS "Using pFUnit")
 
-set(TEST_DIR "${PROJECT_SOURCE_DIR}/test/pfunit")
-
 # Create library for src code
 add_library (sut STATIC ${PROJ_SRC_FILES})
 
