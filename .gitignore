@@ -3,5 +3,5 @@
 **.mod
 **build
 **build-cmake
-pfunit
+./pfunit
 .vscode
