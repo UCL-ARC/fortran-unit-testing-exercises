@@ -1,6 +1,6 @@
 # Top level variables
 ROOT_DIR = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-FC = gfortran
+FC ?= gfortran
 
 #------------------------------------#
 #      Targets for compiling src     #

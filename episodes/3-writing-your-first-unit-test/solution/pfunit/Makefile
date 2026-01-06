@@ -1,8 +1,12 @@
-PFUNIT_SOURCE_DIR = $(ROOT_DIR)/../../../pfunit
-PFUNIT_INCLUDE_DIR = $(PFUNIT_SOURCE_DIR)/build/installed/PFUNIT-4.12/include
-include $(PFUNIT_INCLUDE_DIR)/PFUNIT.mk
+PFUNIT_SOURCE_DIR ?= $(ROOT_DIR)/../../../pfunit
+PFUNIT_VERSION ?= 4.12
+PFUNIT_INCLUDE_DIR = $(PFUNIT_SOURCE_DIR)/build/installed/PFUNIT-$(PFUNIT_VERSION)/include
 
+# Don't try to include if we're cleaning as this doesn't depend on pFUnit
+ifneq ($(MAKECMDGOALS),clean)
+include $(PFUNIT_INCLUDE_DIR)/PFUNIT.mk
 TEST_FLAGS = -I$(BUILD_DIR) $(PFUNIT_EXTRA_FFLAGS)
+endif
 
 # Define variables to be picked up by make_pfunit_test
 tests_TESTS = \

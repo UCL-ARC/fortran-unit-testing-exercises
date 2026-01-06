@@ -11,6 +11,9 @@ RUN apt clean && rm -rf /var/lib/apt/lists/*
 # Create symlink to python3
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
+# Create symlink to python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
 # Allow MPI to oversubscribe
 ENV OMPI_MCA_rmaps_base_oversubscribe=true
 
