@@ -1,6 +1,4 @@
-PFUNIT_SOURCE_DIR ?= /home/vscode/pfunit
-PFUNIT_VERSION ?= 4.12
-PFUNIT_INCLUDE_DIR = $(PFUNIT_SOURCE_DIR)/build/installed/PFUNIT-$(PFUNIT_VERSION)/include
+PFUNIT_INCLUDE_DIR ?= /home/vscode/pfunit/build/installed/PFUNIT-4.12/include
 
 # Don't try to include if we're cleaning as this doesn't depend on pFUnit
 ifneq ($(MAKECMDGOALS),clean)

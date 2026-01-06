@@ -63,6 +63,15 @@ the pFUnit test you must write.
   make tests
   ./test/pfunit/tests
   ```
+  
+  If you are not using the devcontainer, you will likely need to specify the path to your pFUnit include dir. You can do
+  this by passing an environment variable like so.
+
+  ```sh
+  PFUNIT_INCLUDE_DIR=/path/to/pfunit/include make tests
+  ```
+
+  The Fortran compiler will default to **gfortran**. If you wish to use a different compiler, set the env var, **FC**.
 
 - **ii. Build your new test(s) with CMake** - A top level [CMakeLists.txt](./CMakeLists.txt) has already been provided to
   build the src objects and the standard Fortran tests, via
