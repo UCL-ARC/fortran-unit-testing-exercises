@@ -37,7 +37,7 @@ RUN make clean
 RUN rm -rf build-std
 
 # Build
-RUN FC=/usr/bin/f95 PFUNIT_SOURCE_DIR=/home/vscode/pfunit make tests
+RUN FC=/usr/bin/f95 make tests
 
 # Run pFUnit tests
 RUN ./test/pfunit/tests
