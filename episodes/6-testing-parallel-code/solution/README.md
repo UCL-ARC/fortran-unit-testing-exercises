@@ -16,11 +16,11 @@ In order to run this parallel solution with different numbers of MPI ranks via c
 with the following change.
 
 ```diff
---- a/episodes/5-testing-parallel-code/challenge/test/CMakeLists.txt
-+++ b/episodes/5-testing-parallel-code/challenge/test/CMakeLists.txt
-@@ -89,4 +89,5 @@ list(FILTER test_find_steady_state_src INCLUDE REGEX ".*test_find_steady_state.p
+--- a/episodes/6-testing-parallel-code/challenge/test/CMakeLists.txt
++++ b/episodes/6-testing-parallel-code/challenge/test/CMakeLists.txt
+@@ -62,4 +62,5 @@ add_pfunit_ctest (pfunit_exchange_boundaries_tests
  add_pfunit_ctest (pfunit_find_steady_state_tests
-   TEST_SOURCES ${test_find_steady_state_src}
+   TEST_SOURCES "${PROJECT_SOURCE_DIR}/test/test_find_steady_state.pf"
    LINK_LIBRARIES sut # your application library
 +  MAX_PES 8
    )
