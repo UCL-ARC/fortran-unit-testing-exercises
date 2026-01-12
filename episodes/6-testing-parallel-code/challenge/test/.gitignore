@@ -1,0 +1,5 @@
+*.mod
+*.o
+*.F90
+*.inc
+tests
