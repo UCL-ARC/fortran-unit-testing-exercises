@@ -8,7 +8,7 @@ module test_exchange_boundaries
     public
 
     !> Type to bundle inputs and expected outputs of game_of_life::exchange_boundaries
-    @testParameter(constructor=new_exchange_boundaries_test_params)
+    @testParameter
     type, extends(MPITestParameter) :: exchange_boundaries_test_params
         integer, dimension(:,:,:), allocatable :: input_board, expected_output_board
         integer :: ncols, nrows
@@ -151,26 +151,6 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    function new_exchange_boundaries_test_params(input_board, expected_output_board, ncols, nrows, neighbours) result(new_params)
-        integer, dimension(:,:,:), allocatable, intent(in) :: input_board, expected_output_board
-        integer, intent(in) :: ncols, nrows
-        integer, dimension(:,:), allocatable, intent(in) :: neighbours
-
-        type(exchange_boundaries_test_params) :: new_params
-
-        allocate(new_params%input_board(size(input_board, 1), size(input_board, 2), size(input_board, 3)))
-        allocate(new_params%expected_output_board(size(expected_output_board, 1), size(expected_output_board, 2), &
-                                                  size(expected_output_board, 3)))
-        allocate(new_params%neighbours(size(neighbours, 1), size(neighbours, 2)))
-
-        new_params%input_board = input_board
-        new_params%expected_output_board = expected_output_board
-        new_params%ncols = ncols
-        new_params%nrows = nrows
-        new_params%neighbours = neighbours
-
-    end function new_exchange_boundaries_test_params
 
     function newTest(testParameter) result(tst)
         type(exchange_boundaries_test_case) :: tst

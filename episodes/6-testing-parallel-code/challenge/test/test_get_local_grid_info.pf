@@ -8,7 +8,7 @@ module test_get_local_grid_info
     public
 
     !> Type to bundle inputs and expected outputs of game_of_life::get_local_grid_info
-    @testParameter(constructor=new_get_local_grid_info_test_params)
+    @testParameter
     type, extends(MPITestParameter) :: get_local_grid_info_test_params
         integer, allocatable :: ncols_per_rank(:), nrows_per_rank(:), coords(:,:), neighbours(:,:),col_start(:),row_start(:), &
                                 local_ncols(:), local_nrows(:)
@@ -206,33 +206,6 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! Constructors
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    function new_get_local_grid_info_test_params(ncols_per_rank, nrows_per_rank, coords, neighbours,col_start,row_start, local_ncols, &
-                                                 local_nrows) result(new_params)
-        integer, allocatable, intent(in) :: ncols_per_rank(:), nrows_per_rank(:), coords(:,:), neighbours(:,:),col_start(:),row_start(:), &
-                                            local_ncols(:), local_nrows(:)
-
-        type(get_local_grid_info_test_params) new_params
-
-        allocate(new_params%ncols_per_rank(size(ncols_per_rank, 1)))
-        allocate(new_params%nrows_per_rank(size(nrows_per_rank, 1)))
-        allocate(new_params%coords(size(coords, 1), size(coords, 2)))
-        allocate(new_params%neighbours(size(neighbours, 1), size(neighbours, 2)))
-        allocate(new_params%col_start(size(col_start, 1)))
-        allocate(new_params%row_start(size(row_start, 1)))
-        allocate(new_params%local_ncols(size(local_ncols, 1)))
-        allocate(new_params%local_nrows(size(local_nrows, 1)))
-
-        new_params%ncols_per_rank = ncols_per_rank
-        new_params%nrows_per_rank = nrows_per_rank
-        new_params%coords = coords
-        new_params%neighbours = neighbours
-        new_params%col_start =col_start
-        new_params%row_start =row_start
-        new_params%local_ncols = local_ncols
-        new_params%local_nrows = local_nrows
-
-    end function new_get_local_grid_info_test_params
 
     function newTest(testParameter) result(tst)
         type(get_local_grid_info_test_case) :: tst
