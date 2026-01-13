@@ -1,6 +1,6 @@
 # Top level variables
 ROOT_DIR = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-FC ?= mpif90
+FC := mpif90 -ffree-line-length-none
 
 #------------------------------------#
 #      Targets for compiling src     #

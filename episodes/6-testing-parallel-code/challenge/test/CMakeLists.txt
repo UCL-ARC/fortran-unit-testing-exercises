@@ -59,7 +59,4 @@ add_pfunit_ctest (pfunit_exchange_boundaries_tests
   )
 
 # find_steady_state tests
-add_pfunit_ctest (pfunit_find_steady_state_tests
-  TEST_SOURCES "${PROJECT_SOURCE_DIR}/test/test_find_steady_state.pf"
-  LINK_LIBRARIES sut # your application library
-  )
+# Your changes here...

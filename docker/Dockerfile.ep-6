@@ -6,15 +6,14 @@ WORKDIR /home/vscode/6-testing-parallel-code/challenge
 
 # Fix intentional bug in code
 RUN mv ../solution/test_find_steady_state.pf ./test/ && \
-    echo "set(test_find_steady_state_src \${test_srcs})\n\
-list(FILTER test_find_steady_state_src INCLUDE REGEX \".*test_find_steady_state.pf\")\n\
-\n\
-add_pfunit_ctest (pfunit_find_steady_state_tests\n\
-    TEST_SOURCES \${test_find_steady_state_src}\n\
+    echo "add_pfunit_ctest (pfunit_find_steady_state_tests\n\
+    TEST_SOURCES \"\${PROJECT_SOURCE_DIR}/test/test_find_steady_state.pf\"\n\
     LINK_LIBRARIES sut\n\
     MAX_PES 8\n\
     )\n\
-" >> test/CMakeLists.txt
+" >> test/CMakeLists.txt && \
+    sed -i -E 's/TEST_FLAGS = -I\$\(BUILD_DIR\) \$\(PFUNIT_EXTRA_FFLAGS\)/TEST_FLAGS = -I\$\(BUILD_DIR\) \$\(PFUNIT_EXTRA_FFLAGS\) -lpfunit/g' test/Makefile && \
+    sed -i -E 's/test_get_local_grid_info.pf/test_get_local_grid_info.pf \\\n  test_find_steady_state.pf/g' test/Makefile
 
 # build tests with cmake
 RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
@@ -22,3 +21,12 @@ RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed
 
 # test with ctest, allowing MPI to oversubscribe
 RUN ctest --test-dir build-cmake --output-on-failure
+
+# Remove any generated code
+RUN make clean
+
+# Build tests with make
+RUN make tests
+
+# Run make tests
+RUN mpirun -np 8 ./test/tests

@@ -1,4 +1,4 @@
-PFUNIT_INCLUDE_DIR ?= /home/vscode/pfunit/build/installed/PFUNIT-4.12/include
+PFUNIT_INCLUDE_DIR := /home/vscode/pfunit/build/installed/PFUNIT-4.12/include
 
 # Don't try to include if we're cleaning as this doesn't depend on pFUnit
 ifneq ($(MAKECMDGOALS),clean)
@@ -12,7 +12,6 @@ check:
 # Define variables to be picked up by make_pfunit_test
 tests_TESTS = \
   test_evolve_board.pf \
-  test_find_steady_state.pf \
   test_read_model_from_file.pf \
   test_check_for_steady_state.pf \
   test_exchange_boundaries.pf \
