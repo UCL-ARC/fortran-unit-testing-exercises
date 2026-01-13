@@ -35,3 +35,7 @@ There are some examples of parallel tests in [test_exchange_boundaries.pf](./tes
    i. Update the [test/Makefile](./test/Makefile) to allow building MPI enabled pFUnit tests and build your new test with make.
    ii. Make sure your test automatically runs across different numbers of ranks via ctest. You will need to make changes in
        [CMakeLists.txt](./CMakeLists.txt) as well as within the test itself.
+
+3. Add a new test for the function `comms.exchange_boundaries`. This will need to be an MPI enabled test. Due to the nature of
+   `comms.exchange_boundaries` different ranks should expect different results depending on its own rank and the total number of
+   ranks employed.

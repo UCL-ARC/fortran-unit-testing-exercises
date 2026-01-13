@@ -2,7 +2,8 @@
 
 ## Task 1
 
-> Re-write test_find_steady_state.pf so that it uses the pfunit library instead of funit.
+> Re-write test_find_steady_state.pf so that it uses the pfunit library instead of funit. We need to make sure that the subroutine
+> find_steady_state reaches steady state within the same number of generations as its serial version.
 
 A parallel solution is provided in the form of the file [test_find_steady_state.pf](./test_find_steady_state.pf). This file
 contains a pFUnit test module. To use this solution, replace the contents of the serial version of test_find_steady_state.pf with
@@ -28,3 +29,12 @@ add_pfunit_ctest (pfunit_find_steady_state_tests
   MAX_PES 8
 )
 ```
+
+## Task 3
+
+> Add a new test for the function `comms.exchange_boundaries`. This will need to be an MPI enabled test. Due to the nature of
+> `comms.exchange_boundaries` different ranks should expect different results depending on its own rank and the total number of
+> ranks employed.
+
+A completed test is provided in [test_exchange_boundaries.pf](./test_exchange_boundaries.pf). You will also need to make similar
+changes to those done for [Task 2](#task-2) in order to integrate your test with Make or CMake.

@@ -14,7 +14,6 @@ tests_TESTS = \
   test_evolve_board.pf \
   test_read_model_from_file.pf \
   test_check_for_steady_state.pf \
-  test_exchange_boundaries.pf \
   test_get_local_grid_info.pf
 tests_OTHER_SOURCES = $(filter-out $(BUILD_DIR)/main.o, $(SRC_OBJS))
 tests_OTHER_LIBRARIES = $(TEST_FLAGS)
