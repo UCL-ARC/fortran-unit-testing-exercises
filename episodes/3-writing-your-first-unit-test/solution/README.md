@@ -1,4 +1,4 @@
-# Writing your first unit test - Standard Fortran - Solution
+# Writing your first unit test - Solution
 
 ## Part 1 - Test with Standard Fortran
 

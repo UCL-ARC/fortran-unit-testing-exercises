@@ -1,8 +1,9 @@
-# Writing your first unit test - Standard Fortran
+# Writing your first unit test
 
 This exercise aims to teach the principles of unit testing and how to write a good
-unit test. The tests within this challenge are intended to be written using standard
-Fortran without the use of a testing framework, in order to teach the principles alone.
+unit test. Some of the tests within this challenge are intended to be written using standard
+Fortran without the use of a testing framework, in order to teach the principles alone
+before covering specific syntax.
 
 ## The src code
 
