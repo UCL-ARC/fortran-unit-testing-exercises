@@ -50,13 +50,9 @@ add_pfunit_ctest (pfunit_get_local_grid_info_tests
   LINK_LIBRARIES sut # your application library
   MAX_PES 4
   )
+  
+# find_steady_state tests
+# Your changes here...
 
 # exchange_boundaries tests
-add_pfunit_ctest (pfunit_exchange_boundaries_tests
-  TEST_SOURCES "${PROJECT_SOURCE_DIR}/test/test_exchange_boundaries.pf"
-  LINK_LIBRARIES sut # your application library
-  MAX_PES 4
-  )
-
-# find_steady_state tests
 # Your changes here...

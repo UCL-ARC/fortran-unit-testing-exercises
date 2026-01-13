@@ -8,7 +8,7 @@ processes.
 Take a look at the [src](./src) code provided. This is an MPI parallelized implementation of
 [Conway's game of life](http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). The program reads in a data file which represents
 the starting state of the system. The system is then evolved. In this implementation, there is no animation printed to the terminal.
-Only the final result is printed (i.e. is steady state was found and in how many generations). To build and run the src code use the
+Only the final result is printed (i.e. if steady state was found and in how many generations). To build and run the src code use the
 following commands from within this dir.
 
 ```bash
