@@ -4,7 +4,7 @@ This exercise aims to highlight aspects that define a good unit test.
 
 ## Tasks
 
-Take a look at the [src](./src/maths.f90) and [test](./test/maths_test.f90) code provided.
+Take a look at the [src](./src/maths.f90) and [test](./test/test_maths.f90) code provided.
 
 1. Can you identify the aspects of this test which make it a bad unit test?
 2. What changes would improve this unit test?
