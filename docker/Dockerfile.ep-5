@@ -1,8 +1,8 @@
 FROM ghcr.io/ucl-arc/fortran-unit-testing-exercises:main
 
-COPY --chown=vscode episodes/5-debugging-a-broken-test /home/vscode/5-debugging-a-broken-test
+COPY --chown=vscode episodes/5-debugging-a-failing-test /home/vscode/5-debugging-a-failing-test
 
-WORKDIR /home/vscode/5-debugging-a-broken-test/challenge
+WORKDIR /home/vscode/5-debugging-a-failing-test/challenge
 
 # Fix intentional bug in code
 RUN sed -i -E 's/.*matrix\(row, col\) = temp_matrix\(row, col\)/matrix\(col, row\) = temp_matrix\(row, col\)/g' src/matrix_transforms.f90
