@@ -81,8 +81,8 @@ symmetric matrix and is equal to its own transpose, thus the order of the indice
 We can fix the src with the following change
 
 ```diff
---- a/episodes/4-debugging-a-broken-test/challenge/src/matrix_transforms.f90
-+++ b/episodes/4-debugging-a-broken-test/challenge/src/matrix_transforms.f90
+--- a/episodes/4-debugging-a-failing-test/challenge/src/matrix_transforms.f90
++++ b/episodes/4-debugging-a-failing-test/challenge/src/matrix_transforms.f90
 @@ -22,7 +22,7 @@ contains
  
          do row = 1, nrow
