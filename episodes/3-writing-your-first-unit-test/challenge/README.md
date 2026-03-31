@@ -32,7 +32,7 @@ message that will be printed to the terminal in the event that `passed` is `.fal
 the test subroutine is written it should be called within the main body of the test program
 as indicated in `test_temp_conversions.f90`.
 
-> Not: If you add a new test file or change the name of `test_temp_conversions.f90`, you will
+> Note: If you add a new test file or change the name of `test_temp_conversions.f90`, you will
 > need to update list of tests (`test_src`) in [test/pfunit/CMakeLists.txt](./test/pfunit/CMakeLists.txt)
 
 ### Part 2 - Convert tests to use pFUnit
