@@ -44,8 +44,7 @@ contains
         integer, dimension(:,:), allocatable :: actual_board
         character(len=:), allocatable :: actual_io_error_message
 
-        call read_model_from_file(this%params%input_fname, this%params%max_nrow, this%params%max_ncol, actual_board, &
-                                  actual_io_error_message)
+        call read_model_from_file(this%params%input_fname, actual_board, actual_io_error_message)
 
         if (this%params%model_is_valid) then
             call VerifyCheckReadModelFromFileValidModel(this%params, actual_board, actual_io_error_message)
@@ -57,7 +56,6 @@ contains
     ! TASK: Finish the subroutines below such that they call io::read_model_from_file and assert
     !       that, for valid model files, the resultant board is what we expect and, for invalid models, we get
     !       the appropriate error message. Ensure any failure message makes it clear what has failed.
-
     !> Check for the expected output of the io::read_model_from_file subroutine called with a valid model
     subroutine VerifyCheckReadModelFromFileValidModel(params, actual_board, actual_io_error_message)
         !> The test parameters for the current test case
