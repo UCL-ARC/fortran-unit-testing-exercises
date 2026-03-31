@@ -14,6 +14,35 @@ provided are...
 - **fahrenheit_to_celsius**: Which takes in a temperature in Fahrenheit and returns a temperature in Celsius.
 - **celsius_to_kelvin**: Which takes in a temperature in Celsius and returns a temperature in Kelvin.
 
+To build this library you csn use either CMake or Make from within the **challenge** directory.
+
+### Building
+
+**Make:**
+
+```sh
+make tests # You may need to specify the Fortran compiler with FC=<path/to/compiler>
+```
+
+To rebuild after an update, make sure you clean the project first with
+
+```sh
+make clean
+```
+
+**CMake:**
+
+```sh
+cmake -B build
+cmake --build build
+```
+
+To rebuild after an update, make sure you clean the project first with by deleting the build directory.
+
+```sh
+rm -rf build
+```
+
 ## The tasks
 
 ### Part 1 - Test with Standard Fortran
