@@ -71,7 +71,7 @@ contains
 
         do num_ranks = 1, max_num_ranks
             ! Initialise neighbours to catch any mistakes in parameter setup
-            neighbours = -2
+            neighbours = MPI_PROC_NULL
 
             do i = 1, num_ranks
                 rank = i-1
