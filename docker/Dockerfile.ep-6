@@ -6,14 +6,21 @@ WORKDIR /home/vscode/6-testing-parallel-code/challenge
 
 # Fix intentional bug in code
 RUN mv ../solution/test_find_steady_state.pf ./test/ && \
+    mv ../solution/test_exchange_boundaries.pf ./test/ && \
     echo "add_pfunit_ctest (pfunit_find_steady_state_tests\n\
     TEST_SOURCES \"\${PROJECT_SOURCE_DIR}/test/test_find_steady_state.pf\"\n\
     LINK_LIBRARIES sut\n\
     MAX_PES 8\n\
     )\n\
+    \n\
+    add_pfunit_ctest (pfunit_exchange_boundaries\n\
+    TEST_SOURCES \"\${PROJECT_SOURCE_DIR}/test/test_exchange_boundaries.pf\"\n\
+    LINK_LIBRARIES sut\n\
+    MAX_PES 4\n\
+    )\n\
 " >> test/CMakeLists.txt && \
     sed -i -E 's/TEST_FLAGS = -I\$\(BUILD_DIR\) \$\(PFUNIT_EXTRA_FFLAGS\)/TEST_FLAGS = -I\$\(BUILD_DIR\) \$\(PFUNIT_EXTRA_FFLAGS\) -lpfunit/g' test/Makefile && \
-    sed -i -E 's/test_get_local_grid_info.pf/test_get_local_grid_info.pf \\\n  test_find_steady_state.pf/g' test/Makefile
+    sed -i -E 's/test_get_local_grid_info.pf/test_get_local_grid_info.pf \\\n  test_find_steady_state.pf  \\\n  test_exchange_boundaries.pf/g' test/Makefile
 
 # build tests with cmake
 RUN cmake -B build-cmake -DCMAKE_PREFIX_PATH=/home/vscode/pfunit/build/installed && \
