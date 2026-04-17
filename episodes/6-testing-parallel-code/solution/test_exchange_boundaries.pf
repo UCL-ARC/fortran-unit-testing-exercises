@@ -1,6 +1,6 @@
 !> Module for testing the subroutine game_of_life::exchange_boundaries
 module test_exchange_boundaries
-    use comms, only : exchange_boundaries, DomainDecomposition, DOWN, LEFT, UP, RIGHT
+    use comms, only : exchange_boundaries, DomainDecomposition, DOWN, LEFT, RIGHT, UP
     ! allow(C121)
     use pfunit
     implicit none
@@ -31,14 +31,14 @@ contains
     function getParameters() result(params)
         type(exchange_boundaries_test_params), allocatable :: params(:)
 
-        integer :: max_num_ranks, num_ranks, rank, i
+        integer :: max_num_ranks, num_ranks, rank, rank_index, i
 
         integer, dimension(:,:,:), allocatable :: input_board, expected_output_board
         integer, dimension(:,:), allocatable :: neighbours
         integer :: ncols, nrows
 
         max_num_ranks = 4
-        allocate(params(max_num_ranks))
+        allocate(params(3))
 
         ncols = 31
         nrows = 31
@@ -46,70 +46,119 @@ contains
         allocate(expected_output_board(nrows+2, ncols+2, max_num_ranks))
         allocate(neighbours(4, max_num_ranks))
 
-        do num_ranks = 1, max_num_ranks
-            ! Initialise neighbours to catch any mistakes in parameter setup
-            neighbours = MPI_PROC_NULL
+        ! 2 Ranks
+        !  --------
+        ! | 111111 |
+        ! | 111111 |
+        !  --------
+        ! | 000000 |
+        ! | 000000 |
+        !  --------
+        ! Shared by all ranks
+        num_ranks                                   = 2
+        neighbours                                  = MPI_PROC_NULL
+        ! Rank 0
+        rank                                        = 0
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(UP, rank_index)                  = 1 ! UPward halo should be received from rank 1
+        expected_output_board(nrows+2,:,rank_index) = neighbours(UP, rank_index)
+        ! Rank 1
+        rank                                        = 1
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(DOWN, rank_index)                = 0 ! DOWNward halo should be received from rank 0
+        expected_output_board(1,:,rank_index)       = neighbours(DOWN, rank_index)
+        params(1) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ncols, nrows, neighbours)
 
-            do i = 1, num_ranks
-                rank = i-1
+        ! 3 Ranks 
+        !  --------
+        ! | 222222 |
+        ! | 222222 |
+        !  --------
+        ! | 111111 |
+        !  --------
+        ! | 000000 |
+        !  --------
+        ! Shared by all ranks
+        num_ranks                                   = 3
+        neighbours                                  = MPI_PROC_NULL
+        ! Rank 0
+        rank                                        = 0
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(UP,rank_index)                   = 1 ! UPward halo should be received from rank 1
+        expected_output_board(nrows+2,:,rank_index) = neighbours(UP,rank_index)
+        ! Rank 1
+        rank                                        = 1
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(DOWN, rank_index)                = 0 ! DOWNward halo should be received from rank 0
+        expected_output_board(1,:,rank_index)       = neighbours(DOWN, rank_index)
+        neighbours(UP, rank_index)                  = 2 ! UPward halo should be received from rank 2
+        expected_output_board(nrows+2,:,rank_index) = neighbours(UP, rank_index)
+        ! Rank 2
+        rank                                        = 2
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(DOWN, rank_index)                = 1 ! DOWNward halo should be received from rank 1
+        expected_output_board(1,:,rank_index)       = neighbours(DOWN, rank_index)
+        params(2) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ncols, nrows, neighbours)
 
-                ! Fill boards with the rank of the process
-                input_board(:,:,i) = rank
-                expected_output_board(:,:,i) = rank
+        ! 4 Ranks 
+        !  ----- -----
+        ! | 222 | 333 |
+        ! | 222 | 333 |
+        !  ----- -----
+        ! | 000 | 111 |
+        ! | 000 | 111 |
+        !  ----- -----
+        ! Shared by all ranks
+        num_ranks = 4
+        neighbours = MPI_PROC_NULL
+        ! Rank 0
+        rank                                        = 0
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(UP,rank_index)                   = 2 ! UPward halo should be received from rank 2
+        expected_output_board(nrows+2,:,rank_index) = neighbours(UP,rank_index)
+        neighbours(RIGHT,rank_index)                = 1 ! RIGHT halo should be received from rank 1
+        expected_output_board(:,ncols+2,rank_index) = neighbours(RIGHT,rank_index)
+        ! Rank 1
+        rank                                        = 1
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(LEFT, rank_index)                = 0 ! LEFT halo should be received from rank 0
+        expected_output_board(:,1,rank_index)       = neighbours(LEFT, rank_index)
+        neighbours(UP, rank_index)                  = 3 ! UPward halo should be received from rank 3
+        expected_output_board(nrows+2,:,rank_index) = neighbours(UP, rank_index)
+        ! Rank 2
+        rank                                        = 2
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(DOWN, rank_index)                = 0 ! DOWNward halo should be received from rank 0
+        expected_output_board(1,:,rank_index)       = neighbours(DOWN, rank_index)
+        neighbours(RIGHT, rank_index)               = 3 ! RIGHT halo should be received from rank 3
+        expected_output_board(:,ncols+2,rank_index) = neighbours(RIGHT, rank_index)
+        ! Rank 3
+        rank                                        = 3
+        rank_index                                  = rank + 1
+        input_board(:,:,rank_index)                 = rank
+        expected_output_board(:,:,rank_index)       = rank
+        neighbours(DOWN, rank_index)                = 1 ! DOWNward halo should be received from rank 1
+        expected_output_board(1,:,rank_index)       = neighbours(DOWN, rank_index)
+        neighbours(LEFT, rank_index)                = 2 ! LEFT halo should be received from rank 2
+        expected_output_board(:,1,rank_index)       = neighbours(LEFT, rank_index)
+        params(3) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ncols, nrows, neighbours)
 
-                ! Define neighbours and expected halos for num_ranks == 2 test case
-                if (num_ranks == 2 ) then
-                    if (rank == 0) then
-                        neighbours(UP, i) = 1 ! Top halo should be received from rank 1
-                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
-                    else if (rank == 1) then
-                        neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
-                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
-                    end if
-
-                ! Define neighbours and expected halos for num_ranks == 3 test case
-                else if (num_ranks == 3) then
-                    if (rank == 0) then
-                        neighbours(UP, i) = 1 ! Top halo should be received from rank 1
-                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
-                    else if (rank == 1) then
-                        neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
-                        neighbours(UP, i) = 2 ! Top halo should be received from rank 2
-                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
-                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
-                    else if (rank == 2) then
-                        neighbours(DOWN, i) = 1 ! Bottom halo should be received from rank 1
-                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
-                    end if
-
-                ! Define neighbours and expected halos for num_ranks == 4 test case
-                else if (num_ranks == 4) then
-                    if (rank == 0) then
-                        neighbours(UP, i) = 2 ! Top halo should be received from rank 2
-                        neighbours(RIGHT, i) = 1 ! Right halo should be received from rank 1
-                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
-                        expected_output_board(nrows+2, :, i) = neighbours(RIGHT, i)
-                    else if (rank == 1) then
-                        neighbours(LEFT, i) = 0 ! Left halo should be received from rank 0
-                        neighbours(UP, i) = 3 ! Top halo should be received from rank 3
-                        expected_output_board(:, ncols+2, i) = neighbours(UP, i)
-                        expected_output_board(1, :, i) = neighbours(LEFT, i)
-                    else if (rank == 2) then
-                        neighbours(DOWN, i) = 0 ! Bottom halo should be received from rank 0
-                        neighbours(RIGHT, i) = 3 ! Right halo should be received from rank 3
-                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
-                        expected_output_board(nrows+2, :, i) = neighbours(RIGHT, i)
-                    else if (rank == 3) then
-                        neighbours(DOWN, i) = 1 ! Bottom halo should be received from rank 1
-                        neighbours(LEFT, i) = 2 ! Left halo should be received from rank 2
-                        expected_output_board(:, 1, i) = neighbours(DOWN, i)
-                        expected_output_board(1, :, i) = neighbours(LEFT, i)
-                    end if
-
-                end if
-            end do
-            params(num_ranks) = exchange_boundaries_test_params(num_ranks, input_board, expected_output_board, ncols, nrows, neighbours)
-        end do
     end function getParameters
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -121,11 +170,12 @@ contains
     subroutine TestExchangeBoundaries(this)
         class(exchange_boundaries_test_case), intent(inout) :: this
 
-        integer, dimension(:,:), allocatable ::actual_board
+        integer, dimension(:,:), allocatable :: actual_board
 
         integer :: rank_index
         type(DomainDecomposition) :: domainDecomp
 
+        @assertTrue(allocated(this%params%expected_output_board))
         rank_index = this%getProcessRank() + 1
         
         domainDecomp%communicator = this%getMpiCommunicator()
@@ -135,7 +185,7 @@ contains
         allocate(actual_board(size(this%params%input_board, 1), size(this%params%input_board, 2)))
         actual_board = this%params%input_board(:,:,rank_index)
 
-        call exchange_boundaries(actual_board, this%params%ncols, this%params%nrows, domainDecomp)
+        call exchange_boundaries(actual_board, this%params%nrows, this%params%ncols, domainDecomp)
 
         @assertEqual(this%params%expected_output_board(2:this%params%nrows+1,2:this%params%ncols+1,rank_index), actual_board(2:this%params%nrows+1,2:this%params%ncols+1), "Unexpected centre of board")
 

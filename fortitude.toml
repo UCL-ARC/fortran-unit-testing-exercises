@@ -7,5 +7,6 @@ line-length = 132
 
 # Exclude all build dirs
 exclude =[
-    "**build**"
+    "**build**",
+    "./pfunit"
 ]
