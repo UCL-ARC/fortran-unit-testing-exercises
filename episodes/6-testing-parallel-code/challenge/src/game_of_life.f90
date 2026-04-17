@@ -1,7 +1,7 @@
 module game_of_life
     ! allow(C121)
     use mpi
-    use comms, only : DomainDecomposition, DOWN, UP, LEFT, RIGHT, exchange_boundaries, get_local_grid_info
+    use comms, only : DomainDecomposition, exchange_boundaries, get_local_grid_info
     implicit none
     public
 
@@ -99,7 +99,7 @@ contains
 
         do while (.not. local_steady .and. generation_number < max_generations)
             ! Exchange ghost cells with neighbors
-            call exchange_boundaries(local_current, local_ncols, local_nrows, domainDecomp)
+            call exchange_boundaries(local_current, local_nrows, local_ncols, domainDecomp)
 
             ! Evolution
             call evolve_board(local_current, local_new)
