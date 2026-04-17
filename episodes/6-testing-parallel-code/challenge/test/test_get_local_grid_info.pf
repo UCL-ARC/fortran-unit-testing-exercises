@@ -53,12 +53,12 @@ contains
     function getParameters() result(params)
         type(get_local_grid_info_test_params), allocatable :: params(:)
 
-        integer :: max_num_ranks, rank_index, i
+        integer :: max_num_ranks, num_ranks, rank_index, i
         integer, allocatable :: ncols_per_rank(:), nrows_per_rank(:), coords(:,:), neighbours(:,:),col_start(:),row_start(:), &
                                 local_ncols(:), local_nrows(:)
 
         max_num_ranks = 4
-        allocate(params(max_num_ranks))
+        allocate(params(4))
 
         allocate(ncols_per_rank(max_num_ranks))
         allocate(nrows_per_rank(max_num_ranks))
@@ -75,6 +75,7 @@ contains
         ! |     1      |
         ! |            |
         !  ------------
+        num_ranks                  = 1
         neighbours                 = MPI_PROC_NULL
         rank_index                 = 1
         coords(:, rank_index)      = [0,0]
@@ -85,8 +86,8 @@ contains
         local_ncols(rank_index)    = 31
         local_nrows(rank_index)    = 31
         ! End of 1 Rank
-        params(1) = get_local_grid_info_test_params( &
-            1, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
+        params(num_ranks) = get_local_grid_info_test_params( &
+            num_ranks, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
         )
 
         ! 2 Ranks
@@ -96,26 +97,27 @@ contains
         ! |     0      |
         !  ------------
         ! Shared by all ranks
+        num_ranks                    = 2
         neighbours                   = MPI_PROC_NULL
-        ncols_per_rank               = 15
-        nrows_per_rank               = 31
-        row_start                    = 1
-        local_nrows                  = 31
+        ncols_per_rank               = 31
+        nrows_per_rank               = 15
+        col_start                    = 1
+        local_ncols                  = 31
         ! Rank 0
         rank_index                   = 1
         coords(:,rank_index)         = [0, 0]
-        col_start(rank_index)        = 1
+        row_start(rank_index)        = 1
         neighbours(UP, rank_index)   = 1
-        local_ncols(rank_index)      = 15
+        local_nrows(rank_index)      = 15
         ! Rank 1
         rank_index                   = 2
         coords(:,rank_index)         = [1, 0]
-        col_start(rank_index)        = 16
+        row_start(rank_index)        = 16
         neighbours(DOWN, rank_index) = 0
-        local_ncols(rank_index)      = 16
+        local_nrows(rank_index)      = 16
         ! End of 2 Ranks
-        params(2) = get_local_grid_info_test_params( &
-            2, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
+        params(num_ranks) = get_local_grid_info_test_params( &
+            num_ranks, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
         )
 
         ! 3 Ranks
@@ -127,33 +129,34 @@ contains
         ! |     0      |
         !  ------------
         ! Shared by all ranks
+        num_ranks                    = 3
         neighbours                   = MPI_PROC_NULL
-        ncols_per_rank               = 10
-        nrows_per_rank               = 31
-        row_start                    = 1
-        local_nrows                  = 31
+        nrows_per_rank               = 10
+        ncols_per_rank               = 31
+        col_start                    = 1
+        local_ncols                  = 31
         ! Rank 0
         rank_index                   = 1
         coords(:,rank_index)         = [0, 0]
-        col_start(rank_index)        = 1
+        row_start(rank_index)        = 1
         neighbours(UP, rank_index)   = 1
-        local_ncols(rank_index)      = 10
+        local_nrows(rank_index)      = 10
         ! Rank 1
         rank_index                   = 2
         coords(:,rank_index)         = [1, 0]
-        col_start(rank_index)        = 11
+        row_start(rank_index)        = 11
         neighbours(DOWN, rank_index) = 0
         neighbours(UP, rank_index)   = 2
-        local_ncols(rank_index)      = 10
+        local_nrows(rank_index)      = 10
         ! Rank 2
         rank_index                   = 3
         coords(:,rank_index)         = [2, 0]
-        col_start(rank_index)        = 21
+        row_start(rank_index)        = 21
         neighbours(DOWN, rank_index) = 1
-        local_ncols(rank_index)      = 11
+        local_nrows(rank_index)      = 11
         ! End of 3 Ranks
-        params(3) = get_local_grid_info_test_params( &
-            3, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
+        params(num_ranks) = get_local_grid_info_test_params( &
+            num_ranks, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
         )
 
         ! 4 Ranks
@@ -163,48 +166,49 @@ contains
         ! |   0  |   1  |  
         !  ------ ------
         ! Shared by all ranks
+        num_ranks                     = 4
         neighbours                    = MPI_PROC_NULL
         ncols_per_rank                = 15
         nrows_per_rank                = 15
         ! Rank 0
         rank_index                    = 1
         coords(:,rank_index)          = [0, 0]
-        col_start(rank_index)         = 1
         row_start(rank_index)         = 1
+        col_start(rank_index)         = 1
         neighbours(UP, rank_index)    = 2
         neighbours(RIGHT, rank_index) = 1
-        local_ncols(rank_index)       = 15
         local_nrows(rank_index)       = 15
+        local_ncols(rank_index)       = 15
         ! Rank 1
         rank_index                    = 2
         coords(:,rank_index)          = [0, 1]
-        col_start(rank_index)         = 1
-        row_start(rank_index)         = 16
+        row_start(rank_index)         = 1
+        col_start(rank_index)         = 16
         neighbours(LEFT, rank_index)  = 0
         neighbours(UP, rank_index)    = 3
-        local_ncols(rank_index)       = 15
-        local_nrows(rank_index)       = 16
+        local_nrows(rank_index)       = 15
+        local_ncols(rank_index)       = 16
         ! Rank 2
         rank_index                    = 3
         coords(:,rank_index)          = [1, 0]
-        col_start(rank_index)         = 16
-        row_start(rank_index)         = 1
+        row_start(rank_index)         = 16
+        col_start(rank_index)         = 1
         neighbours(RIGHT, rank_index) = 3
         neighbours(DOWN, rank_index)  = 0
-        local_ncols(rank_index)       = 16
-        local_nrows(rank_index)       = 15
+        local_nrows(rank_index)       = 16
+        local_ncols(rank_index)       = 15
         ! Rank 3
         rank_index                    = 4
         coords(:,rank_index)          = [1, 1]
-        col_start(rank_index)         = 16
         row_start(rank_index)         = 16
+        col_start(rank_index)         = 16
         neighbours(LEFT, rank_index)  = 2
         neighbours(DOWN, rank_index)  = 1
-        local_ncols(rank_index)       = 16
         local_nrows(rank_index)       = 16
+        local_ncols(rank_index)       = 16
         ! End of 4 Ranks
-        params(4) = get_local_grid_info_test_params( &
-            4, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
+        params(num_ranks) = get_local_grid_info_test_params( &
+            num_ranks, ncols_per_rank, nrows_per_rank, coords, neighbours, col_start, row_start, local_ncols, local_nrows &
         )
     end function getParameters
 

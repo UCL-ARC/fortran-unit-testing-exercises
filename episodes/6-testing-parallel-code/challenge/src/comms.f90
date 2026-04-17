@@ -105,20 +105,20 @@ contains
         call MPI_Cart_shift(domainDecomp%communicator, 0, 1, domainDecomp%neighbours(DOWN), domainDecomp%neighbours(UP), mpierr)
         call MPI_Cart_shift(domainDecomp%communicator, 1, 1, domainDecomp%neighbours(LEFT), domainDecomp%neighbours(RIGHT), mpierr)
 
-        ncols_per_rank = global_ncols / domainDecomp%dims(1)
-        nrows_per_rank = global_nrows / domainDecomp%dims(2)
+        nrows_per_rank = global_nrows / domainDecomp%dims(1)
+        ncols_per_rank = global_ncols / domainDecomp%dims(2)
 
-        col_start = coords(1)*ncols_per_rank + 1
-        row_start = coords(2)*nrows_per_rank + 1
+        row_start = coords(1)*nrows_per_rank + 1
+        col_start = coords(2)*ncols_per_rank + 1
 
-        num_ranks_col = domainDecomp%dims(1)
-        num_ranks_row = domainDecomp%dims(2)
+        num_ranks_row = domainDecomp%dims(1)
+        num_ranks_col = domainDecomp%dims(2)
 
         ! Add remainders if on the top or right of the grid
         local_ncols = ncols_per_rank
         local_nrows = nrows_per_rank
-        if (domainDecomp%neighbours(UP) == MPI_PROC_NULL) local_ncols = local_ncols + modulo(global_ncols, ncols_per_rank)
-        if (domainDecomp%neighbours(RIGHT) == MPI_PROC_NULL) local_nrows = local_nrows + modulo(global_nrows, nrows_per_rank)
+        if (domainDecomp%neighbours(RIGHT) == MPI_PROC_NULL) local_ncols = local_ncols + modulo(global_ncols, ncols_per_rank)
+        if (domainDecomp%neighbours(UP) == MPI_PROC_NULL) local_nrows = local_nrows + modulo(global_nrows, nrows_per_rank)
     end subroutine get_local_grid_info
 
 end module comms
