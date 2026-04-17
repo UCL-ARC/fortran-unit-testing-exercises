@@ -20,13 +20,13 @@ module comms
 contains
 
     !> Subroutine to exchange boundaries between neighboring ranks
-    subroutine exchange_boundaries(board, local_ncols, local_nrows, domainDecomp)
+    subroutine exchange_boundaries(board, local_nrows, local_ncols, domainDecomp)
         !> The board to be exchanged
         integer, dimension(:,:), intent(inout) :: board
         !> The number of rows in the local board
-        integer, intent(in) :: local_ncols
-        !> The number of columns in the local board
         integer, intent(in) :: local_nrows
+        !> The number of columns in the local board
+        integer, intent(in) :: local_ncols
         !> The domain decomposition object
         type(DomainDecomposition), intent(in) :: domainDecomp
 
@@ -35,40 +35,40 @@ contains
         ! Vertical exchange
         if (domainDecomp%neighbours(UP) >= 0) then
             ! Send top halo up
-            call MPI_ISEND(board(:,local_ncols+1), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(UP), 0, &
+            call MPI_ISEND(board(local_nrows+1,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(UP), 0, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive top halo from the above rank
-            CALL MPI_RECV(board(:,local_ncols+2), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(UP), 1, &
+            CALL MPI_RECV(board(local_nrows+2,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(UP), 1, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
         if (domainDecomp%neighbours(DOWN) >= 0) then
             ! Send the bottom halo down
-            call MPI_ISEND(board(:,2), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(DOWN), 1, &
+            call MPI_ISEND(board(2,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(DOWN), 1, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive the bottom halo from the below rank
-            CALL MPI_RECV(board(:,1), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(DOWN), 0, &
+            CALL MPI_RECV(board(1,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(DOWN), 0, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
 
         ! Horizontal exchange
         if (domainDecomp%neighbours(LEFT) >= 0) then
             ! Send the left halo left
-            call MPI_ISEND(board(2,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(LEFT), 2, &
+            call MPI_ISEND(board(:,2), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(LEFT), 2, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive the left halo from the left
-            CALL MPI_RECV(board(1,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(LEFT), 3, &
+            CALL MPI_RECV(board(:,1), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(LEFT), 3, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
         if (domainDecomp%neighbours(RIGHT) >= 0) then
             ! Send the right halo right
-            call MPI_ISEND(board(local_nrows+1,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 3, &
+            call MPI_ISEND(board(:,local_ncols+1), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 3, &
                 domainDecomp%communicator, mpi_req, ierr)
 
             ! Receive the right halo from the right
-            CALL MPI_RECV(board(local_nrows+2,:), local_ncols+2, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 2, &
+            CALL MPI_RECV(board(:,local_ncols+2), local_nrows+2, MPI_INTEGER, domainDecomp%neighbours(RIGHT), 2, &
                 domainDecomp%communicator, MPI_STATUS_IGNORE, ierr)
         endif
     end subroutine exchange_boundaries
